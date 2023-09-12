@@ -1,6 +1,6 @@
-@import url("./inputButton.css");
+@import url("../inputButton.css");
 
-@import url("./button.css");
+@import url("../button.css");
 
 body{
     background-color: #2795DB;
@@ -87,6 +87,11 @@ input{
     color: #2795DB;
 }
 
+.website-name {
+    font-size: 2em;
+    font-weight: bold;
+}
+
 @media(max-width: 1060px){
 
     .side-img{
@@ -125,7 +130,7 @@ input{
     }
    
 
-    .brand h1{
+    .website-name {
         font-size: 24px;
     }
     .logo{

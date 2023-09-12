@@ -16,17 +16,24 @@ header{
     margin-bottom: 30px;
 }
 
-header h1{
+.website-name {
     width: 224px;
     height: 75px;
     font-size: 64px;
     line-height: 75px;
+    font-weight: bold;
 }
 
 .erro{
     width: 858.4px;
     height: 470px;
 }
+
+.error-message {
+    font-size: 2em;
+    font-weight: bold;
+}
+
 section{
     display: flex;
     flex-direction: column;
@@ -35,7 +42,7 @@ section{
 
 }
 
-section h1{
+.error-message {
     font-size: 48px;
     line-height: 56px;
     margin-top: 20px ;

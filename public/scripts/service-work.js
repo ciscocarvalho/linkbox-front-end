@@ -4,10 +4,9 @@ self.addEventListener('install', (event) => {
       caches.open('my-cache').then((cache) => {
         return cache.addAll([
           '/',
-          '/index.html',
-          '/dashboard.html',
-          '/login.html',
-          '/cadastro.html',
+          '/dashboard',
+          '/login',
+          '/cadastro',
           '/styles.css',
           '/dashboard.css',
           '/cadastro.css',

@@ -20,7 +20,8 @@ header{
     display: none;
 }
 
-il{
+li{
+    all: unset;
     margin: 5px;
 }
 
@@ -43,11 +44,15 @@ section{
     align-items: center;
 }
 
+.website-name {
+    font-size: 2rem;
+    font-weight: bold;
+}
 
-
-h2{
+.headline {
     font-size: 72px;
     text-align: center;
+    font-weight: bold;
 }
 p{
     font-size: 30px;
@@ -101,7 +106,7 @@ img{
 
     }
 
-    .texto h2{
+    .headline {
         font-size: 30px;
     }
     .texto p {
@@ -130,7 +135,7 @@ img{
     .texto p{
         display: none;
     }
-    .texto h2{
+    .headline {
         display: flex;
         align-items: center;
         font-size: 30px;
@@ -179,17 +184,17 @@ img{
 
 @media(max-width:310px){
 
-    h1{
+    .website-name {
         font-size: 30px;
     }
 }
 @media(max-width: 280px){
 
-    h1{
+    .website-name {
         font-size: 20px;
     }
 
-    .texto h2{
+    .headline {
         font-size: 20px;
         height: auto;
     }

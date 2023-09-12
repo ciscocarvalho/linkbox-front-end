@@ -22,7 +22,9 @@ section img {
     gap: 20px;
 }
 
-.brand h1{
+.website-name {
+    font-size: 2rem;
+    font-weight: bold;
     width: 224px;
     height: 75px;
 
@@ -34,6 +36,12 @@ section img {
     width: 858.4px;
     height: 470px;
 }
+
+.error-message {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
 section{
     display: flex;
     flex-direction: column;

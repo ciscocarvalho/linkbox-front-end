@@ -18,7 +18,7 @@ visibilidadeSenhaBtn.addEventListener("click", (e) => {
 })
 
 
-const url = 'dashboard.html'
+const url = 'dashboard'
 const form = document.querySelector('form')
 
 form.addEventListener("submit", (e) => {
