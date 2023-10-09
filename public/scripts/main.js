@@ -6,7 +6,6 @@ if ("serviceWorker" in navigator) {
         console.log("registrado o service work", reg);
       })
       .catch((erro) => {
-        //console.log("deu merda", erro);
       });
   });
 }

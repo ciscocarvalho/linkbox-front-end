@@ -12,7 +12,6 @@ class ButtonDelete extends Button {
 
         if (allItems.length > 1) {
             allItems.forEach(item => {
-                // item = this.getAssociatedItem();
                 removeItemFromUI(item);
                 item.remove()
             });

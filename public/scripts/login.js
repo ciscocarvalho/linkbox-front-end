@@ -30,7 +30,6 @@ form.addEventListener("submit", (e) => {
 
 
 function redirecionar() {
-    // Redireciona o navegador para o URL especificado
     window.location.href = url;
   }
 
@@ -77,7 +76,6 @@ function checkInput(){
 
    
 
-    // adc sucesso
     small.classList.add('success')
     small.classList.remove('error')
 
@@ -96,9 +94,7 @@ function checkInput(){
     const formsControl = input.parentElement;
     const small = formsControl.querySelector('small')
 
-    // msg de erro
     small.innerText = message;
-    //adc classe de erro
    small.classList.add('error')
 
 }

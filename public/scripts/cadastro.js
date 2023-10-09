@@ -89,7 +89,6 @@ function setSuccessForEmail(input) {
   console.log(formsControl);
   const small = formsControl.querySelector("small");
 
-  // adc sucesso
   small.classList.add("success");
   small.classList.remove("error");
   teste();
@@ -97,24 +96,19 @@ function setSuccessForEmail(input) {
 function setSuccessForUsername(input) {
   const formsControl = input.parentElement;
   const small = formsControl.querySelector("small");
-  // adc sucesso
   small.classList.add("success");
   small.classList.remove("error");
-  //teste()
 }
 
 function setErrorFor(input, message) {
   const formsControl = input.parentElement;
   const small = formsControl.querySelector("small");
 
-  // msg de erro
   small.innerText = message;
-  //adc classe de erro
   small.classList.add("error");
 }
 
 function redirecionar() {
-  // Redireciona o navegador para o URL especificado
   window.location.href = url;
 }
 
