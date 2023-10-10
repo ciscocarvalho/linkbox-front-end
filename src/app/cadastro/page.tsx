@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 const page: React.FC = () => {
   return <>
-    <script src="scripts/cadastro.js" defer></script>
+    <script src="scripts/cadastro.js" type="module" defer></script>
 
     <section>
       <div className="container">

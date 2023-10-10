@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 const page: React.FC = () => {
   return <>
-    <script src="scripts/login.js" defer></script>
+    <script src="scripts/login.js" type="module" defer></script>
 
     <img src="images/side-image.svg" className="side-img" />
 
@@ -33,8 +33,8 @@ const page: React.FC = () => {
             </div>
 
             <div className="input-container">
-                <label htmlFor="inputSenha">
-                    <input type="password" placeholder="Senha" id="inputSenha" />
+                <label htmlFor="input-senha">
+                    <input type="password" placeholder="Senha" id="input-senha" />
                     <small className="passwordd"></small>
                 </label>
                 <button className="icon-btn visibilidade-senha-btn">
