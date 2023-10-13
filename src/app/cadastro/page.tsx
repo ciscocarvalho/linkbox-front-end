@@ -51,7 +51,7 @@ const page: React.FC = () => {
             </div>
           </div>
           <div className="termos">
-            <input type="checkbox" id="sla" />
+            <input type="checkbox" />
             <h2>Li e concordo com os termos de uso</h2>
           </div>
           <div className="texto">
