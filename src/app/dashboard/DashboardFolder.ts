@@ -1,4 +1,5 @@
 import DashboardItem from "./DashboardItem";
+import { reorderArray } from "./reorderArray";
 
 class DashboardFolder extends DashboardItem {
     name?: string;
@@ -55,6 +56,7 @@ class DashboardFolder extends DashboardItem {
 
         folder.addChild(child);
         this.removeChild(child);
+        child.setParent(folder);
     }
 
     addChild(child: DashboardItem) {
@@ -66,19 +68,8 @@ class DashboardFolder extends DashboardItem {
         return this.children.findIndex(child => child === targetChild);
     }
 
-    moveChild(child: DashboardItem, index: number) {
-        let children = this.children;
-        const childIndex = this.getChildIndex(child);
-        if (childIndex === index) return;
-        children[childIndex] = null as any;
-
-        let leftChildren = children.slice(0, index);
-        let rightChildren = children.slice(index);
-
-        children = [...leftChildren, child, ...rightChildren];
-        children = children.filter(child => child !== null);
-
-        this.setChildren(children);
+    repositionChild(currentIndex: number, newIndex: number, strategy: "before" | "after") {
+        reorderArray(this.children, currentIndex, newIndex, strategy);
     }
 
     contains(item: DashboardItem) {

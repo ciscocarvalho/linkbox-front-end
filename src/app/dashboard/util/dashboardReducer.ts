@@ -226,14 +226,26 @@ const removeOne = (dashboard: TDashboard, itemID: DashboardItemID) => {
 }
 
 const removeMany = (dashboard: TDashboard, itemIDs: DashboardItemID[]) => {
-  const updatedDashboard = updateDashboard(dashboard, newDashboard => {
+  return updateDashboard(dashboard, newDashboard => {
     itemIDs.forEach(itemID => {
       newDashboard = removeOne(newDashboard, itemID);
     });
     return newDashboard;
   })
+}
 
-  return updatedDashboard;
+const keepDisplayedInFolderOrder = (dashboard: TDashboard) => {
+  return updateDashboard(dashboard, newDashboard => {
+    const { currentFolder, displayedItems } = newDashboard;
+    const childrenOfCurrentFolder = currentFolder.getChildren();
+
+    newDashboard.displayedItems = childrenOfCurrentFolder.filter(child => {
+      const index = displayedItems.findIndex(displayedItem => displayedItem.id === child.id);
+      return index !== -1;
+    })
+
+    return newDashboard;
+  })
 }
 
 const addOne = (dashboard: TDashboard, item: DashboardItem) => {
@@ -257,6 +269,8 @@ const displayOne = (dashboard: TDashboard, itemID: DashboardItemID, behavior: Be
         newDashboard.displayedItems = [item];
       }
     }
+
+    newDashboard = keepDisplayedInFolderOrder(newDashboard);
 
     return newDashboard;
   });
@@ -530,6 +544,67 @@ const edit = (dashboard: TDashboard, itemID: DashboardItemID, updatedFields: Par
 
     return newDashboard;
   });
+}
+
+const moveOne = (dashboard: TDashboard, itemID: DashboardItemID, folderID: DashboardFolder["id"]) => {
+  return updateDashboard(dashboard, newDashboard => {
+    const item = findByIDInDashboard(newDashboard, itemID);
+    const folder = findByIDInDashboard(newDashboard, folderID) as DashboardFolder;
+
+    if (!item || !folder) {
+      return newDashboard;
+    }
+
+    item.getParent()?.moveChildToAnotherFolder(item, folder);
+    newDashboard = keepDisplayedInFolderOrder(newDashboard);
+
+    return newDashboard;
+  });
+}
+
+const moveMany = (dashboard: TDashboard, itemIDs: DashboardItemID[], folderID: DashboardFolder["id"]) => {
+  return updateDashboard(dashboard, newDashboard => {
+    itemIDs.forEach(itemID => {
+      newDashboard = moveOne(newDashboard, itemID, folderID);
+    });
+    return newDashboard;
+  })
+}
+
+const repositionOne = (dashboard: TDashboard, currentIndex: number, newIndex: number, strategy: "before" | "after") => {
+  return updateDashboard(dashboard, newDashboard => {
+    const { currentFolder } = newDashboard;
+    currentFolder.repositionChild(currentIndex, newIndex, strategy);
+    newDashboard = keepDisplayedInFolderOrder(newDashboard);
+    return newDashboard;
+  });
+};
+
+const repositionMany = (dashboard: TDashboard, indexes: number[], newIndex: number, strategy: "before" | "after") => {
+  return updateDashboard(dashboard, newDashboard => {
+    const { currentFolder } = newDashboard;
+    const children = currentFolder.getChildren();
+    const smallestIndex = Math.min(...indexes);
+    const movingBack = newIndex <= smallestIndex;
+
+    if (movingBack) {
+      indexes = indexes.toReversed();
+    }
+
+    const items = indexes.map(index => children[index]);
+
+    const getItemIndex = (item: DashboardItem) => {
+      const children = currentFolder.getChildren();
+      return children.findIndex(child => child.id === item.id);
+    }
+
+    items.forEach(item => {
+      const index = getItemIndex(item);
+      newDashboard = repositionOne(newDashboard, index, newIndex, strategy);
+    });
+
+    return newDashboard;
+  })
 };
 
 export const dashboardReducer = (dashboard: TDashboard, action: DashboardAction) => {
@@ -616,8 +691,19 @@ export const dashboardReducer = (dashboard: TDashboard, action: DashboardAction)
       return undoCutOne(dashboard, action.itemID);
     }
     case "edit": {
-      const { itemID, updatedFields } = action;
-      return edit(dashboard, itemID, updatedFields);
+      return edit(dashboard, action.itemID, action.updatedFields);
+    }
+    case "move": {
+      return moveOne(dashboard, action.itemID, action.folderID);
+    }
+    case "move_many": {
+      return moveMany(dashboard, action.itemIDs, action.folderID);
+    }
+    case "reposition": {
+      return repositionOne(dashboard, action.currentIndex, action.newIndex, action.strategy );
+    }
+    case "reposition_many": {
+      return repositionMany(dashboard, action.indexes, action.newIndex, action.strategy );
     }
     default: {
       return dashboard;

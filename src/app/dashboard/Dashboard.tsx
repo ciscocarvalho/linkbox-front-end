@@ -19,7 +19,9 @@ const Dashboard: React.FC = () => {
     parentFolder: initialFolder.getParent(),
   };
   const [dashboard, dispatch] = useReducer(dashboardReducer, initialDashboard);
-  const hasItems = dashboard.displayedItems.length > 0;
+  const { clipboard, displayedItems } = dashboard;
+  const validItems = displayedItems.filter(item => !clipboard.cut.includes(item));
+  const hasItems = displayedItems.length > 0;
 
   return (
     <DashboardContext.Provider value={dashboard}>
@@ -49,7 +51,7 @@ const Dashboard: React.FC = () => {
             <br />
             Adicione um link ou uma pasta clicando no botão +
           </p>
-          <CardsContainer />
+          <CardsContainer items={validItems} />
           <CardsFooter />
         </main>
 

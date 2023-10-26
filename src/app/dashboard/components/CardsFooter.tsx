@@ -1,6 +1,5 @@
 "use client";
 import React, { useContext } from 'react';
-import { DashboardAction } from "../types";
 import { DashboardContext, DashboardDispatchContext } from '../contexts/DashboardContext';
 import { mapItemsToItemIDs } from "../util";
 

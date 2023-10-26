@@ -50,6 +50,24 @@ export type DashboardAction = {
   type: "edit";
   itemID: DashboardItemID;
   updatedFields: Partial<DashboardFolder | DashboardLink>;
+} | {
+  type: "reposition";
+  currentIndex: number;
+  newIndex: number;
+  strategy: "before" | "after";
+} | {
+  type: "reposition_many";
+  indexes: number[];
+  newIndex: number;
+  strategy: "before" | "after";
+} | {
+  type: "move";
+  itemID: DashboardItemID;
+  folderID: DashboardFolder["id"];
+} | {
+  type: "move_many";
+  itemIDs: DashboardItemID[];
+  folderID: DashboardFolder["id"];
 }
 
 export type TDashboard = {

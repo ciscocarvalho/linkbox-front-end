@@ -4,7 +4,7 @@ import DashboardFolder from '../DashboardFolder';
 import DashboardLink from '../DashboardLink';
 import FolderDataContainer from "./FolderDataContainer"
 import LinkDataContainer from "./LinkDataContainer"
-import { getItemType } from '../util';
+import { getItemType, itemIsFolder } from '../util';
 import DashboardItem from '../DashboardItem';
 import { DashboardContext, DashboardDispatchContext } from '../contexts/DashboardContext';
 import BtnsContainer from './ItemCard/BtnsContainer';
@@ -18,7 +18,7 @@ let clickedItem: DashboardItem;
 let clickTimeout: ReturnType<typeof setTimeout>;
 let currentCard: HTMLDivElement | null;
 
-const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
+const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
   const [backgroundColor, setBackgroundColor] = useState(item.backgroundColor);
   const [hovering, setHovering] = useState(false);
   const [inSmallScreenWidth, setInSmallScreenWidth] = useState(isInSmallScreenWidth());
@@ -30,8 +30,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
   const isSelected = dashboard.selected.includes(item);
 
   const onSingleClick = () => {
-    dispatch({ type: "reset_selection" });
-    dispatch({ type: "select", itemID: item.id });
+    dispatch({ type: "select", itemID: item.id, behavior: "exclusive" });
   }
 
   const onDoubleClick = () => {
@@ -70,8 +69,46 @@ const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
     }
   }, []);
 
+  let className = `${itemType}-card`
+
+  if (isSelected) {
+    className += " card-selected";
+  }
+
+  if (overInfo && overInfo.id === item.id && !isSelected) {
+    if (overInfo.isPositionCloseToCenter && itemIsFolder(item)) {
+      className += ` card-drag-over-center`;
+    } else {
+      className += ` card-drag-over-${overInfo.positionRelativeToCenter}`;
+    }
+  }
+
+  const handleOnClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
+    e.stopPropagation();
+    const oldClickItem = clickedItem;
+    clickedItem = item;
+
+    if (oldClickItem === clickedItem) {
+      clickCount++;
+    } else {
+      clickCount = 1;
+    }
+
+    if (clickCount === 1) {
+      onSingleClick();
+      currentCard = card.current;
+      clickTimeout = setTimeout(() => {
+        clickCount = 0;
+      }, 500);
+    } else {
+      onDoubleClick();
+      clearTimeout(clickTimeout);
+      clickCount = 0;
+    }
+  }
+
   return <div
-    className={`${itemType}-card${isSelected ? " card-selected" : ""}`}
+    className={className}
     draggable={true}
     ref={card}
     style={{
@@ -80,29 +117,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
     }}
     onMouseOver={() => setHovering(true)}
     onMouseOut={() => setHovering(false)}
-    onClick={(e) => {
-      e.stopPropagation();
-      const oldClickItem = clickedItem;
-      clickedItem = item;
-
-      if (oldClickItem === clickedItem) {
-        clickCount++;
-      } else {
-        clickCount = 1;
-      }
-
-      if (clickCount === 1) {
-        onSingleClick();
-        currentCard = card.current;
-        clickTimeout = setTimeout(() => {
-          clickCount = 0;
-        }, 500);
-      } else {
-        onDoubleClick();
-        clearTimeout(clickTimeout);
-        clickCount = 0;
-      }
-    }}
+    onClick={handleOnClick}
     {...computedProps}
   >
     {
@@ -111,7 +126,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
         : <LinkDataContainer link={item as DashboardLink} />
     }
     <BtnsContainer
-      hovering={hovering}
+      hovering={hovering && !overInfo}
       inSmallScreenWidth={inSmallScreenWidth}
       item={item}
       setBackgroundColor={setBackgroundColor}
