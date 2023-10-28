@@ -14,3 +14,7 @@ button {
   background: none;
   border: none;
 }
+
+li{
+    all: unset;
+}
