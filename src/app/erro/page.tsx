@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import React from 'react';
 import '../reset.css';
-import './erro.css';
 
 export const metadata: Metadata = {
   title: 'Erro 404',
@@ -9,20 +8,20 @@ export const metadata: Metadata = {
 }
 
 const page: React.FC = () => {
-  return <>
+  return <div className="bg-[#2795DB] flex justify-center items-center flex-col h-[100vh] gap-[50px]">
     <a href="/">
-        <div className="brand">
-            <img src="images/Logo.svg" className="logo" />
-            <p className="website-name">LinkBox</p>
+        <div className="flex gap-[20px]">
+            <img src="images/Logo.svg" className="w-[80px] h-[80px]" />
+            <p className="font-bold w-[224px] h-[75px] text-[64px] leading-[75px]">LinkBox</p>
         </div>
     </a>
 
-    <section>
-        <img src="images/erro 404 img.svg" className="erro" />
+    <section className="flex flex-col justify-between items-center">
+        <img src="images/erro 404 img.svg" className="select-none w-[858.4px] h-[470px]" />
     </section>
 
-    <p className="error-message">Página não encontrada!</p>
-  </>
+    <p className="text-[2rem] font-bold">Página não encontrada!</p>
+  </div>
 };
 
 export default page;
