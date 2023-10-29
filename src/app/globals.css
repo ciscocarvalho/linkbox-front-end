@@ -15,3 +15,10 @@
 body {
   height: 100vh;
 }
+
+@layer utilities {
+  /* tailwind's outline-none class generates wrong style */
+  .outline-hidden {
+    outline: none;
+  }
+}

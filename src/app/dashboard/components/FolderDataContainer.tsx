@@ -1,5 +1,6 @@
 import React from 'react';
 import DashboardFolder from '../DashboardFolder';
+import Icon from '../../components/Icon';
 
 interface FolderDataContainer {
   folder: DashboardFolder;
@@ -8,7 +9,7 @@ interface FolderDataContainer {
 const FolderDataContainer: React.FC<FolderDataContainer> = ({ folder }) => {
   return <div className="folder-data-container">
     <div className="card-icon-container">
-      <span className="material-symbols-outlined">folder</span>
+      <Icon name="folder" />
     </div>
     <p className="folder-name">{folder.name}</p>
   </div>;

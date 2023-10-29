@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from 'react';
+import InputIcon from './InputIcon';
 
 interface PasswordVisibilityTogglerProps {
  passwordInputRef: React.RefObject<HTMLInputElement>
@@ -18,9 +19,7 @@ const PasswordVisibilityToggler: React.FC<PasswordVisibilityTogglerProps> = ({ p
       passwordInputRef.current.type = visible ? "password" : "text";
       passwordInputRef.current.focus();
     }}>
-      <span className="material-symbols-outlined">
-        {visible ? "visibility_off" : "visibility"}
-      </span>
+      <InputIcon name={visible ? "visibility_off" : "visibility"} />
     </button>
   );
 };

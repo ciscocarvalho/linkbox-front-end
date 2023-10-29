@@ -3,6 +3,7 @@ import React, { useContext, useRef } from 'react';
 import DashboardItem from '../DashboardItem';
 import { itemIsFolder, itemIsLink } from '../util';
 import { DashboardContext, DashboardDispatchContext } from '../contexts/DashboardContext';
+import Input from '../../components/Input';
 
 const SearchBar: React.FC<JSX.IntrinsicElements["input"]> = ({ ...inputProps }) => {
   const dashboard = useContext(DashboardContext);
@@ -16,8 +17,7 @@ const SearchBar: React.FC<JSX.IntrinsicElements["input"]> = ({ ...inputProps }) 
   }
 
   return (
-    <input
-      ref={searchBar}
+    <Input
       onInput={() => {
         const query = searchBar.current?.value;
 
@@ -37,6 +37,7 @@ const SearchBar: React.FC<JSX.IntrinsicElements["input"]> = ({ ...inputProps }) 
         }))
       }}
       {...inputProps}
+      ref={searchBar}
     />
   );
 };

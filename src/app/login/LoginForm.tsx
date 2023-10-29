@@ -1,43 +1,53 @@
 "use client";
-import React, { useRef } from 'react';
-import { checkPasswordInput, checkEmailInput } from "../Util/AuthForm";
+import React, { useRef, useState } from 'react';
+import { getPasswordError, getEmailError } from "../Util/AuthForm";
 import PasswordVisibilityToggler from '../components/PasswordVisibilityToggler';
+import Button from '../components/Button';
+import InputContainer from '../components/InputContainer';
+import Input from '../components/Input';
+import InputIcon from '../components/InputIcon';
+import FormInputError from '../components/FormInputError';
 
 const LoginForm: React.FC = () => {
   const password = useRef<HTMLInputElement>(null);
   const email = useRef<HTMLInputElement>(null);
-  const smallEmail = useRef<HTMLElement>(null);
-  const smallPassword = useRef<HTMLElement>(null);
+  const [passwordError, setPasswordError] = useState<string | undefined>();
+  const [emailError, setEmailError] = useState<string | undefined>();
 
-  return <form onSubmit={(e) => {
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
       e.preventDefault();
-      checkEmailInput(email.current!);
-      checkPasswordInput(password.current!);
+      const newEmailError = getEmailError(email.current!.value);
+      const newPasswordError = getPasswordError(password.current!.value);
 
-      if (
-          smallEmail.current?.classList.contains("success") &&
-          smallPassword.current?.classList.contains("success")
-      ) {
-          window.location.href = "dashboard";
+      if (newEmailError || newPasswordError) {
+          setEmailError(newEmailError);
+          setPasswordError(newPasswordError);
+          return;
       }
-  }}>
-      <div className="input-container">
-          <input type="email" placeholder="Email" className="email" id="inputEmail" ref={email} />
-          <label htmlFor="inputEmail">
-              <span className="material-symbols-outlined">mail</span>
-              <small className="emails" ref={smallEmail}></small>
-          </label>
-      </div>
 
-      <div className="input-container">
+      window.location.href = "dashboard";
+  }
+
+  return <form className="flex gap-[20px] flex-col justify-center items-center w-[70%] mt-[60px]" onSubmit={handleSubmit}>
+      <InputContainer>
+          <Input type="email" placeholder="Email" className="email" id="inputEmail" ref={email} />
+          <label htmlFor="inputEmail">
+              <InputIcon name="mail" />
+              <FormInputError message={emailError} />
+          </label>
+      </InputContainer>
+
+      <InputContainer>
+          <Input type="password" placeholder="Senha" id="input-senha" ref={password} />
           <label htmlFor="input-senha">
-              <input type="password" placeholder="Senha" id="input-senha" ref={password} />
-              <small ref={smallPassword}></small>
+              <FormInputError message={passwordError} />
           </label>
           <PasswordVisibilityToggler passwordInputRef={password} />
-      </div>
+      </InputContainer>
 
-      <button type="submit" className="regular-btn"><span>Entrar</span></button>
+      <Button type="submit">
+          <span>Entrar</span>
+      </Button>
   </form>
 };
 

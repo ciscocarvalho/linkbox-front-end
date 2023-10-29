@@ -2,6 +2,7 @@
 import React, { useContext } from 'react';
 import { DashboardContext, DashboardDispatchContext } from '../contexts/DashboardContext';
 import { mapItemsToItemIDs } from "../util";
+import Icon from '../../components/Icon';
 
 const CardsFooter: React.FC = () => {
   const dashboard = useContext(DashboardContext);
@@ -28,13 +29,13 @@ const CardsFooter: React.FC = () => {
       <p className="text-selected-cards">{selected.length} { selected.length === 1 ? "Selecionado" : "Selecionados"}</p>
       <div className="cards-footer-btn-container">
         <div className="btn copy-btn" onClick={copySelected}>
-          <span className="material-symbols-outlined">content_copy</span>
+          <Icon name="content_copy" />
         </div>
         <div className="btn cut-btn" onClick={cutSelected}>
-          <span className="material-symbols-outlined">cut</span>
+          <Icon name="cut" />
         </div>
         <div className="btn delete-btn" onClick={deleteSelected}>
-          <span className="material-symbols-outlined">delete</span>
+          <Icon name="delete" />
         </div>
       </div>
     </footer>

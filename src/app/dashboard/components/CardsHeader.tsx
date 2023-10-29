@@ -2,6 +2,7 @@
 import React, { useContext } from 'react';
 import { DashboardContext, DashboardDispatchContext } from '../contexts/DashboardContext';
 import { inputNewItem } from "../util";
+import Icon from '../../components/Icon';
 
 const CardsHeader = () => {
   const dashboard = useContext(DashboardContext);
@@ -16,7 +17,7 @@ const CardsHeader = () => {
         className={`btn go-back-btn${inSubfolder ? "" : " hidden"}`}
         onClick={() => dispatch({ type: "go_back" })}
       >
-        <span className="material-symbols-outlined">arrow_back</span>
+        <Icon name="arrow_back" />
       </div>
     </div>
     <div className="cards-header-right">
@@ -24,7 +25,7 @@ const CardsHeader = () => {
         className={`btn cancel-paste-btn${clipboardInUse ? "" : " hidden"}`}
         onClick={() => dispatch({ type: "reset_clipboard" })}
       >
-        <span className="material-symbols-outlined">cancel</span>
+        <Icon name="cancel" />
       </div>
 
       <div
@@ -34,7 +35,7 @@ const CardsHeader = () => {
           dispatch({ type: "paste", folderID: currentFolder.id })
         }}
       >
-        <span className="material-symbols-outlined">content_paste</span>
+        <Icon name="content_paste" />
       </div>
 
       <div className="btn add-btn" onClick={() => {
@@ -44,7 +45,7 @@ const CardsHeader = () => {
         };
         dispatch({ type: "add", item });
       }}>
-        <span className="material-symbols-outlined">add</span>
+        <Icon name="add" />
       </div>
       <p className={`current-folder-name${inSubfolder ? "" : " hidden"}`}>{currentFolder.name}</p>
     </div>

@@ -7,10 +7,7 @@ self.addEventListener('install', (event) => {
           '/dashboard',
           '/login',
           '/cadastro',
-          '/styles.css',
           '/dashboard.css',
-          '/cadastro.css',
-          '/login.css',
           '/script.js'
         ]);
       })

@@ -8,6 +8,9 @@ import { DashboardContext, DashboardDispatchContext } from './contexts/Dashboard
 import CardsContainer from "./components/CardsContainer";
 import CardsHeader from "./components/CardsHeader";
 import CardsFooter from "./components/CardsFooter";
+import InputContainer from "../components/InputContainer";
+import InputIcon from "../components/InputIcon";
+import Icon from "../components/Icon";
 
 const Dashboard: React.FC = () => {
   const initialFolder = new DashboardFolder();
@@ -35,12 +38,12 @@ const Dashboard: React.FC = () => {
               </div>
             </a>
           </div>
-          <div className="input-container">
+          <InputContainer>
             <SearchBar type="text" placeholder="Pesquise" id="inputPesquisa" />
             <label htmlFor="inputPesquisa">
-              <span className="material-symbols-outlined">search</span>
+              <InputIcon name="search" />
             </label>
-          </div>
+          </InputContainer>
           <div></div>
         </nav>
 
@@ -57,19 +60,17 @@ const Dashboard: React.FC = () => {
 
         <aside className="side-menu hide">
           <div className="exit">
-            <span className="material-symbols-outlined exit-btn">close</span>
+            <Icon name="close" className="exit-btn" />
           </div>
           <div className="side-options">
             <div className="side-content">
               <a href="/">
-                <span className="material-symbols-outlined side-btn">logout</span>{" "}
+                <Icon name="logout" className="side-btn" />{" "}
                 <span className="side-text">Sair</span>
               </a>
             </div>
             <div className="side-content">
-              <span className="material-symbols-outlined side-btn">
-                switch_account
-              </span>
+              <Icon name="switch_account" className="side-btn" />
               <span className="side-text">Mudar de Conta</span>
             </div>
           </div>

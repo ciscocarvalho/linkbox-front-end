@@ -1,101 +1,111 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import {
-  checkPasswordInput,
-  checkUsernameInput,
-  checkEmailInput,
+  getPasswordError,
+  getUsernameError,
+  getEmailError,
 } from "../Util/AuthForm";
 import PasswordVisibilityToggler from "../components/PasswordVisibilityToggler";
+import GoogleButton from "../components/GoogleButton";
+import Button from "../components/Button";
+import InputContainer from "../components/InputContainer";
+import Input from "../components/Input";
+import InputIcon from "../components/InputIcon";
+import FormInputError from "../components/FormInputError";
 
 const CadastroForm: React.FC = () => {
   const passwordInput = useRef<HTMLInputElement>(null);
   const emailInput = useRef<HTMLInputElement>(null);
   const usernameInput = useRef<HTMLInputElement>(null);
-  const smallEmail = useRef<HTMLElement>(null);
-  const smallPassword = useRef<HTMLElement>(null);
-  const smallUsername = useRef<HTMLElement>(null);
   const check = useRef<HTMLInputElement>(null);
+
+  const [usernameError, setUsernameError] = useState<string | undefined>();
+  const [emailError, setEmailError] = useState<string | undefined>();
+  const [passwordError, setPasswordError] = useState<string | undefined>();
 
   return (
     <form
+      className="flex flex-col justify-center items-center w-[100%] h-[60%] gap-[20px] max-[540px]:h-fit"
       onSubmit={(e) => {
         e.preventDefault();
 
-        checkUsernameInput(usernameInput.current!);
-        checkEmailInput(emailInput.current!);
-        checkPasswordInput(passwordInput.current!);
+        const newUsernameError = getUsernameError(usernameInput.current!.value);
+        const newEmailError = getEmailError(emailInput.current!.value);
+        const newPasswordError = getPasswordError(passwordInput.current!.value);
 
-        if (
-          smallEmail.current?.classList.contains("success") &&
-          smallPassword.current?.classList.contains("success") &&
-          smallUsername.current?.classList.contains("success") &&
-          check.current?.checked
-        ) {
-          alert("Você foi cadastrado");
-          window.location.href = "login";
+        if (newUsernameError || newEmailError || newPasswordError || !check.current!.checked) {
+          setUsernameError(newUsernameError);
+          setEmailError(newEmailError);
+          setPasswordError(newPasswordError);
+          return;
         }
+
+        alert("Você foi cadastrado");
+        window.location.href = "login";
       }}
     >
-      <div className="form-inputs">
-        <div className="input-container">
+      <div className="flex flex-col gap-[20px] p-[20px]">
+        <InputContainer>
           <label htmlFor="input-nome">
-            <input
+            <Input
               type="text"
               placeholder="Nome"
               id="input-nome"
               ref={usernameInput}
             />
-            <small ref={smallUsername}></small>
+            <FormInputError message={usernameError} />
           </label>
           <label htmlFor="input-nome">
-            <span className="material-symbols-outlined">edit</span>
+            <InputIcon name="edit" />
           </label>
-        </div>
-        <div className="input-container">
+        </InputContainer>
+        <InputContainer>
           <div>
-            <input
+            <Input
               type="email"
               placeholder="Email"
               id="input-email"
               ref={emailInput}
             />
-            <small ref={smallEmail}></small>
+            <FormInputError message={emailError} />
           </div>
           <label htmlFor="input-email">
-            <span className="material-symbols-outlined">mail</span>
+            <InputIcon name="mail" />
           </label>
-        </div>
-        <div className="input-container">
+        </InputContainer>
+        <InputContainer>
           <label>
-            <input
+            <Input
               type="password"
               placeholder="Senha"
               id="input-senha"
               ref={passwordInput}
             />
-            <small ref={smallPassword}></small>
+            <FormInputError message={passwordError} />
           </label>
           <PasswordVisibilityToggler passwordInputRef={passwordInput} />
-        </div>
+        </InputContainer>
       </div>
-      <div className="termos">
-        <input type="checkbox" ref={check} />
-        <h2>Li e concordo com os termos de uso</h2>
+      <div className="flex gap-[10px]">
+        <input className="w-[20px]" type="checkbox" ref={check} />
+        <h2 className="text-[18px] max-[356px]:text-[15px] max-[292px]:text-[12px]">
+          Li e concordo com os termos de uso
+        </h2>
       </div>
-      <div className="texto">
-        <button className="regular-btn" type="submit">
+      <div className="flex flex-col justify-center items-center gap-[40px] max-[656px]:gap-[20px] max-[481px]:gap-[10px]">
+        <Button type="submit">
           Criar conta
-        </button>
+        </Button>
 
-        <a href="#" className="sla">
-          <button className="regular-btn text-above google-btn" type="button">
-            <img src="images/Google logo.svg" className="google-logo" />
-            <p>Continuar com o Google</p>
-          </button>
+        <a href="#">
+          <GoogleButton className="flex justify-center items-center h-[60px] w-[279px] border-none rounded-[20px] bg-[#90CDF4] gap-[20px] max-[540px]:w-0" type="button">
+            <img src="images/Google logo.svg" />
+            <p className="max-[540px]:hidden">Continuar com o Google</p>
+          </GoogleButton>
         </a>
 
-        <div className="text-bellow">
-          <a href="login" className="link-login">
+        <div className="text-[15px]">
+          <a href="login" className="text-[#2795DB]">
             Já possui conta? Entrar
           </a>
         </div>
