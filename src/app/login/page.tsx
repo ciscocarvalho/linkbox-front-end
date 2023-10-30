@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import React from 'react';
 import '../reset.css';
 import LoginForm from './LoginForm';
-import GoogleButton from '../components/GoogleButton';
+import GooglePrimaryButton from '../components/GooglePrimaryButton';
 
 export const metadata: Metadata = {
   title: 'Login',
@@ -22,10 +22,10 @@ const Page: React.FC = () => {
         <LoginForm />
         <div className="flex flex-col">
             <div className="max-[445px]:hidden">
-                <GoogleButton>
+                <GooglePrimaryButton>
                     <img src="images/Google logo.svg" />
                     <p>Continuar com o Google</p>
-                </GoogleButton>
+                </GooglePrimaryButton>
             </div>
             <div className="flex w-[279px] h-[60px] justify-center items-center">
                 <a href="cadastro" className="text-[#2795DB]">

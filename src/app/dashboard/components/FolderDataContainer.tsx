@@ -7,11 +7,11 @@ interface FolderDataContainer {
 }
 
 const FolderDataContainer: React.FC<FolderDataContainer> = ({ folder }) => {
-  return <div className="folder-data-container">
-    <div className="card-icon-container">
+  return <div className="flex items-center gap-[20px]">
+    <div className="flex justify-center items-center w-[32px] h-[32px]">
       <Icon name="folder" />
     </div>
-    <p className="folder-name">{folder.name}</p>
+    <p className="text-[18px]">{folder.name}</p>
   </div>;
 };
 

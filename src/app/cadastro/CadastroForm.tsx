@@ -6,8 +6,8 @@ import {
   getEmailError,
 } from "../Util/AuthForm";
 import PasswordVisibilityToggler from "../components/PasswordVisibilityToggler";
-import GoogleButton from "../components/GoogleButton";
-import Button from "../components/Button";
+import GooglePrimaryButton from "../components/GooglePrimaryButton";
+import PrimaryButton from "../components/PrimaryButton";
 import InputContainer from "../components/InputContainer";
 import Input from "../components/Input";
 import InputIcon from "../components/InputIcon";
@@ -93,15 +93,15 @@ const CadastroForm: React.FC = () => {
         </h2>
       </div>
       <div className="flex flex-col justify-center items-center gap-[40px] max-[656px]:gap-[20px] max-[481px]:gap-[10px]">
-        <Button type="submit">
+        <PrimaryButton type="submit">
           Criar conta
-        </Button>
+        </PrimaryButton>
 
         <a href="#">
-          <GoogleButton className="flex justify-center items-center h-[60px] w-[279px] border-none rounded-[20px] bg-[#90CDF4] gap-[20px] max-[540px]:w-0" type="button">
+          <GooglePrimaryButton className="flex justify-center items-center h-[60px] w-[279px] border-none rounded-[20px] bg-[#90CDF4] gap-[20px] max-[540px]:w-0" type="button">
             <img src="images/Google logo.svg" />
             <p className="max-[540px]:hidden">Continuar com o Google</p>
-          </GoogleButton>
+          </GooglePrimaryButton>
         </a>
 
         <div className="text-[15px]">

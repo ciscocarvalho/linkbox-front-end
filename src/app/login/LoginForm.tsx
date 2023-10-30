@@ -2,7 +2,7 @@
 import React, { useRef, useState } from 'react';
 import { getPasswordError, getEmailError } from "../Util/AuthForm";
 import PasswordVisibilityToggler from '../components/PasswordVisibilityToggler';
-import Button from '../components/Button';
+import PrimaryButton from '../components/PrimaryButton';
 import InputContainer from '../components/InputContainer';
 import Input from '../components/Input';
 import InputIcon from '../components/InputIcon';
@@ -45,9 +45,9 @@ const LoginForm: React.FC = () => {
           <PasswordVisibilityToggler passwordInputRef={password} />
       </InputContainer>
 
-      <Button type="submit">
+      <PrimaryButton type="submit">
           <span>Entrar</span>
-      </Button>
+      </PrimaryButton>
   </form>
 };
 

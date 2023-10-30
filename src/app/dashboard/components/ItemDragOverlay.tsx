@@ -8,6 +8,7 @@ import DashboardFolder from "../DashboardFolder";
 import DashboardLink from "../DashboardLink";
 import { DragOverlay, Modifier } from "@dnd-kit/core";
 import { snapCenterToCursor } from "@dnd-kit/modifiers";
+import DragIndicator from "./DragIndicator";
 
 const snapTopLeftToCursor: Modifier = (_ref) => {
   const { draggingNodeRect } = _ref;
@@ -32,28 +33,24 @@ const ItemDragOverlay: React.FC<ItemDragOverlayProps> = ({ draggedItems, active 
   const typeOfActiveItem = itemIsFolder(active) ? "folder" : "link";
   const dashboard = useContext(DashboardContext);
   const { selected } = dashboard;
-  let className = `${typeOfActiveItem}-card`
+  let className = "flex justify-between items-center min-h-[60px] h-[60px] py-[8px] px-[20px]";
 
   if (selected.find(item => item.id === active?.id) !== undefined) {
-    className += " card-selected";
+    className += " bg-[#DDE3EC]";
   }
+
+  className += " gap-[20px]";
 
   const dataContainer = typeOfActiveItem === "folder"
       ? <FolderDataContainer folder={active as DashboardFolder} />
       : <LinkDataContainer link={active as DashboardLink} />
-
-  const draggedIndicator = draggedItems.length > 1
-      ? <div className="dragged-number-indicator-container">
-        <p>{draggedItems.length}</p>
-      </div>
-      : null;
 
   return (
     <DragOverlay modifiers={[snapTopLeftToCursor]}>
       <div className="drag-image" style={{ display: "inline-block" }}>
         <div className={className}>
           {dataContainer}
-          {draggedIndicator}
+          <DragIndicator amount={draggedItems.length} />
         </div>
       </div>
     </DragOverlay>

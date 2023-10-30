@@ -2,7 +2,7 @@ import React, { useContext, useRef } from 'react';
 import { DashboardContext, DashboardDispatchContext } from '../../contexts/DashboardContext';
 import DashboardItem from '../../DashboardItem';
 import * as util from '../../util';
-import Button from '../ItemCard/Button';
+import IconButton from '../../../components/IconButton';
 import DashboardLink from '../../DashboardLink';
 
 interface BtnsContainerProps {
@@ -20,11 +20,10 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
 }) => {
   const dashboard = useContext(DashboardContext);
   const dispatch = useContext(DashboardDispatchContext);
-  const itemType = util.getItemType(item);
   const showRegular = hovering && !inSmallScreenWidth;
   const isSelected = dashboard.selected.includes(item);
   const classNameForRegularButtons = showRegular ? "" : "hidden";
-  const classNameForSelectButton = (hovering || inSmallScreenWidth) ? null : "hidden";
+  const classNameForSelectButton = (hovering || inSmallScreenWidth) ? undefined : "hidden";
 
   const edit = () => {
     if (item instanceof DashboardLink) {
@@ -49,17 +48,17 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
   }
 
   return (
-    <div className={`${itemType}-btns-container btns-container`}>
-      <Button
+    <div className={`flex gap-[8px]`}>
+      <IconButton
         icon={isSelected ? "check_box" : "check_box_outline_blank"}
         onClick={(e) => {
           e.stopPropagation();
           dispatch({ type: isSelected ? "unselect" : "select", itemID: item.id });
         }}
-        className={["select-btn", classNameForSelectButton].filter(className => !!className).join(" ")}
+        className={classNameForSelectButton}
       />
 
-      <Button
+      <IconButton
         icon="content_copy"
         onClick={(e) => {
           e.stopPropagation();
@@ -68,7 +67,7 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
         className={classNameForRegularButtons}
       />
 
-      <Button
+      <IconButton
         icon="content_cut"
         onClick={(e) => {
           e.stopPropagation();
@@ -77,7 +76,7 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
         className={classNameForRegularButtons}
       />
 
-      <Button
+      <IconButton
         icon="palette"
         onClick={(e) => {
           e.stopPropagation();
@@ -86,17 +85,17 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
           // its behavior: https://github.com/facebook/react/issues/6308
           colorInput.current?.addEventListener("change", listenerForColorChange)
         }}
-        className={`color-btn${(showRegular) ? "" : " hidden"}`}
+        className={`relative${(showRegular) ? "" : " hidden"}`}
       >
         <input
           type="color"
-          className="color-input"
+          className="absolute w-[100%] h-[100%] invisible"
           ref={colorInput}
           onInput={() => setBackgroundColor(colorInput.current!.value)}
         />
-      </Button>
+      </IconButton>
 
-      <Button
+      <IconButton
         icon="edit"
         onClick={(e) => {
           e.stopPropagation();
@@ -105,7 +104,7 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
         className={classNameForRegularButtons}
       />
 
-      <Button
+      <IconButton
         icon="delete"
         onClick={(e) => { e.stopPropagation(); dispatch({ type: "remove", itemID: item.id }); }}
         className={classNameForRegularButtons}

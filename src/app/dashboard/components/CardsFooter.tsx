@@ -2,7 +2,7 @@
 import React, { useContext } from 'react';
 import { DashboardContext, DashboardDispatchContext } from '../contexts/DashboardContext';
 import { mapItemsToItemIDs } from "../util";
-import Icon from '../../components/Icon';
+import IconButton from '../../components/IconButton';
 
 const CardsFooter: React.FC = () => {
   const dashboard = useContext(DashboardContext);
@@ -25,18 +25,12 @@ const CardsFooter: React.FC = () => {
   }
 
   return (
-    <footer className={`cards-footer${selected.length > 1 ? "" : " hidden"}`}>
-      <p className="text-selected-cards">{selected.length} { selected.length === 1 ? "Selecionado" : "Selecionados"}</p>
-      <div className="cards-footer-btn-container">
-        <div className="btn copy-btn" onClick={copySelected}>
-          <Icon name="content_copy" />
-        </div>
-        <div className="btn cut-btn" onClick={cutSelected}>
-          <Icon name="cut" />
-        </div>
-        <div className="btn delete-btn" onClick={deleteSelected}>
-          <Icon name="delete" />
-        </div>
+    <footer className={`bg-[#efeded] flex flex-wrap justify-end items-center mt-auto gap-x-[20px] gap-y-0 px-0 py-[8px]${selected.length > 1 ? "" : " hidden"}`}>
+      <p className="p-[20px]">{selected.length} { selected.length === 1 ? "Selecionado" : "Selecionados"}</p>
+      <div className="flex justify-center items-center">
+        <IconButton onClick={copySelected} icon="content_copy" />
+        <IconButton onClick={cutSelected} icon="cut" />
+        <IconButton onClick={deleteSelected} icon="delete" />
       </div>
     </footer>
   );

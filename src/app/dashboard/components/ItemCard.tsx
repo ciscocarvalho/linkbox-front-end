@@ -69,19 +69,32 @@ const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
     }
   }, []);
 
-  let className = `${itemType}-card`
+  let className = "flex justify-between items-center min-h-[60px] h-[60px] py-[8px] px-[20px]";
 
-  if (isSelected) {
-    className += " card-selected";
+  if (isSelected || hovering) {
+    className += " bg-[#DDE3EC]";
+  } else if (backgroundColor) {
+    className += ` bg-[${backgroundColor}]`;
   }
 
   if (overInfo && overInfo.id === item.id && !isSelected) {
     if (overInfo.isPositionCloseToCenter && itemIsFolder(item)) {
-      className += ` card-drag-over-center`;
+      className += ` !bg-[#DDE3EC]`;
     } else {
-      className += ` card-drag-over-${overInfo.positionRelativeToCenter}`;
+      switch (overInfo.positionRelativeToCenter) {
+        case "below": {
+          className += ` !border-b-[1px] !border-b-solid !border-b-[#2795DB]`;
+          break;
+        }
+        case "above": {
+          className += ` !border-t-[1px] !border-t-solid !border-t-[#2795DB]`;
+          break;
+        }
+      }
     }
   }
+
+  className += " select-none";
 
   const handleOnClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
     e.stopPropagation();
@@ -108,12 +121,11 @@ const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
   }
 
   return <div
-    className={className}
+    className={`border-t-[2px] first:border-t-[1px] first:border-t-solid first:border-t-[#BBC8DC] border-b-[1px] border-b-solid border-b-[#BBC8DC] ${className}`}
     draggable={true}
     ref={card}
     style={{
       cursor: "default",
-      backgroundColor: isSelected ? "" : backgroundColor,
     }}
     onMouseOver={() => setHovering(true)}
     onMouseOut={() => setHovering(false)}

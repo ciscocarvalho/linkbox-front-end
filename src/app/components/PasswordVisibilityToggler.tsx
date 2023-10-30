@@ -10,7 +10,7 @@ const PasswordVisibilityToggler: React.FC<PasswordVisibilityTogglerProps> = ({ p
   const [visible, setVisible] = useState(false);
 
   return (
-    <button className="icon-btn visibilidade-senha-btn" onClick={(e) => {
+    <button onClick={(e) => {
       e.preventDefault()
       if (!passwordInputRef.current) {
         return;

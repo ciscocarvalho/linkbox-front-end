@@ -1,7 +1,7 @@
 import React from 'react';
-import Button from './Button';
+import PrimaryButton from './PrimaryButton';
 
-type GoogleButtonProps = React.ComponentProps<typeof Button>;
+type GoogleButtonProps = React.ComponentProps<typeof PrimaryButton>;
 
 const GoogleButton: React.FC<GoogleButtonProps> = ({ children, ...buttonProps }) => {
   let className = "flex justify-around items-center font-medium text-[17px]";
@@ -11,9 +11,9 @@ const GoogleButton: React.FC<GoogleButtonProps> = ({ children, ...buttonProps })
   }
 
   return (
-    <Button {...buttonProps} className={className}>
+    <PrimaryButton {...buttonProps} className={className}>
       {children}
-    </Button>
+    </PrimaryButton>
   );
 };
 
