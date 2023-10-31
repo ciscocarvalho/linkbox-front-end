@@ -22,8 +22,6 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
   const dispatch = useContext(DashboardDispatchContext);
   const showRegular = hovering && !inSmallScreenWidth;
   const isSelected = dashboard.selected.includes(item);
-  const classNameForRegularButtons = showRegular ? "" : "hidden";
-  const classNameForSelectButton = (hovering || inSmallScreenWidth) ? undefined : "hidden";
 
   const edit = () => {
     if (item instanceof DashboardLink) {
@@ -49,66 +47,69 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
 
   return (
     <div className={`flex gap-[8px]`}>
-      <IconButton
-        icon={isSelected ? "check_box" : "check_box_outline_blank"}
-        onClick={(e) => {
-          e.stopPropagation();
-          dispatch({ type: isSelected ? "unselect" : "select", itemID: item.id });
-        }}
-        className={classNameForSelectButton}
-      />
+      {
+        hovering || inSmallScreenWidth
+          ? <IconButton
+            icon={isSelected ? "check_box" : "check_box_outline_blank"}
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch({ type: isSelected ? "unselect" : "select", itemID: item.id });
+            }}
+          />
+          : null
+      }
 
-      <IconButton
-        icon="content_copy"
-        onClick={(e) => {
-          e.stopPropagation();
-          dispatch({ type: "copy", itemID: item.id, behavior: "exclusive" });
-        }}
-        className={classNameForRegularButtons}
-      />
-
-      <IconButton
-        icon="content_cut"
-        onClick={(e) => {
-          e.stopPropagation();
-          dispatch({ type: "cut", itemID: item.id, behavior: "exclusive" });
-        }}
-        className={classNameForRegularButtons}
-      />
-
-      <IconButton
-        icon="palette"
-        onClick={(e) => {
-          e.stopPropagation();
-          colorInput.current?.click();
-          // We can't simply use onChange in the react way because react changes
-          // its behavior: https://github.com/facebook/react/issues/6308
-          colorInput.current?.addEventListener("change", listenerForColorChange)
-        }}
-        className={`relative${(showRegular) ? "" : " hidden"}`}
-      >
-        <input
-          type="color"
-          className="absolute w-[100%] h-[100%] invisible"
-          ref={colorInput}
-          onInput={() => setBackgroundColor(colorInput.current!.value)}
-        />
-      </IconButton>
-
-      <IconButton
-        icon="edit"
-        onClick={(e) => {
-          e.stopPropagation();
-          edit();
-        }}
-        className={classNameForRegularButtons}
-      />
-
-      <IconButton
-        icon="delete"
-        onClick={(e) => { e.stopPropagation(); dispatch({ type: "remove", itemID: item.id }); }}
-        className={classNameForRegularButtons}
-      />
+      {
+        showRegular
+          ? <>
+            <IconButton
+              icon="content_copy"
+              onClick={(e) => {
+                e.stopPropagation();
+                dispatch({ type: "copy", itemID: item.id, behavior: "exclusive" });
+              }}
+            />
+            <IconButton
+              icon="content_cut"
+              onClick={(e) => {
+                e.stopPropagation();
+                dispatch({ type: "cut", itemID: item.id, behavior: "exclusive" });
+              }}
+            />
+            <IconButton
+              icon="palette"
+              onClick={(e) => {
+                e.stopPropagation();
+                colorInput.current?.click();
+                // We can't simply use onChange in the react way because react changes
+                // its behavior: https://github.com/facebook/react/issues/6308
+                colorInput.current?.addEventListener("change", listenerForColorChange)
+              }}
+              className={"relative"}
+            >
+              <input
+                type="color"
+                className="absolute w-[100%] h-[100%] invisible"
+                ref={colorInput}
+                onInput={() => setBackgroundColor(colorInput.current!.value)}
+              />
+            </IconButton>
+            <IconButton
+              icon="edit"
+              onClick={(e) => {
+                e.stopPropagation();
+                edit();
+              }}
+              className={showRegular}
+            />
+            <IconButton
+              icon="delete"
+              onClick={(e) => { e.stopPropagation(); dispatch({ type: "remove", itemID: item.id }); }}
+              className={showRegular}
+            />
+          </>
+          : null
+      }
     </div>
   );
 }

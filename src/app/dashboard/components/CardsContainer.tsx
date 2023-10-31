@@ -175,21 +175,26 @@ const CardsContainer: React.FC<CardsContainerProps> = ({ items }) => {
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={items} strategy={verticalListSortingStrategy}>
-        <div
-          className={`h-[100%] flex flex-col overflow-y-auto${hasItems ? "" : " hidden"}`}
-          onClick={handleOnClick}
-          ref={cardsContainer}
-        >
-          {
-            items.map(
-              (item, i) => (
-                <SortableItem key={i} id={item.id}>
-                  <ItemCard item={item} key={i} overInfo={overInfo} />
-                </SortableItem>
-              )
-            )
-          }
-        </div>
+        {
+          hasItems
+            ? <div
+              className={`h-[100%] flex flex-col overflow-y-auto`}
+
+              onClick={handleOnClick}
+              ref={cardsContainer}
+            >
+              {
+                items.map(
+                  (item, i) => (
+                    <SortableItem key={i} id={item.id}>
+                      <ItemCard item={item} key={i} overInfo={overInfo} />
+                    </SortableItem>
+                  )
+                )
+              }
+            </div>
+            : null
+        }
       </SortableContext>
       <ItemDragOverlay
         draggedItems={manySelected ? selected : (active ? [active] : [])}

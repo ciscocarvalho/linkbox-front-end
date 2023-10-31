@@ -13,18 +13,28 @@ const CardsHeader = () => {
 
   return <header className="flex justify-between items-center min-h-[60px] h-[60px] py-[8px] px-[20px]">
     <div className="flex justify-center items-center gap-[20px]">
-      <IconButton className={inSubfolder ? undefined : "hidden"} onClick={() => dispatch({ type: "go_back" })} icon="arrow_back" />
+      {
+        inSubfolder
+          ? <IconButton onClick={() => dispatch({ type: "go_back" })} icon="arrow_back" />
+          : null
+      }
     </div>
+
     <div className="flex justify-center items-center gap-[20px]">
-      <IconButton className={clipboardInUse ? undefined : "hidden"} onClick={() => dispatch({ type: "reset_clipboard" })} icon="cancel" />
-      <IconButton
-        className={clipboardInUse ? undefined : "hidden"}
-        onClick={(e) => {
-          e.stopPropagation();
-          dispatch({ type: "paste", folderID: currentFolder.id })
-        }}
-        icon="content_paste"
-      />
+      {
+        clipboardInUse
+          ? <>
+            <IconButton onClick={() => dispatch({ type: "reset_clipboard" })} icon="cancel" />
+            <IconButton
+              onClick={(e) => {
+                e.stopPropagation();
+                dispatch({ type: "paste", folderID: currentFolder.id })
+              }}
+              icon="content_paste"
+            />
+          </>
+          : null
+      }
 
       <IconButton
         onClick={() => {
@@ -36,7 +46,12 @@ const CardsHeader = () => {
         }}
         icon="add"
       />
-      <p className={inSubfolder ? undefined : "hidden"}>{currentFolder.name}</p>
+
+      {
+        inSubfolder
+          ? <p>{currentFolder.name}</p>
+          : null
+      }
     </div>
   </header>
 }
