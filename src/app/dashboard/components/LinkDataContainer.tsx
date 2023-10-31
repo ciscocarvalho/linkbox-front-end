@@ -11,7 +11,7 @@ const LinkDataContainer: React.FC<LinkDataContainerProps> = ({ link }) => {
       <img src={`https://www.google.com/s2/favicons?domain=${link.url}&sz=32`} />
     </div>
 
-    <div className="info-container">
+    <div>
       <p className="text-[18px]">{link.title}</p>
       <p className="text-[12px]">{link.url}</p>
     </div>

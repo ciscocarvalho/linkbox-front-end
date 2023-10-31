@@ -176,7 +176,7 @@ const CardsContainer: React.FC<CardsContainerProps> = ({ items }) => {
     >
       <SortableContext items={items} strategy={verticalListSortingStrategy}>
         <div
-          className={`cards-container h-[100%] flex flex-col overflow-y-auto${hasItems ? "" : " hidden"}`}
+          className={`h-[100%] flex flex-col overflow-y-auto${hasItems ? "" : " hidden"}`}
           onClick={handleOnClick}
           ref={cardsContainer}
         >

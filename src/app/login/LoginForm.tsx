@@ -30,7 +30,7 @@ const LoginForm: React.FC = () => {
 
   return <form className="flex gap-[20px] flex-col justify-center items-center w-[70%] mt-[60px]" onSubmit={handleSubmit}>
       <InputContainer>
-          <Input type="email" placeholder="Email" className="email" id="inputEmail" ref={email} />
+          <Input type="email" placeholder="Email" id="inputEmail" ref={email} />
           <label htmlFor="inputEmail">
               <InputIcon name="mail" />
               <FormInputError message={emailError} />
