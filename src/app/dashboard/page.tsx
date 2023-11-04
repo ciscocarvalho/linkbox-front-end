@@ -1,16 +1,20 @@
-import { Metadata } from 'next';
+"use client"
 import React from 'react';
 import '../reset.css';
 import Dashboard from './Dashboard';
+import { useCookies } from 'react-cookie';
 
-export const metadata: Metadata = {
-  icons: [{ rel: 'short icon', url: 'images/Logo.svg' } ],
-}
+const Page: React.FC = () => {
+  const [cookies] = useCookies(["token"]);
 
-const page: React.FC = () => {
+  if (!cookies.token) {
+    window.location.href = "login";
+    return null;
+  }
+
   return <div className="h-[100vh] flex flex-col">
     <Dashboard />
-  </div>
+  </div>;
 };
 
-export default page;
+export default Page;

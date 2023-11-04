@@ -7,17 +7,43 @@ import InputContainer from '../components/InputContainer';
 import Input from '../components/Input';
 import InputIcon from '../components/InputIcon';
 import FormInputError from '../components/FormInputError';
+import { useCookies } from 'react-cookie';
+import { BACKEND_URL } from '../../constants';
+
+type SigninResult = {
+    auth: true,
+    user: string,
+    token: string
+} | {
+    auth: false,
+    token: null,
+    msg: string,
+}
+
+const login = async (email: string, password: string): Promise<SigninResult> => {
+  const res = await fetch(`${BACKEND_URL}/auth/signin`, {
+    method: "post",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+
+  return await res.json();
+}
 
 const LoginForm: React.FC = () => {
   const password = useRef<HTMLInputElement>(null);
   const email = useRef<HTMLInputElement>(null);
   const [passwordError, setPasswordError] = useState<string | undefined>();
   const [emailError, setEmailError] = useState<string | undefined>();
+  const [_, setCookie] = useCookies(["token"]);
 
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
       e.preventDefault();
-      const newEmailError = getEmailError(email.current!.value);
-      const newPasswordError = getPasswordError(password.current!.value);
+      const newEmail = email.current!.value;
+      const newPassword = password.current!.value;
+
+      const newEmailError = getEmailError(newEmail);
+      const newPasswordError = getPasswordError(newPassword);
 
       if (newEmailError || newPasswordError) {
           setEmailError(newEmailError);
@@ -25,7 +51,15 @@ const LoginForm: React.FC = () => {
           return;
       }
 
-      window.location.href = "dashboard";
+      const data = await login(newEmail, newPassword);
+
+      if (data.auth) {
+        setCookie("token", data.token);
+        window.location.href = "dashboard";
+      } else {
+        console.error(data.msg);
+        alert("Ocorreu um erro ao entrar");
+      }
   }
 
   return <form className="flex gap-[20px] flex-col justify-center items-center w-[70%] mt-[60px]" onSubmit={handleSubmit}>

@@ -12,6 +12,22 @@ import InputContainer from "../components/InputContainer";
 import Input from "../components/Input";
 import InputIcon from "../components/InputIcon";
 import FormInputError from "../components/FormInputError";
+import { BACKEND_URL } from "../../constants";
+
+type SignupResult = {
+  email?: string,
+  msg?: string,
+};
+
+const signup = async (email: string, password: string): Promise<SignupResult> => {
+  const res = await fetch(`${BACKEND_URL}/auth/signup`, {
+    method: "post",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+
+  return await res.json();
+}
 
 const CadastroForm: React.FC = () => {
   const passwordInput = useRef<HTMLInputElement>(null);
@@ -26,12 +42,16 @@ const CadastroForm: React.FC = () => {
   return (
     <form
       className="flex flex-col justify-center items-center w-[100%] h-[60%] gap-[20px] max-[540px]:h-fit"
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
 
-        const newUsernameError = getUsernameError(usernameInput.current!.value);
-        const newEmailError = getEmailError(emailInput.current!.value);
-        const newPasswordError = getPasswordError(passwordInput.current!.value);
+        const username = usernameInput.current!.value;
+        const email = emailInput.current!.value;
+        const password = passwordInput.current!.value
+
+        const newUsernameError = getUsernameError(username);
+        const newEmailError = getEmailError(email);
+        const newPasswordError = getPasswordError(password);
 
         if (newUsernameError || newEmailError || newPasswordError || !check.current!.checked) {
           setUsernameError(newUsernameError);
@@ -40,8 +60,15 @@ const CadastroForm: React.FC = () => {
           return;
         }
 
-        alert("Você foi cadastrado");
-        window.location.href = "login";
+        const data = await signup(email, password);
+
+        if (data.email) {
+          alert("Você foi cadastrado");
+          window.location.href = "login";
+        } else {
+          console.error(data.msg);
+          alert("Ocorreu um erro ao cadastrar");
+        }
       }}
     >
       <div className="flex flex-col gap-[20px] p-[20px]">
