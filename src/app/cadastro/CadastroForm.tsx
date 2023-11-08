@@ -12,22 +12,7 @@ import InputContainer from "../components/InputContainer";
 import Input from "../components/Input";
 import InputIcon from "../components/InputIcon";
 import FormInputError from "../components/FormInputError";
-import { BACKEND_URL } from "../../constants";
-
-type SignupResult = {
-  email?: string,
-  msg?: string,
-};
-
-const signup = async (email: string, password: string): Promise<SignupResult> => {
-  const res = await fetch(`${BACKEND_URL}/auth/signup`, {
-    method: "post",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
-
-  return await res.json();
-}
+import signup from "../../Services/Auth/signup";
 
 const CadastroForm: React.FC = () => {
   const passwordInput = useRef<HTMLInputElement>(null);

@@ -8,27 +8,7 @@ import Input from '../components/Input';
 import InputIcon from '../components/InputIcon';
 import FormInputError from '../components/FormInputError';
 import { useCookies } from 'react-cookie';
-import { BACKEND_URL } from '../../constants';
-
-type SigninResult = {
-    auth: true,
-    user: string,
-    token: string
-} | {
-    auth: false,
-    token: null,
-    msg: string,
-}
-
-const login = async (email: string, password: string): Promise<SigninResult> => {
-  const res = await fetch(`${BACKEND_URL}/auth/signin`, {
-    method: "post",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
-
-  return await res.json();
-}
+import login from '../../Services/Auth/login';
 
 const LoginForm: React.FC = () => {
   const password = useRef<HTMLInputElement>(null);
