@@ -1,9 +1,7 @@
 import DashboardFolder from "../DashboardFolder";
 import DashboardItem from "../DashboardItem";
 import DashboardLink from "../DashboardLink";
-import { DashboardAction, DashboardItemID, TDashboard } from "../types";
-import { mapItemsToItemIDs } from "../util";
-import { findInDashboard } from "./findInDashboard";
+import { DashboardAction, TDashboard } from "../types";
 
 type Behavior = "inclusive" | "exclusive";
 
@@ -37,21 +35,21 @@ const updateDashboard = (oldDashboard: TDashboard, updater: (newDashboard: TDash
   return updater(newDashboard);
 }
 
-const removeOneFromClipboard = (dashboard: TDashboard, itemID: DashboardItemID) => {
+const removeOneFromClipboard = (dashboard: TDashboard, item: DashboardItem) => {
   return updateDashboard(dashboard, newDashboard => {
-    newDashboard = undoCutOne(newDashboard, itemID);
-    newDashboard = undoCopyOne(newDashboard, itemID);
+    newDashboard = undoCutOne(newDashboard, item);
+    newDashboard = undoCopyOne(newDashboard, item);
     return newDashboard;
   });
 }
 
-const unselectOne = (dashboard: TDashboard, itemID: DashboardItemID, behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const unselectOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
   return updateDashboard(dashboard, newDashboard => {
     if (behavior === "inclusive") {
-      newDashboard.selected = newDashboard.selected.filter(item => item.id !== itemID);
+      newDashboard.selected = newDashboard.selected.filter(thisItem => thisItem.id !== item.id);
     } else {
       newDashboard = selectAll(newDashboard);
-      newDashboard.selected = newDashboard.selected.filter(item => item.id !== itemID);
+      newDashboard.selected = newDashboard.selected.filter(thisItem => thisItem.id !== item.id);
     }
 
     return newDashboard;
@@ -60,17 +58,13 @@ const unselectOne = (dashboard: TDashboard, itemID: DashboardItemID, behavior: B
 
 const resetSelection = (dashboard: TDashboard) => {
   return updateDashboard(dashboard, newDashboard => {
-    return unselectMany(newDashboard, mapItemsToItemIDs(newDashboard.selected));
+    return unselectMany(newDashboard, newDashboard.selected);
   })
 }
 
-const selectOne = (dashboard: TDashboard, itemID: DashboardItemID, behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const selectOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
   return updateDashboard(dashboard, newDashboard => {
-    const item = findByIDInDashboard(newDashboard, itemID);
-
-    if (!item) {
-      return newDashboard;
-    } else if (behavior === "inclusive") {
+    if (behavior === "inclusive") {
       newDashboard.selected.push(item);
     } else {
       newDashboard.selected = [item];
@@ -80,30 +74,35 @@ const selectOne = (dashboard: TDashboard, itemID: DashboardItemID, behavior: Beh
   });
 }
 
-const unselectMany = (dashboard: TDashboard, itemIDs: DashboardItemID[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const unselectMany = (dashboard: TDashboard, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
   return updateDashboard(dashboard, newDashboard => {
     if (behavior === "exclusive") {
       newDashboard = selectAll(newDashboard);
     }
 
-    itemIDs.forEach(itemID => { newDashboard = unselectOne(newDashboard, itemID) });
+    items.forEach(item => {
+      newDashboard = unselectOne(newDashboard, item)
+    });
+
     return newDashboard;
   });
 }
 
 const unselectAll = (dashboard: TDashboard) => {
   return updateDashboard(dashboard, newDashboard => {
-    return unselectMany(newDashboard, mapItemsToItemIDs(newDashboard.displayedItems));
+    return unselectMany(newDashboard, newDashboard.displayedItems);
   });
 }
 
-const selectMany = (dashboard: TDashboard, itemIDs: DashboardItemID[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const selectMany = (dashboard: TDashboard, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
   return updateDashboard(dashboard, newDashboard => {
     if (behavior === "exclusive") {
       newDashboard = unselectAll(newDashboard);
     }
 
-    itemIDs.forEach(itemID => { newDashboard = selectOne(newDashboard, itemID) });
+    items.forEach(item => {
+      newDashboard = selectOne(newDashboard, item)
+    });
 
     return newDashboard;
   });
@@ -111,20 +110,13 @@ const selectMany = (dashboard: TDashboard, itemIDs: DashboardItemID[], behavior:
 
 const selectAll = (dashboard: TDashboard) => {
   return updateDashboard(dashboard, newDashboard => {
-    return selectMany(newDashboard, mapItemsToItemIDs(newDashboard.displayedItems));
+    return selectMany(newDashboard, newDashboard.displayedItems);
   });
 }
 
-const findByIDInDashboard = (dashboard: TDashboard, itemID: DashboardItemID) => {
-  return findInDashboard(dashboard, (item: DashboardItem) => {
-    return item.id === itemID;
-  });
-}
-
-const removeOne = (dashboard: TDashboard, itemID: DashboardItemID) => {
+const removeOne = (dashboard: TDashboard, item: DashboardItem) => {
   return updateDashboard(dashboard, newDashboard => {
-    const item = findByIDInDashboard(newDashboard, itemID);
-    const parent = item?.getParent();
+    const parent = item.getParent();
 
     if (!item || !parent) {
       return newDashboard;
@@ -132,18 +124,18 @@ const removeOne = (dashboard: TDashboard, itemID: DashboardItemID) => {
 
     parent.removeChild(item);
     item.setParent(null);
-    newDashboard = undisplayOne(newDashboard, item.id);
-    newDashboard = removeOneFromClipboard(newDashboard, item.id);
-    newDashboard = unselectOne(newDashboard, item.id);
+    newDashboard = undisplayOne(newDashboard, item);
+    newDashboard = removeOneFromClipboard(newDashboard, item);
+    newDashboard = unselectOne(newDashboard, item);
 
     return newDashboard;
   });
 }
 
-const removeMany = (dashboard: TDashboard, itemIDs: DashboardItemID[]) => {
+const removeMany = (dashboard: TDashboard, items: DashboardItem[]) => {
   return updateDashboard(dashboard, newDashboard => {
-    itemIDs.forEach(itemID => {
-      newDashboard = removeOne(newDashboard, itemID);
+    items.forEach(item => {
+      newDashboard = removeOne(newDashboard, item);
     });
     return newDashboard;
   })
@@ -167,16 +159,14 @@ const addOne = (dashboard: TDashboard, item: DashboardItem) => {
   return updateDashboard(dashboard, newDashboard => {
     newDashboard.currentFolder.addChild(item);
     item.setParent(newDashboard.currentFolder);
-    newDashboard = displayOne(newDashboard, item.id);
+    newDashboard = displayOne(newDashboard, item);
     return newDashboard;
   });
 }
 
-const displayOne = (dashboard: TDashboard, itemID: DashboardItemID, behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const displayOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
   return updateDashboard(dashboard, newDashboard => {
-    const item = findByIDInDashboard(newDashboard, itemID);
-
-    if (item && !newDashboard.displayedItems.includes(item)) {
+    if (!newDashboard.displayedItems.includes(item)) {
       if (behavior === "inclusive") {
         newDashboard.displayedItems.push(item);
       } else {
@@ -191,13 +181,13 @@ const displayOne = (dashboard: TDashboard, itemID: DashboardItemID, behavior: Be
   });
 }
 
-const undisplayOne = (dashboard: TDashboard, itemID: DashboardItemID, behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const undisplayOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
   return updateDashboard(dashboard, newDashboard => {
     if (behavior === "exclusive") {
       newDashboard = displayAll(newDashboard);
     }
 
-    newDashboard.displayedItems = newDashboard.displayedItems.filter(item => item.id !== itemID);
+    newDashboard.displayedItems = newDashboard.displayedItems.filter(displayedItem => displayedItem.id !== item.id);
 
     return newDashboard;
   });
@@ -205,29 +195,22 @@ const undisplayOne = (dashboard: TDashboard, itemID: DashboardItemID, behavior: 
 
 const resetDisplay = (dashboard: TDashboard) => {
   return updateDashboard(dashboard, newDashboard => {
-    return undisplayMany(newDashboard, mapItemsToItemIDs(newDashboard.displayedItems));
+    return undisplayMany(newDashboard, newDashboard.displayedItems);
   });
 }
 
-const displayFolder = (dashboard: TDashboard, folderID: DashboardFolder["id"]) => {
+const displayFolder = (dashboard: TDashboard, folder: DashboardFolder) => {
   return updateDashboard(dashboard, newDashboard => {
-    const folder = findByIDInDashboard(newDashboard, folderID) as DashboardFolder;
-
-    if (!folder) {
-      return newDashboard;
-    }
-
     newDashboard.displayedItems = folder.getChildren();
     return newDashboard;
   });
 }
 
-const cutOne = (dashboard: TDashboard, itemID: DashboardItemID, behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const cutOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
   return updateDashboard(dashboard, newDashboard => {
-    const item = findByIDInDashboard(newDashboard, itemID);
-    const parent = item?.getParent();
+    const parent = item.getParent();
 
-    if (item && parent) {
+    if (parent) {
       parent.removeChild(item);
       if (behavior === "inclusive") {
         newDashboard.clipboard.cut.push(item);
@@ -240,37 +223,40 @@ const cutOne = (dashboard: TDashboard, itemID: DashboardItemID, behavior: Behavi
   });
 }
 
-const undoCopyOne = (dashboard: TDashboard, itemID: DashboardItemID) => {
+const undoCopyOne = (dashboard: TDashboard, item: DashboardItem) => {
   return updateDashboard(dashboard, newDashboard => {
-    const item = findByIDInDashboard(newDashboard, itemID);
-
-    if (item) {
-      const copied = newDashboard.clipboard.copied;
-      newDashboard.clipboard.copied = copied.filter(itemCopied => itemCopied.id !== item.id);
-    }
+    const copied = newDashboard.clipboard.copied;
+    newDashboard.clipboard.copied = copied.filter(itemCopied => itemCopied.id !== item.id);
 
     return newDashboard;
   });
 }
 
-const undoCopyMany = (dashboard: TDashboard, itemIDs: DashboardItemID[]) => {
+const undoCopyMany = (dashboard: TDashboard, items: DashboardItem[]) => {
   return updateDashboard(dashboard, newDashboard => {
-    itemIDs.forEach(itemID => { newDashboard = undoCopyOne(newDashboard, itemID) });
+    items.forEach(item => {
+      newDashboard = undoCopyOne(newDashboard, item);
+    });
+
     return newDashboard;
   });
 }
 
 const undoCopyAll = (dashboard: TDashboard) => {
   return updateDashboard(dashboard, newDashboard => {
-    return undoCopyMany(newDashboard, mapItemsToItemIDs(newDashboard.clipboard.copied));
+    return undoCopyMany(newDashboard, newDashboard.clipboard.copied);
   });
 }
 
-const undoCutOne = (dashboard: TDashboard, itemID: DashboardItemID) => {
+const undoCutOne = (dashboard: TDashboard, item: DashboardItem) => {
   return updateDashboard(dashboard, newDashboard => {
     const itemsCut = newDashboard.clipboard.cut;
-    const item = itemsCut.find(itemCut => itemCut.id === itemID);
-    const parent = item?.getParent();
+
+    if (!itemsCut.find(itemCut => itemCut.id === item.id)) {
+      return newDashboard;
+    }
+
+    const parent = item.getParent();
 
     if (item && parent) {
       parent.addChild(item);
@@ -281,88 +267,96 @@ const undoCutOne = (dashboard: TDashboard, itemID: DashboardItemID) => {
   });
 }
 
-const undoCutMany = (dashboard: TDashboard, itemIDs: DashboardItemID[]) => {
+const undoCutMany = (dashboard: TDashboard, items: DashboardItem[]) => {
   return updateDashboard(dashboard, newDashboard => {
-    itemIDs.forEach(itemID => { newDashboard = undoCutOne(newDashboard, itemID) });
+    items.forEach(item => {
+      newDashboard = undoCutOne(newDashboard, item);
+    });
+
     return newDashboard;
   });
 }
 
 const undoCutAll = (dashboard: TDashboard) => {
   return updateDashboard(dashboard, newDashboard => {
-    return undoCutMany(newDashboard, mapItemsToItemIDs(newDashboard.clipboard.cut));
+    return undoCutMany(newDashboard, newDashboard.clipboard.cut);
   });
 }
 
-const cutMany = (dashboard: TDashboard, itemIDs: DashboardItemID[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const cutMany = (dashboard: TDashboard, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
   return updateDashboard(dashboard, newDashboard => {
     if (behavior === "exclusive") {
       newDashboard = undoCutAll(newDashboard);
     }
 
-    itemIDs.forEach(itemID => { newDashboard = cutOne(newDashboard, itemID) });
+    items.forEach(item => {
+      newDashboard = cutOne(newDashboard, item)
+    });
 
     return newDashboard;
   });
 }
 
-const copyOne = (dashboard: TDashboard, itemID: DashboardItemID, behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const copyOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
   return updateDashboard(dashboard, newDashboard => {
-    const item = findByIDInDashboard(newDashboard, itemID);
-
-    if (item) {
-      if (behavior === "inclusive") {
-        dashboard.clipboard.copied.push(item);
-      } else {
-        dashboard.clipboard.copied = [item];
-      }
+    if (behavior === "inclusive") {
+      dashboard.clipboard.copied.push(item);
+    } else {
+      dashboard.clipboard.copied = [item];
     }
 
     return newDashboard;
   });
 }
 
-const copyMany = (dashboard: TDashboard, itemIDs: DashboardItemID[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const copyMany = (dashboard: TDashboard, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
   return updateDashboard(dashboard, newDashboard => {
     if (behavior === "exclusive") {
       newDashboard = undoCopyAll(newDashboard);
     }
 
-    itemIDs.forEach(itemID => { newDashboard = copyOne(newDashboard, itemID) });
+    items.forEach(item => {
+      newDashboard = copyOne(newDashboard, item);
+    });
+
     return newDashboard;
   });
 }
 
-const undisplayMany = (dashboard: TDashboard, itemIDs: DashboardItemID[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const undisplayMany = (dashboard: TDashboard, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
   return updateDashboard(dashboard, newDashboard => {
     if (behavior === "exclusive") {
       newDashboard = displayAll(newDashboard);
     }
 
-    itemIDs.forEach(itemID => { newDashboard = undisplayOne(newDashboard, itemID) });
+    items.forEach(item => {
+      newDashboard = undisplayOne(newDashboard, item);
+    });
 
     return newDashboard;
   });
 }
 
 const undisplayAll = (dashboard: TDashboard) => {
-  return undisplayMany(dashboard, mapItemsToItemIDs(dashboard.displayedItems));
+  return undisplayMany(dashboard, dashboard.displayedItems);
 }
 
-const displayMany = (dashboard: TDashboard, itemIDs: DashboardItemID[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const displayMany = (dashboard: TDashboard, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
   return updateDashboard(dashboard, newDashboard => {
     if (behavior === "exclusive") {
       newDashboard = undisplayAll(newDashboard);
     }
 
-    itemIDs.forEach(itemID => { newDashboard = displayOne(newDashboard, itemID) });
+    items.forEach(item => {
+      newDashboard = displayOne(newDashboard, item)
+    });
 
     return newDashboard;
   });
 }
 
 const displayAll = (dashboard: TDashboard) => {
-  return displayFolder(dashboard, dashboard.currentFolder.id);
+  return displayFolder(dashboard, dashboard.currentFolder);
 }
 
 const resetClipboard = (dashboard: TDashboard) => {
@@ -373,34 +367,22 @@ const resetClipboard = (dashboard: TDashboard) => {
   });
 }
 
-const paste = (dashboard: TDashboard, folderID: DashboardFolder["id"]) => {
+const paste = (dashboard: TDashboard, folder: DashboardFolder) => {
   return updateDashboard(dashboard, newDashboard => {
-    const folder = findByIDInDashboard(newDashboard, folderID) as DashboardFolder;
-
-    if (!folder) {
-      return newDashboard;
-    }
-
     const { cut, copied } = newDashboard.clipboard;
     newDashboard = resetClipboard(newDashboard);
 
     cutItemsToFolder(cut, folder);
-    newDashboard = displayMany(newDashboard, mapItemsToItemIDs(cut));
+    newDashboard = displayMany(newDashboard, cut);
 
     const items = copyItemsToFolder(copied, folder);
-    newDashboard = displayMany(newDashboard, mapItemsToItemIDs(items));
+    newDashboard = displayMany(newDashboard, items);
 
     return newDashboard;
   });
 }
 
-const openLink = (dashboard: TDashboard, linkID: DashboardLink["id"]) => {
-  const link = findByIDInDashboard(dashboard, linkID) as DashboardLink;
-
-  if (!link) {
-    return dashboard;
-  }
-
+const openLink = (dashboard: TDashboard, link: DashboardLink) => {
   let { url } = link;
 
   if (!!url && !/^https?:\/\//i.test(url)) {
@@ -412,16 +394,12 @@ const openLink = (dashboard: TDashboard, linkID: DashboardLink["id"]) => {
   return dashboard;
 }
 
-const openFolder = (dashboard: TDashboard, folderID: DashboardFolder["id"]) => {
+const openFolder = (dashboard: TDashboard, folder: DashboardFolder) => {
   return updateDashboard(dashboard, newDashboard => {
-    const folder = findByIDInDashboard(newDashboard, folderID) as DashboardFolder;
-
-    if (folder) {
-      newDashboard.currentFolder = folder;
-      newDashboard.parentFolder = newDashboard.currentFolder.getParent();
-      newDashboard.selected = [];
-      newDashboard = displayFolder(newDashboard, newDashboard.currentFolder.id);
-    }
+    newDashboard.currentFolder = folder;
+    newDashboard.parentFolder = newDashboard.currentFolder.getParent();
+    newDashboard.selected = [];
+    newDashboard = displayFolder(newDashboard, newDashboard.currentFolder);
 
     return newDashboard;
   });
@@ -429,9 +407,9 @@ const openFolder = (dashboard: TDashboard, folderID: DashboardFolder["id"]) => {
 
 const goBack = (dashboard: TDashboard) => {
   return updateDashboard(dashboard, newDashboard => {
-    const parentID = newDashboard.parentFolder?.id;
-    if (parentID !== undefined) {
-      newDashboard = openFolder(newDashboard, parentID);
+    const parent = newDashboard.parentFolder;
+    if (parent) {
+      newDashboard = openFolder(newDashboard, parent);
     }
     return newDashboard;
   });
@@ -439,37 +417,25 @@ const goBack = (dashboard: TDashboard) => {
 
 const resetClipboardCopy = (dashboard: TDashboard) => {
   return updateDashboard(dashboard, newDashboard => {
-    return undoCopyMany(newDashboard, mapItemsToItemIDs(newDashboard.clipboard.copied));
+    return undoCopyMany(newDashboard, newDashboard.clipboard.copied);
   });
 }
 
 const resetClipboardCut = (dashboard: TDashboard) => {
   return updateDashboard(dashboard, newDashboard => {
-    return undoCutMany(newDashboard, mapItemsToItemIDs(newDashboard.clipboard.cut));
+    return undoCutMany(newDashboard, newDashboard.clipboard.cut);
   });
 }
 
-const edit = (dashboard: TDashboard, itemID: DashboardItemID, updatedFields: Partial<DashboardItem>) => {
+const edit = (dashboard: TDashboard, item: DashboardItem, updatedFields: Partial<DashboardItem>) => {
   return updateDashboard(dashboard, newDashboard => {
-    const item = findByIDInDashboard(newDashboard, itemID);
-
-    if (item) {
-      item.update(updatedFields);
-    }
-
+    item.update(updatedFields);
     return newDashboard;
   });
 }
 
-const moveOne = (dashboard: TDashboard, itemID: DashboardItemID, folderID: DashboardFolder["id"]) => {
+const moveOne = (dashboard: TDashboard, item: DashboardItem, folder: DashboardFolder) => {
   return updateDashboard(dashboard, newDashboard => {
-    const item = findByIDInDashboard(newDashboard, itemID);
-    const folder = findByIDInDashboard(newDashboard, folderID) as DashboardFolder;
-
-    if (!item || !folder) {
-      return newDashboard;
-    }
-
     item.getParent()?.moveChildToAnotherFolder(item, folder);
     newDashboard = keepDisplayedInFolderOrder(newDashboard);
 
@@ -477,10 +443,10 @@ const moveOne = (dashboard: TDashboard, itemID: DashboardItemID, folderID: Dashb
   });
 }
 
-const moveMany = (dashboard: TDashboard, itemIDs: DashboardItemID[], folderID: DashboardFolder["id"]) => {
+const moveMany = (dashboard: TDashboard, items: DashboardItem[], folder: DashboardFolder) => {
   return updateDashboard(dashboard, newDashboard => {
-    itemIDs.forEach(itemID => {
-      newDashboard = moveOne(newDashboard, itemID, folderID);
+    items.forEach(item => {
+      newDashboard = moveOne(newDashboard, item, folder);
     });
     return newDashboard;
   })
@@ -528,70 +494,70 @@ export const dashboardReducer = (dashboard: TDashboard, action: DashboardAction)
       return addOne(dashboard, action.item)
     }
     case "remove": {
-      return removeOne(dashboard, action.itemID);
+      return removeOne(dashboard, action.item);
     }
     case "remove_many": {
-      return removeMany(dashboard, action.itemIDs);
+      return removeMany(dashboard, action.items);
     }
     case "reset_selection": {
       return resetSelection(dashboard);
     }
     case "select": {
-      return selectOne(dashboard, action.itemID, action.behavior);
+      return selectOne(dashboard, action.item, action.behavior);
     }
     case "unselect": {
-      return unselectOne(dashboard, action.itemID, action.behavior);
+      return unselectOne(dashboard, action.item, action.behavior);
     }
     case "select_many": {
-      return selectMany(dashboard, action.itemIDs, action.behavior);
+      return selectMany(dashboard, action.items, action.behavior);
     }
     case "unselect_many": {
-      return unselectMany(dashboard, action.itemIDs, action.behavior);
+      return unselectMany(dashboard, action.items, action.behavior);
     }
     case "display": {
-      return displayOne(dashboard, action.itemID, action.behavior);
+      return displayOne(dashboard, action.item, action.behavior);
     }
     case "undisplay": {
-      return undisplayOne(dashboard, action.itemID, action.behavior);
+      return undisplayOne(dashboard, action.item, action.behavior);
     }
     case "reset_clipboard": {
       return resetClipboard(dashboard);
     }
     case "cut": {
-      return cutOne(dashboard, action.itemID, action.behavior);
+      return cutOne(dashboard, action.item, action.behavior);
     }
     case "cut_many": {
-      return cutMany(dashboard, action.itemIDs, action.behavior);
+      return cutMany(dashboard, action.items, action.behavior);
     }
     case "copy": {
-      return copyOne(dashboard, action.itemID, action.behavior);
+      return copyOne(dashboard, action.item, action.behavior);
     }
     case "copy_many": {
-      return copyMany(dashboard, action.itemIDs, action.behavior);
+      return copyMany(dashboard, action.items, action.behavior);
     }
     case "paste": {
-      return paste(dashboard, action.folderID);
+      return paste(dashboard, action.folder);
     }
     case "open_link": {
-      return openLink(dashboard, action.linkID);
+      return openLink(dashboard, action.link);
     }
     case "open_folder": {
-      return openFolder(dashboard, action.folderID);
+      return openFolder(dashboard, action.folder);
     }
     case "go_back": {
       return goBack(dashboard);
     }
     case "undisplay_many": {
-      return undisplayMany(dashboard, action.itemIDs, action.behavior);
+      return undisplayMany(dashboard, action.items, action.behavior);
     }
     case "display_many": {
-      return displayMany(dashboard, action.itemIDs, action.behavior);
+      return displayMany(dashboard, action.items, action.behavior);
     }
     case "reset_display": {
       return resetDisplay(dashboard);
     }
     case "display_folder": {
-      return displayFolder(dashboard, action.folderID);
+      return displayFolder(dashboard, action.folder);
     }
     case "reset_clipboard_copy": {
       return resetClipboardCopy(dashboard);
@@ -600,19 +566,19 @@ export const dashboardReducer = (dashboard: TDashboard, action: DashboardAction)
       return resetClipboardCut(dashboard);
     }
     case "undo_copy": {
-      return undoCopyOne(dashboard, action.itemID);
+      return undoCopyOne(dashboard, action.item);
     }
     case "undo_cut": {
-      return undoCutOne(dashboard, action.itemID);
+      return undoCutOne(dashboard, action.item);
     }
     case "edit": {
-      return edit(dashboard, action.itemID, action.updatedFields);
+      return edit(dashboard, action.item, action.updatedFields);
     }
     case "move": {
-      return moveOne(dashboard, action.itemID, action.folderID);
+      return moveOne(dashboard, action.item, action.folder);
     }
     case "move_many": {
-      return moveMany(dashboard, action.itemIDs, action.folderID);
+      return moveMany(dashboard, action.items, action.folder);
     }
     case "reposition": {
       return repositionOne(dashboard, action.currentIndex, action.newIndex, action.strategy );

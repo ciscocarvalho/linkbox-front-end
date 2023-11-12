@@ -1,6 +1,6 @@
 import DashboardFolder from "../DashboardFolder";
 import DashboardItem from "../DashboardItem";
-import { TDashboard } from "../types";
+import { DashboardItemID, TDashboard } from "../types";
 
 const traverseUpFolder = (folder: DashboardFolder, fn: (folder: DashboardFolder) => boolean | void) => {
   let currentFolder = folder;
@@ -87,4 +87,10 @@ export const findInDashboard = (dashboard: TDashboard, predicate: Function) => {
   });
 
   return result as DashboardItem | null;
+}
+
+export const findByIDInDashboard = (dashboard: TDashboard, itemID: DashboardItemID) => {
+  return findInDashboard(dashboard, (item: DashboardItem) => {
+    return item.id === itemID;
+  });
 }

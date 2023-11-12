@@ -25,6 +25,7 @@ import DashboardItem from '../DashboardItem';
 import { itemIsFolder } from '../util';
 import ItemDragOverlay from './ItemDragOverlay';
 import DashboardFolder from '../DashboardFolder';
+import { findByIDInDashboard } from '../util/findInDashboard';
 
 const getClientVerticalPositionRelativeToElementCenter = (
   clientY: number,
@@ -85,11 +86,13 @@ const CardsContainer: React.FC<CardsContainerProps> = ({ items }) => {
 
   const moveToFolder = (folder: DashboardFolder) => {
     if (manySelected) {
-      const itemIDs = selected.map(item => item.id);
-      dispatch({ type: "move_many", itemIDs, folderID: folder.id });
+      dispatch({ type: "move_many", items: selected, folder: folder });
       dispatch({ type: "reset_selection" });
     } else if (activeID) {
-      dispatch({ type: "move", itemID: activeID, folderID: folder.id });
+      const item = findByIDInDashboard(dashboard, activeID);
+      if (item) {
+        dispatch({ type: "move", item, folder: folder });
+      }
     }
   }
 
@@ -133,7 +136,10 @@ const CardsContainer: React.FC<CardsContainerProps> = ({ items }) => {
     const activeIsSelected = selected.find(item => item.id === active.id) !== undefined;
 
     if (!activeIsSelected) {
-      dispatch({ type: "select", itemID: (active.id as number), behavior: "exclusive" });
+      const item = findByIDInDashboard(dashboard, active.id as number);
+      if (item) {
+        dispatch({ type: "select", item, behavior: "exclusive" });
+      }
     }
 
     setActiveID(active.id as number);

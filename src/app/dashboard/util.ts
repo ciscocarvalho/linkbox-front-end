@@ -58,5 +58,3 @@ export const inputNewItem = () => {
 export const itemIsFolder = (item: DashboardItem): item is DashboardFolder => item instanceof DashboardFolder;
 
 export const itemIsLink = (item: DashboardItem): item is DashboardLink => item instanceof DashboardLink;
-
-export const mapItemsToItemIDs = (items: DashboardItem[]) => items.map(item => item.id);

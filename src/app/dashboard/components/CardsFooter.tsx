@@ -1,7 +1,6 @@
 "use client";
 import React, { useContext } from 'react';
 import { DashboardContext, DashboardDispatchContext } from '../contexts/DashboardContext';
-import { mapItemsToItemIDs } from "../util";
 import IconButton from '../../components/IconButton';
 
 const CardsFooter: React.FC = () => {
@@ -10,17 +9,17 @@ const CardsFooter: React.FC = () => {
   const { selected } = dashboard;
 
   const copySelected = () => {
-    dispatch({ type: "copy_many", itemIDs: mapItemsToItemIDs(selected) });
+    dispatch({ type: "copy_many", items: selected });
     dispatch({ type: "reset_selection" });
   }
 
   const cutSelected = () => {
-    dispatch({ type: "cut_many", itemIDs: mapItemsToItemIDs(selected) });
+    dispatch({ type: "cut_many", items: selected });
     dispatch({ type: "reset_selection" });
   }
 
   const deleteSelected = () => {
-    dispatch({ type: "remove_many", itemIDs: mapItemsToItemIDs(selected) });
+    dispatch({ type: "remove_many", items: selected });
     dispatch({ type: "reset_selection" });
   }
 

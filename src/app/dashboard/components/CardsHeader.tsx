@@ -28,7 +28,7 @@ const CardsHeader = () => {
             <IconButton
               onClick={(e) => {
                 e.stopPropagation();
-                dispatch({ type: "paste", folderID: currentFolder.id })
+                dispatch({ type: "paste", folder: currentFolder })
               }}
               icon="content_paste"
             />

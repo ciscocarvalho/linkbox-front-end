@@ -14,10 +14,10 @@ export type DashboardAction = {
   item: DashboardItem;
 } | {
   type: "remove" | "undo_copy" | "undo_cut";
-  itemID: DashboardItemID;
+  item: DashboardItem;
 } | {
   type: "select" | "unselect" | "display" | "undisplay" | "copy" | "cut";
-  itemID: DashboardItemID;
+  item: DashboardItem;
   behavior?: "inclusive" | "exclusive";
 } | {
   type:
@@ -27,11 +27,11 @@ export type DashboardAction = {
     "cut_many" |
     "undisplay_many" |
     "display_many";
-  itemIDs: DashboardItemID[];
+  items: DashboardItem[];
   behavior?: "inclusive" | "exclusive";
 } | {
   type: "remove_many";
-  itemIDs: DashboardItemID[];
+  items: DashboardItem[];
 } | {
   type:
     "go_back" |
@@ -42,13 +42,13 @@ export type DashboardAction = {
     "reset_clipboard_cut";
 } | {
   type: "paste" | "open_folder" | "display_folder";
-  folderID: DashboardFolder["id"];
+  folder: DashboardFolder;
 } | {
   type: "open_link";
-  linkID: DashboardFolder["id"];
+  link: DashboardLink;
 } | {
   type: "edit";
-  itemID: DashboardItemID;
+  item: DashboardItem;
   updatedFields: Partial<DashboardFolder | DashboardLink>;
 } | {
   type: "reposition";
@@ -62,12 +62,12 @@ export type DashboardAction = {
   strategy: "before" | "after";
 } | {
   type: "move";
-  itemID: DashboardItemID;
-  folderID: DashboardFolder["id"];
+  item: DashboardItem;
+  folder: DashboardFolder;
 } | {
   type: "move_many";
-  itemIDs: DashboardItemID[];
-  folderID: DashboardFolder["id"];
+  items: DashboardItem[];
+  folder: DashboardFolder;
 }
 
 export type TDashboard = {

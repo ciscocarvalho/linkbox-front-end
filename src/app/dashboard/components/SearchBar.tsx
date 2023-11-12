@@ -12,8 +12,8 @@ const SearchBar: React.FC<JSX.IntrinsicElements["input"]> = ({ ...inputProps }) 
   const allItems = dashboard.currentFolder.getChildren();
 
   const setItems = (items: DashboardItem[]) => {
-    dispatch({ type: "undisplay_many", itemIDs: allItems.map(item => item.id) })
-    dispatch({ type: "display_many", itemIDs: items.map(item => item.id) })
+    dispatch({ type: "undisplay_many", items: allItems })
+    dispatch({ type: "display_many", items: items })
   }
 
   return (

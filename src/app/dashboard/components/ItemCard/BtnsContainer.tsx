@@ -27,12 +27,12 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
     if (item instanceof DashboardLink) {
       const linkInfo = util.inputLinkInfo();
       if (linkInfo) {
-        dispatch({ type: "edit", itemID: item.id, updatedFields: linkInfo });
+        dispatch({ type: "edit", item, updatedFields: linkInfo });
       }
     } else {
       const folderInfo = util.inputFolderInfo();
       if (folderInfo) {
-        dispatch({ type: "edit", itemID: item.id, updatedFields: folderInfo });
+        dispatch({ type: "edit", item, updatedFields: folderInfo });
       }
     }
   }
@@ -41,7 +41,7 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
 
   const listenerForColorChange = () => {
     const backgroundColor = colorInput.current!.value;
-    dispatch({ type: "edit", itemID: item.id, updatedFields: { backgroundColor } });
+    dispatch({ type: "edit", item, updatedFields: { backgroundColor } });
     colorInput.current?.removeEventListener("change", listenerForColorChange);
   }
 
@@ -53,7 +53,7 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
             icon={isSelected ? "check_box" : "check_box_outline_blank"}
             onClick={(e) => {
               e.stopPropagation();
-              dispatch({ type: isSelected ? "unselect" : "select", itemID: item.id });
+              dispatch({ type: isSelected ? "unselect" : "select", item });
             }}
           />
           : null
@@ -66,14 +66,14 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
               icon="content_copy"
               onClick={(e) => {
                 e.stopPropagation();
-                dispatch({ type: "copy", itemID: item.id, behavior: "exclusive" });
+                dispatch({ type: "copy", item, behavior: "exclusive" });
               }}
             />
             <IconButton
               icon="content_cut"
               onClick={(e) => {
                 e.stopPropagation();
-                dispatch({ type: "cut", itemID: item.id, behavior: "exclusive" });
+                dispatch({ type: "cut", item, behavior: "exclusive" });
               }}
             />
             <IconButton
@@ -104,7 +104,7 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
             />
             <IconButton
               icon="delete"
-              onClick={(e) => { e.stopPropagation(); dispatch({ type: "remove", itemID: item.id }); }}
+              onClick={(e) => { e.stopPropagation(); dispatch({ type: "remove", item }); }}
               className={showRegular}
             />
           </>

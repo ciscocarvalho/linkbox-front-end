@@ -30,15 +30,15 @@ const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
   const isSelected = dashboard.selected.includes(item);
 
   const onSingleClick = () => {
-    dispatch({ type: "select", itemID: item.id, behavior: "exclusive" });
+    dispatch({ type: "select", item, behavior: "exclusive" });
   }
 
   const onDoubleClick = () => {
     if (card.current) {
       if (itemType === "link") {
-        dispatch({ type: "open_link", linkID: item.id })
+        dispatch({ type: "open_link", link: item })
       } else {
-        dispatch({ type: "open_folder", folderID: item.id })
+        dispatch({ type: "open_folder", folder: item })
       }
     }
   }
