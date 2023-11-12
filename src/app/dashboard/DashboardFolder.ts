@@ -49,18 +49,19 @@ class DashboardFolder extends DashboardItem {
 
     removeChild(child: DashboardItem) {
         this.setChildren(this.children.filter(v => v !== child))
+        child.setParent(null);
     }
 
     moveChildToAnotherFolder(child: DashboardItem, folder: DashboardFolder) {
         if (!this.contains(child)) return;
 
-        folder.addChild(child);
         this.removeChild(child);
-        child.setParent(folder);
+        folder.addChild(child);
     }
 
     addChild(child: DashboardItem) {
         this.children.push(child);
+        child.setParent(this);
     }
 
     getChildIndex(child: DashboardItem) {

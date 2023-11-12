@@ -7,20 +7,14 @@ type Behavior = "inclusive" | "exclusive";
 
 const DEFAULT_BEHAVIOR = "inclusive";
 
-const removeItemFromParent = (item: DashboardItem) => {
-  const parent = item.getParent();
-  parent?.removeChild(item);
-  item.setParent(null);
-}
-
 const cutItemsToFolder = (items: DashboardItem[], folder: DashboardFolder) => {
   items.forEach(item => {
-    removeItemFromParent(item);
-  });
-
-  items.forEach(item => {
-    folder.addChild(item);
-    item.setParent(folder);
+    const parent = item.getParent();
+    if (parent) {
+      parent.moveChildToAnotherFolder(item, folder);
+    } else {
+      folder.addChild(item);
+    }
   });
 }
 
@@ -101,7 +95,6 @@ const removeOne = (dashboard: TDashboard, item: DashboardItem) => {
   }
 
   parent.removeChild(item);
-  item.setParent(null);
   dashboard = undisplayOne(dashboard, item);
   dashboard = removeOneFromClipboard(dashboard, item);
   dashboard = unselectOne(dashboard, item);
@@ -130,7 +123,6 @@ const keepDisplayedInFolderOrder = (dashboard: TDashboard) => {
 
 const addOne = (dashboard: TDashboard, item: DashboardItem) => {
   dashboard.currentFolder.addChild(item);
-  item.setParent(dashboard.currentFolder);
   dashboard = displayOne(dashboard, item);
   return dashboard;
 }
@@ -170,15 +162,10 @@ const displayFolder = (dashboard: TDashboard, folder: DashboardFolder) => {
 }
 
 const cutOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
-  const parent = item.getParent();
-
-  if (parent) {
-    parent.removeChild(item);
-    if (behavior === "inclusive") {
-      dashboard.clipboard.cut.push(item);
-    } else {
-      dashboard.clipboard.cut = [item];
-    }
+  if (behavior === "inclusive") {
+    dashboard.clipboard.cut.push(item);
+  } else {
+    dashboard.clipboard.cut = [item];
   }
 
   return dashboard;
@@ -205,18 +192,7 @@ const undoCopyAll = (dashboard: TDashboard) => {
 
 const undoCutOne = (dashboard: TDashboard, item: DashboardItem) => {
   const itemsCut = dashboard.clipboard.cut;
-
-  if (!itemsCut.find(itemCut => itemCut.id === item.id)) {
-    return dashboard;
-  }
-
-  const parent = item.getParent();
-
-  if (item && parent) {
-    parent.addChild(item);
-    dashboard.clipboard.cut = itemsCut.filter(itemCut => itemCut.id !== item.id);
-  }
-
+  dashboard.clipboard.cut = itemsCut.filter(itemCut => itemCut.id !== item.id);
   return dashboard;
 }
 
