@@ -30,311 +30,252 @@ const copyItemsToFolder = (items: DashboardItem[], folder: DashboardFolder) => {
   return copiedItems;
 }
 
-const updateDashboard = (oldDashboard: TDashboard, updater: (newDashboard: TDashboard) => TDashboard) => {
-  const newDashboard = { ...oldDashboard };
-  return updater(newDashboard);
-}
-
 const removeOneFromClipboard = (dashboard: TDashboard, item: DashboardItem) => {
-  return updateDashboard(dashboard, newDashboard => {
-    newDashboard = undoCutOne(newDashboard, item);
-    newDashboard = undoCopyOne(newDashboard, item);
-    return newDashboard;
-  });
+  dashboard = undoCutOne(dashboard, item);
+  dashboard = undoCopyOne(dashboard, item);
+  return dashboard;
 }
 
 const unselectOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
-  return updateDashboard(dashboard, newDashboard => {
-    if (behavior === "inclusive") {
-      newDashboard.selected = newDashboard.selected.filter(thisItem => thisItem.id !== item.id);
-    } else {
-      newDashboard = selectAll(newDashboard);
-      newDashboard.selected = newDashboard.selected.filter(thisItem => thisItem.id !== item.id);
-    }
+  if (behavior === "inclusive") {
+    dashboard.selected = dashboard.selected.filter(thisItem => thisItem.id !== item.id);
+  } else {
+    dashboard = selectAll(dashboard);
+    dashboard.selected = dashboard.selected.filter(thisItem => thisItem.id !== item.id);
+  }
 
-    return newDashboard;
-  });
+  return dashboard;
 }
 
 const resetSelection = (dashboard: TDashboard) => {
-  return updateDashboard(dashboard, newDashboard => {
-    return unselectMany(newDashboard, newDashboard.selected);
-  })
+  return unselectMany(dashboard, dashboard.selected);
 }
 
 const selectOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
-  return updateDashboard(dashboard, newDashboard => {
-    if (behavior === "inclusive") {
-      newDashboard.selected.push(item);
-    } else {
-      newDashboard.selected = [item];
-    }
+  if (behavior === "inclusive") {
+    dashboard.selected.push(item);
+  } else {
+    dashboard.selected = [item];
+  }
 
-    return newDashboard;
-  });
+  return dashboard;
 }
 
 const unselectMany = (dashboard: TDashboard, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
-  return updateDashboard(dashboard, newDashboard => {
-    if (behavior === "exclusive") {
-      newDashboard = selectAll(newDashboard);
-    }
+  if (behavior === "exclusive") {
+    dashboard = selectAll(dashboard);
+  }
 
-    items.forEach(item => {
-      newDashboard = unselectOne(newDashboard, item)
-    });
-
-    return newDashboard;
+  items.forEach(item => {
+    dashboard = unselectOne(dashboard, item)
   });
+
+  return dashboard;
 }
 
 const unselectAll = (dashboard: TDashboard) => {
-  return updateDashboard(dashboard, newDashboard => {
-    return unselectMany(newDashboard, newDashboard.displayedItems);
-  });
+  return unselectMany(dashboard, dashboard.displayedItems);
 }
 
 const selectMany = (dashboard: TDashboard, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
-  return updateDashboard(dashboard, newDashboard => {
-    if (behavior === "exclusive") {
-      newDashboard = unselectAll(newDashboard);
-    }
+  if (behavior === "exclusive") {
+    dashboard = unselectAll(dashboard);
+  }
 
-    items.forEach(item => {
-      newDashboard = selectOne(newDashboard, item)
-    });
-
-    return newDashboard;
+  items.forEach(item => {
+    dashboard = selectOne(dashboard, item)
   });
+
+  return dashboard;
 }
 
 const selectAll = (dashboard: TDashboard) => {
-  return updateDashboard(dashboard, newDashboard => {
-    return selectMany(newDashboard, newDashboard.displayedItems);
-  });
+  return selectMany(dashboard, dashboard.displayedItems);
 }
 
 const removeOne = (dashboard: TDashboard, item: DashboardItem) => {
-  return updateDashboard(dashboard, newDashboard => {
-    const parent = item.getParent();
+  const parent = item.getParent();
 
-    if (!item || !parent) {
-      return newDashboard;
-    }
+  if (!item || !parent) {
+    return dashboard;
+  }
 
-    parent.removeChild(item);
-    item.setParent(null);
-    newDashboard = undisplayOne(newDashboard, item);
-    newDashboard = removeOneFromClipboard(newDashboard, item);
-    newDashboard = unselectOne(newDashboard, item);
+  parent.removeChild(item);
+  item.setParent(null);
+  dashboard = undisplayOne(dashboard, item);
+  dashboard = removeOneFromClipboard(dashboard, item);
+  dashboard = unselectOne(dashboard, item);
 
-    return newDashboard;
-  });
+  return dashboard;
 }
 
 const removeMany = (dashboard: TDashboard, items: DashboardItem[]) => {
-  return updateDashboard(dashboard, newDashboard => {
-    items.forEach(item => {
-      newDashboard = removeOne(newDashboard, item);
-    });
-    return newDashboard;
-  })
+  items.forEach(item => {
+    dashboard = removeOne(dashboard, item);
+  });
+  return dashboard;
 }
 
 const keepDisplayedInFolderOrder = (dashboard: TDashboard) => {
-  return updateDashboard(dashboard, newDashboard => {
-    const { currentFolder, displayedItems } = newDashboard;
-    const childrenOfCurrentFolder = currentFolder.getChildren();
+  const { currentFolder, displayedItems } = dashboard;
+  const childrenOfCurrentFolder = currentFolder.getChildren();
 
-    newDashboard.displayedItems = childrenOfCurrentFolder.filter(child => {
-      const index = displayedItems.findIndex(displayedItem => displayedItem.id === child.id);
-      return index !== -1;
-    })
-
-    return newDashboard;
+  dashboard.displayedItems = childrenOfCurrentFolder.filter(child => {
+    const index = displayedItems.findIndex(displayedItem => displayedItem.id === child.id);
+    return index !== -1;
   })
+
+  return dashboard;
 }
 
 const addOne = (dashboard: TDashboard, item: DashboardItem) => {
-  return updateDashboard(dashboard, newDashboard => {
-    newDashboard.currentFolder.addChild(item);
-    item.setParent(newDashboard.currentFolder);
-    newDashboard = displayOne(newDashboard, item);
-    return newDashboard;
-  });
+  dashboard.currentFolder.addChild(item);
+  item.setParent(dashboard.currentFolder);
+  dashboard = displayOne(dashboard, item);
+  return dashboard;
 }
 
 const displayOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
-  return updateDashboard(dashboard, newDashboard => {
-    if (!newDashboard.displayedItems.includes(item)) {
-      if (behavior === "inclusive") {
-        newDashboard.displayedItems.push(item);
-      } else {
-        newDashboard = undisplayAll(newDashboard);
-        newDashboard.displayedItems = [item];
-      }
+  if (!dashboard.displayedItems.includes(item)) {
+    if (behavior === "inclusive") {
+      dashboard.displayedItems.push(item);
+    } else {
+      dashboard = undisplayAll(dashboard);
+      dashboard.displayedItems = [item];
     }
+  }
 
-    newDashboard = keepDisplayedInFolderOrder(newDashboard);
+  dashboard = keepDisplayedInFolderOrder(dashboard);
 
-    return newDashboard;
-  });
+  return dashboard;
 }
 
 const undisplayOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
-  return updateDashboard(dashboard, newDashboard => {
-    if (behavior === "exclusive") {
-      newDashboard = displayAll(newDashboard);
-    }
+  if (behavior === "exclusive") {
+    dashboard = displayAll(dashboard);
+  }
 
-    newDashboard.displayedItems = newDashboard.displayedItems.filter(displayedItem => displayedItem.id !== item.id);
+  dashboard.displayedItems = dashboard.displayedItems.filter(displayedItem => displayedItem.id !== item.id);
 
-    return newDashboard;
-  });
+  return dashboard;
 }
 
 const resetDisplay = (dashboard: TDashboard) => {
-  return updateDashboard(dashboard, newDashboard => {
-    return undisplayMany(newDashboard, newDashboard.displayedItems);
-  });
+  return undisplayMany(dashboard, dashboard.displayedItems);
 }
 
 const displayFolder = (dashboard: TDashboard, folder: DashboardFolder) => {
-  return updateDashboard(dashboard, newDashboard => {
-    newDashboard.displayedItems = folder.getChildren();
-    return newDashboard;
-  });
+  dashboard.displayedItems = folder.getChildren();
+  return dashboard;
 }
 
 const cutOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
-  return updateDashboard(dashboard, newDashboard => {
-    const parent = item.getParent();
+  const parent = item.getParent();
 
-    if (parent) {
-      parent.removeChild(item);
-      if (behavior === "inclusive") {
-        newDashboard.clipboard.cut.push(item);
-      } else {
-        newDashboard.clipboard.cut = [item];
-      }
+  if (parent) {
+    parent.removeChild(item);
+    if (behavior === "inclusive") {
+      dashboard.clipboard.cut.push(item);
+    } else {
+      dashboard.clipboard.cut = [item];
     }
+  }
 
-    return newDashboard;
-  });
+  return dashboard;
 }
 
 const undoCopyOne = (dashboard: TDashboard, item: DashboardItem) => {
-  return updateDashboard(dashboard, newDashboard => {
-    const copied = newDashboard.clipboard.copied;
-    newDashboard.clipboard.copied = copied.filter(itemCopied => itemCopied.id !== item.id);
+  const copied = dashboard.clipboard.copied;
+  dashboard.clipboard.copied = copied.filter(itemCopied => itemCopied.id !== item.id);
 
-    return newDashboard;
-  });
+  return dashboard;
 }
 
 const undoCopyMany = (dashboard: TDashboard, items: DashboardItem[]) => {
-  return updateDashboard(dashboard, newDashboard => {
-    items.forEach(item => {
-      newDashboard = undoCopyOne(newDashboard, item);
-    });
-
-    return newDashboard;
+  items.forEach(item => {
+    dashboard = undoCopyOne(dashboard, item);
   });
+
+  return dashboard;
 }
 
 const undoCopyAll = (dashboard: TDashboard) => {
-  return updateDashboard(dashboard, newDashboard => {
-    return undoCopyMany(newDashboard, newDashboard.clipboard.copied);
-  });
+  return undoCopyMany(dashboard, dashboard.clipboard.copied);
 }
 
 const undoCutOne = (dashboard: TDashboard, item: DashboardItem) => {
-  return updateDashboard(dashboard, newDashboard => {
-    const itemsCut = newDashboard.clipboard.cut;
+  const itemsCut = dashboard.clipboard.cut;
 
-    if (!itemsCut.find(itemCut => itemCut.id === item.id)) {
-      return newDashboard;
-    }
+  if (!itemsCut.find(itemCut => itemCut.id === item.id)) {
+    return dashboard;
+  }
 
-    const parent = item.getParent();
+  const parent = item.getParent();
 
-    if (item && parent) {
-      parent.addChild(item);
-      newDashboard.clipboard.cut = itemsCut.filter(itemCut => itemCut.id !== item.id);
-    }
+  if (item && parent) {
+    parent.addChild(item);
+    dashboard.clipboard.cut = itemsCut.filter(itemCut => itemCut.id !== item.id);
+  }
 
-    return newDashboard;
-  });
+  return dashboard;
 }
 
 const undoCutMany = (dashboard: TDashboard, items: DashboardItem[]) => {
-  return updateDashboard(dashboard, newDashboard => {
-    items.forEach(item => {
-      newDashboard = undoCutOne(newDashboard, item);
-    });
-
-    return newDashboard;
+  items.forEach(item => {
+    dashboard = undoCutOne(dashboard, item);
   });
+
+  return dashboard;
 }
 
 const undoCutAll = (dashboard: TDashboard) => {
-  return updateDashboard(dashboard, newDashboard => {
-    return undoCutMany(newDashboard, newDashboard.clipboard.cut);
-  });
+  return undoCutMany(dashboard, dashboard.clipboard.cut);
 }
 
 const cutMany = (dashboard: TDashboard, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
-  return updateDashboard(dashboard, newDashboard => {
-    if (behavior === "exclusive") {
-      newDashboard = undoCutAll(newDashboard);
-    }
+  if (behavior === "exclusive") {
+    dashboard = undoCutAll(dashboard);
+  }
 
-    items.forEach(item => {
-      newDashboard = cutOne(newDashboard, item)
-    });
-
-    return newDashboard;
+  items.forEach(item => {
+    dashboard = cutOne(dashboard, item)
   });
+
+  return dashboard;
 }
 
 const copyOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
-  return updateDashboard(dashboard, newDashboard => {
-    if (behavior === "inclusive") {
-      dashboard.clipboard.copied.push(item);
-    } else {
-      dashboard.clipboard.copied = [item];
-    }
+  if (behavior === "inclusive") {
+    dashboard.clipboard.copied.push(item);
+  } else {
+    dashboard.clipboard.copied = [item];
+  }
 
-    return newDashboard;
-  });
+  return dashboard;
 }
 
 const copyMany = (dashboard: TDashboard, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
-  return updateDashboard(dashboard, newDashboard => {
-    if (behavior === "exclusive") {
-      newDashboard = undoCopyAll(newDashboard);
-    }
+  if (behavior === "exclusive") {
+    dashboard = undoCopyAll(dashboard);
+  }
 
-    items.forEach(item => {
-      newDashboard = copyOne(newDashboard, item);
-    });
-
-    return newDashboard;
+  items.forEach(item => {
+    dashboard = copyOne(dashboard, item);
   });
+
+  return dashboard;
 }
 
 const undisplayMany = (dashboard: TDashboard, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
-  return updateDashboard(dashboard, newDashboard => {
-    if (behavior === "exclusive") {
-      newDashboard = displayAll(newDashboard);
-    }
+  if (behavior === "exclusive") {
+    dashboard = displayAll(dashboard);
+  }
 
-    items.forEach(item => {
-      newDashboard = undisplayOne(newDashboard, item);
-    });
-
-    return newDashboard;
+  items.forEach(item => {
+    dashboard = undisplayOne(dashboard, item);
   });
+
+  return dashboard;
 }
 
 const undisplayAll = (dashboard: TDashboard) => {
@@ -342,17 +283,15 @@ const undisplayAll = (dashboard: TDashboard) => {
 }
 
 const displayMany = (dashboard: TDashboard, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
-  return updateDashboard(dashboard, newDashboard => {
-    if (behavior === "exclusive") {
-      newDashboard = undisplayAll(newDashboard);
-    }
+  if (behavior === "exclusive") {
+    dashboard = undisplayAll(dashboard);
+  }
 
-    items.forEach(item => {
-      newDashboard = displayOne(newDashboard, item)
-    });
-
-    return newDashboard;
+  items.forEach(item => {
+    dashboard = displayOne(dashboard, item)
   });
+
+  return dashboard;
 }
 
 const displayAll = (dashboard: TDashboard) => {
@@ -360,26 +299,22 @@ const displayAll = (dashboard: TDashboard) => {
 }
 
 const resetClipboard = (dashboard: TDashboard) => {
-  return updateDashboard(dashboard, newDashboard => {
-    newDashboard = resetClipboardCut(newDashboard);
-    newDashboard = resetClipboardCopy(newDashboard);
-    return newDashboard;
-  });
+  dashboard = resetClipboardCut(dashboard);
+  dashboard = resetClipboardCopy(dashboard);
+  return dashboard;
 }
 
 const paste = (dashboard: TDashboard, folder: DashboardFolder) => {
-  return updateDashboard(dashboard, newDashboard => {
-    const { cut, copied } = newDashboard.clipboard;
-    newDashboard = resetClipboard(newDashboard);
+  const { cut, copied } = dashboard.clipboard;
+  dashboard = resetClipboard(dashboard);
 
-    cutItemsToFolder(cut, folder);
-    newDashboard = displayMany(newDashboard, cut);
+  cutItemsToFolder(cut, folder);
+  dashboard = displayMany(dashboard, cut);
 
-    const items = copyItemsToFolder(copied, folder);
-    newDashboard = displayMany(newDashboard, items);
+  const items = copyItemsToFolder(copied, folder);
+  dashboard = displayMany(dashboard, items);
 
-    return newDashboard;
-  });
+  return dashboard;
 }
 
 const openLink = (dashboard: TDashboard, link: DashboardLink) => {
@@ -395,100 +330,84 @@ const openLink = (dashboard: TDashboard, link: DashboardLink) => {
 }
 
 const openFolder = (dashboard: TDashboard, folder: DashboardFolder) => {
-  return updateDashboard(dashboard, newDashboard => {
-    newDashboard.currentFolder = folder;
-    newDashboard.parentFolder = newDashboard.currentFolder.getParent();
-    newDashboard.selected = [];
-    newDashboard = displayFolder(newDashboard, newDashboard.currentFolder);
+  dashboard.currentFolder = folder;
+  dashboard.parentFolder = dashboard.currentFolder.getParent();
+  dashboard.selected = [];
+  dashboard = displayFolder(dashboard, dashboard.currentFolder);
 
-    return newDashboard;
-  });
+  return dashboard;
 }
 
 const goBack = (dashboard: TDashboard) => {
-  return updateDashboard(dashboard, newDashboard => {
-    const parent = newDashboard.parentFolder;
-    if (parent) {
-      newDashboard = openFolder(newDashboard, parent);
-    }
-    return newDashboard;
-  });
+  const parent = dashboard.parentFolder;
+  if (parent) {
+    dashboard = openFolder(dashboard, parent);
+  }
+  return dashboard;
 }
 
 const resetClipboardCopy = (dashboard: TDashboard) => {
-  return updateDashboard(dashboard, newDashboard => {
-    return undoCopyMany(newDashboard, newDashboard.clipboard.copied);
-  });
+  return undoCopyMany(dashboard, dashboard.clipboard.copied);
 }
 
 const resetClipboardCut = (dashboard: TDashboard) => {
-  return updateDashboard(dashboard, newDashboard => {
-    return undoCutMany(newDashboard, newDashboard.clipboard.cut);
-  });
+  return undoCutMany(dashboard, dashboard.clipboard.cut);
 }
 
 const edit = (dashboard: TDashboard, item: DashboardItem, updatedFields: Partial<DashboardItem>) => {
-  return updateDashboard(dashboard, newDashboard => {
-    item.update(updatedFields);
-    return newDashboard;
-  });
+  item.update(updatedFields);
+  return dashboard;
 }
 
 const moveOne = (dashboard: TDashboard, item: DashboardItem, folder: DashboardFolder) => {
-  return updateDashboard(dashboard, newDashboard => {
-    item.getParent()?.moveChildToAnotherFolder(item, folder);
-    newDashboard = keepDisplayedInFolderOrder(newDashboard);
+  item.getParent()?.moveChildToAnotherFolder(item, folder);
+  dashboard = keepDisplayedInFolderOrder(dashboard);
 
-    return newDashboard;
-  });
+  return dashboard;
 }
 
 const moveMany = (dashboard: TDashboard, items: DashboardItem[], folder: DashboardFolder) => {
-  return updateDashboard(dashboard, newDashboard => {
-    items.forEach(item => {
-      newDashboard = moveOne(newDashboard, item, folder);
-    });
-    return newDashboard;
-  })
+  items.forEach(item => {
+    dashboard = moveOne(dashboard, item, folder);
+  });
+  return dashboard;
 }
 
 const repositionOne = (dashboard: TDashboard, currentIndex: number, newIndex: number, strategy: "before" | "after") => {
-  return updateDashboard(dashboard, newDashboard => {
-    const { currentFolder } = newDashboard;
-    currentFolder.repositionChild(currentIndex, newIndex, strategy);
-    newDashboard = keepDisplayedInFolderOrder(newDashboard);
-    return newDashboard;
-  });
+  const { currentFolder } = dashboard;
+  currentFolder.repositionChild(currentIndex, newIndex, strategy);
+  dashboard = keepDisplayedInFolderOrder(dashboard);
+  return dashboard;
 };
 
 const repositionMany = (dashboard: TDashboard, indexes: number[], newIndex: number, strategy: "before" | "after") => {
-  return updateDashboard(dashboard, newDashboard => {
-    const { currentFolder } = newDashboard;
+  const { currentFolder } = dashboard;
+  const children = currentFolder.getChildren();
+  const smallestIndex = Math.min(...indexes);
+  const movingBack = newIndex <= smallestIndex;
+
+  if (movingBack) {
+    indexes = indexes.toReversed();
+  }
+
+  const items = indexes.map(index => children[index]);
+
+  const getItemIndex = (item: DashboardItem) => {
     const children = currentFolder.getChildren();
-    const smallestIndex = Math.min(...indexes);
-    const movingBack = newIndex <= smallestIndex;
+    return children.findIndex(child => child.id === item.id);
+  }
 
-    if (movingBack) {
-      indexes = indexes.toReversed();
-    }
+  items.forEach(item => {
+    const index = getItemIndex(item);
+    dashboard = repositionOne(dashboard, index, newIndex, strategy);
+  });
 
-    const items = indexes.map(index => children[index]);
-
-    const getItemIndex = (item: DashboardItem) => {
-      const children = currentFolder.getChildren();
-      return children.findIndex(child => child.id === item.id);
-    }
-
-    items.forEach(item => {
-      const index = getItemIndex(item);
-      newDashboard = repositionOne(newDashboard, index, newIndex, strategy);
-    });
-
-    return newDashboard;
-  })
+  return dashboard;
 };
 
 export const dashboardReducer = (dashboard: TDashboard, action: DashboardAction) => {
+  dashboard = { ...dashboard };
+
   switch (action.type) {
     case "add": {
       return addOne(dashboard, action.item)
