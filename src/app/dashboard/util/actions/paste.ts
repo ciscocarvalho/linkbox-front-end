@@ -3,14 +3,17 @@ import DashboardItem from "../../DashboardItem";
 import { DashboardAction, TDashboard } from "../../types";
 import DashboardFolder from "../../DashboardFolder";
 import { cloneItem } from "../services/cloneItem";
+import { getParent } from "../services/getParent";
+import { addItem } from "../services/addItem";
+import { moveItem } from "../services/moveItem";
 
 const cutItemsToFolder = (items: DashboardItem[], folder: DashboardFolder) => {
   items.forEach(item => {
-    const parent = item.getParent();
+    const parent = getParent(item);
     if (parent) {
-      parent.moveChildToAnotherFolder(item, folder);
+      moveItem(item, folder);
     } else {
-      folder.addChild(item);
+      addItem(folder, item);
     }
   });
 }
