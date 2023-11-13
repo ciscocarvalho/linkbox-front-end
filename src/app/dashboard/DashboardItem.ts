@@ -1,4 +1,5 @@
 import DashboardFolder from "./DashboardFolder";
+import { checkItemID } from "./util";
 
 abstract class DashboardItem {
     private static items: DashboardItem[] = [];
@@ -31,7 +32,7 @@ abstract class DashboardItem {
     abstract clone(): DashboardItem;
 
     static getById(id: number) {
-        return DashboardItem.items.find(item => item.getId() === id);
+        return DashboardItem.items.find(item => checkItemID(item, id));
     }
 }
 

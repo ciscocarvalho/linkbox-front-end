@@ -4,6 +4,7 @@ import DashboardFolder from "../../DashboardFolder";
 import DashboardItem from "../../DashboardItem";
 import { reposition } from "./reposition";
 import { getChildren } from "../services/getChildren";
+import { compareItems } from "../../util";
 
 export const repositionMany = (
   currentFolder: DashboardFolder,
@@ -24,7 +25,7 @@ export const repositionMany = (
 
   const getItemIndex = (item: DashboardItem) => {
     const children = getChildren(currentFolder);
-    return children.findIndex(child => child.id === item.id);
+    return children.findIndex(child => compareItems(child, item));
   }
 
   items.forEach(item => {

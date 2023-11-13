@@ -2,6 +2,7 @@ import DashboardFolder from "../DashboardFolder";
 import DashboardItem from "../DashboardItem";
 import DashboardLink from "../DashboardLink";
 import { DashboardAction, TDashboard } from "../types";
+import { compareItems } from "../util";
 import { getChildren } from "./services/getChildren";
 
 type Behavior = "inclusive" | "exclusive";
@@ -19,7 +20,7 @@ const unselectOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behav
     dashboard = selectAll(dashboard);
   }
 
-  dashboard.selected = dashboard.selected.filter(thisItem => thisItem.id !== item.id);
+  dashboard.selected = dashboard.selected.filter(thisItem => !compareItems(thisItem, item));
 
   return dashboard;
 }
@@ -99,7 +100,7 @@ const undisplayOne = (dashboard: TDashboard, item: DashboardItem, behavior: Beha
     dashboard = displayAll(dashboard);
   }
 
-  dashboard.displayedItems = dashboard.displayedItems.filter(displayedItem => displayedItem.id !== item.id);
+  dashboard.displayedItems = dashboard.displayedItems.filter(displayedItem => !compareItems(displayedItem, item));
 
   return dashboard;
 }
@@ -125,8 +126,7 @@ const cutOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavior =
 
 const undoCopyOne = (dashboard: TDashboard, item: DashboardItem) => {
   const copied = dashboard.clipboard.copied;
-  dashboard.clipboard.copied = copied.filter(itemCopied => itemCopied.id !== item.id);
-
+  dashboard.clipboard.copied = copied.filter(itemCopied => !compareItems(itemCopied, item));
   return dashboard;
 }
 
@@ -144,7 +144,7 @@ const undoCopyAll = (dashboard: TDashboard) => {
 
 const undoCutOne = (dashboard: TDashboard, item: DashboardItem) => {
   const itemsCut = dashboard.clipboard.cut;
-  dashboard.clipboard.cut = itemsCut.filter(itemCut => itemCut.id !== item.id);
+  dashboard.clipboard.cut = itemsCut.filter(itemCut => !compareItems(itemCut, item));
   return dashboard;
 }
 

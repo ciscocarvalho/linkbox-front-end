@@ -1,6 +1,7 @@
 import DashboardFolder from "../DashboardFolder";
 import DashboardItem from "../DashboardItem";
 import { DashboardItemID, TDashboard } from "../types";
+import { checkItemID } from "../util";
 import { getChildren } from "./services/getChildren";
 
 const traverseUpFolder = (folder: DashboardFolder, fn: (folder: DashboardFolder) => boolean | void) => {
@@ -92,6 +93,6 @@ export const findInDashboard = (dashboard: TDashboard, predicate: Function) => {
 
 export const findByIDInDashboard = (dashboard: TDashboard, itemID: DashboardItemID) => {
   return findInDashboard(dashboard, (item: DashboardItem) => {
-    return item.id === itemID;
+    return checkItemID(item, itemID);
   });
 }

@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import DashboardItem from "../DashboardItem";
 import { DashboardContext } from "../contexts/DashboardContext";
-import { itemIsFolder } from "../util";
+import { checkItemID, itemIsFolder } from "../util";
 import FolderDataContainer from "./FolderDataContainer";
 import LinkDataContainer from "./LinkDataContainer";
 import DashboardFolder from "../DashboardFolder";
@@ -35,7 +35,7 @@ const ItemDragOverlay: React.FC<ItemDragOverlayProps> = ({ draggedItems, active 
   const { selected } = dashboard;
   let className = "flex justify-between items-center min-h-[60px] h-[60px] py-[8px] px-[20px]";
 
-  if (selected.find(item => item.id === active?.id) !== undefined) {
+  if (selected.find(item => checkItemID(item, active?.id)) !== undefined) {
     className += " bg-[#DDE3EC]";
   }
 

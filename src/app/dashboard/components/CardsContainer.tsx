@@ -22,7 +22,7 @@ import {
 } from '@dnd-kit/sortable';
 import SortableItem from './SortableItem';
 import DashboardItem from '../DashboardItem';
-import { itemIsFolder } from '../util';
+import { checkItemID, compareItems, getItemID, itemIsFolder } from '../util';
 import ItemDragOverlay from './ItemDragOverlay';
 import DashboardFolder from '../DashboardFolder';
 import { findByIDInDashboard } from '../util/findInDashboard';
@@ -52,7 +52,7 @@ const getClientVerticalPositionRelativeToElementCenter = (
 
 const getCursorPositionInfo = (event: DragMoveEvent, items: DashboardItem[]) => {
   const { over, active } = event;
-  const itemOver = items.find(item => item.id === over?.id);
+  const itemOver = items.find(item => checkItemID(item, over?.id as number));
 
   if (!active.rect.current.translated || !over || !itemOver) {
     return;
@@ -107,24 +107,24 @@ const CardsContainer: React.FC<CardsContainerProps> = ({ items }) => {
     if (manySelected) {
       const indexes = selected
         .map(item => {
-          return childrenOfCurrentFolder.findIndex(child => child.id === item.id);
+          return childrenOfCurrentFolder.findIndex(child => compareItems(child, item));
         })
         .filter(index => index !== -1)
         .toSorted();
 
       repositionMany(dashboard.currentFolder, indexes, newIndex, strategy, dispatch);
     } else {
-      const currentIndex = items.findIndex(item => item.id === active.id);
+      const currentIndex = items.findIndex(item => checkItemID(item, active.id as number));
       reposition(dashboard.currentFolder, currentIndex, newIndex, strategy, dispatch);
     }
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    const overIsSelected = selected.find(item => item.id === over?.id) !== undefined;
+    const overIsSelected = selected.find(item => checkItemID(item, over?.id as number)) !== undefined;
 
     if (over !== null && active.id !== over.id && !overIsSelected) {
-      const newIndex = items.findIndex(item => item.id === over.id);
+      const newIndex = items.findIndex(item => checkItemID(item, over.id as number));
       const overItem = items[newIndex];
 
       if (itemIsFolder(overItem) && overInfo!.isPositionCloseToCenter) {
@@ -138,7 +138,7 @@ const CardsContainer: React.FC<CardsContainerProps> = ({ items }) => {
   }
 
   const handleDragStart = ({ active }: DragStartEvent) => {
-    const activeIsSelected = selected.find(item => item.id === active.id) !== undefined;
+    const activeIsSelected = selected.find(item => checkItemID(item, active.id as number)) !== undefined;
 
     if (!activeIsSelected) {
       const item = findByIDInDashboard(dashboard, active.id as number);
@@ -197,7 +197,7 @@ const CardsContainer: React.FC<CardsContainerProps> = ({ items }) => {
               {
                 items.map(
                   (item, i) => (
-                    <SortableItem key={i} id={item.id}>
+                    <SortableItem key={i} id={getItemID(item)}>
                       <ItemCard item={item} key={i} overInfo={overInfo} />
                     </SortableItem>
                   )

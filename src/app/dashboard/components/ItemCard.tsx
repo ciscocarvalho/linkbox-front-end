@@ -4,7 +4,7 @@ import DashboardFolder from '../DashboardFolder';
 import DashboardLink from '../DashboardLink';
 import FolderDataContainer from "./FolderDataContainer"
 import LinkDataContainer from "./LinkDataContainer"
-import { getItemType, itemIsFolder } from '../util';
+import { checkItemID, getItemID, getItemType, itemIsFolder } from '../util';
 import DashboardItem from '../DashboardItem';
 import { DashboardContext, DashboardDispatchContext } from '../contexts/DashboardContext';
 import BtnsContainer from './ItemCard/BtnsContainer';
@@ -23,7 +23,7 @@ const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
   const [hovering, setHovering] = useState(false);
   const [inSmallScreenWidth, setInSmallScreenWidth] = useState(isInSmallScreenWidth());
   const itemType = getItemType(item);
-  const computedProps = { [`data-${itemType}-id`]: item.getId().toString() };
+  const computedProps = { [`data-${itemType}-id`]: getItemID(item).toString() };
   const card = useRef<HTMLDivElement>(null);
   const dashboard = useContext(DashboardContext);
   const dispatch = useContext(DashboardDispatchContext);
@@ -77,7 +77,7 @@ const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
     className += ` bg-[${backgroundColor}]`;
   }
 
-  if (overInfo && overInfo.id === item.id && !isSelected) {
+  if (overInfo && checkItemID(item, overInfo.id) && !isSelected) {
     if (overInfo.isPositionCloseToCenter && itemIsFolder(item)) {
       className += ` !bg-[#DDE3EC]`;
     } else {

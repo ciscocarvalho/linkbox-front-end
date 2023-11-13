@@ -1,7 +1,7 @@
 import DashboardFolder from "./DashboardFolder";
 import DashboardItem from "./DashboardItem";
 import DashboardLink from "./DashboardLink";
-import { DashboardItemType } from "./types";
+import { DashboardItemID, DashboardItemType } from "./types";
 
 export const getItemType = (item: DashboardItem) => item instanceof DashboardLink ? "link" : "folder";
 
@@ -58,3 +58,15 @@ export const inputNewItem = () => {
 export const itemIsFolder = (item: DashboardItem): item is DashboardFolder => item instanceof DashboardFolder;
 
 export const itemIsLink = (item: DashboardItem): item is DashboardLink => item instanceof DashboardLink;
+
+export const getItemID = (item: DashboardItem) => {
+  return item.id;
+};
+
+export const checkItemID = (item: DashboardItem, id: DashboardItemID) => {
+  return item.id === id;
+};
+
+export const compareItems = (a: DashboardItem, b: DashboardItem) => {
+  return a.id === b.id;
+};
