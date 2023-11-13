@@ -2,6 +2,7 @@ import { Dispatch } from "react";
 import DashboardItem from "../../DashboardItem";
 import { DashboardAction, TDashboard } from "../../types";
 import DashboardFolder from "../../DashboardFolder";
+import { cloneItem } from "../services/cloneItem";
 
 const cutItemsToFolder = (items: DashboardItem[], folder: DashboardFolder) => {
   items.forEach(item => {
@@ -15,7 +16,7 @@ const cutItemsToFolder = (items: DashboardItem[], folder: DashboardFolder) => {
 }
 
 const copyItemsToFolder = (items: DashboardItem[], folder: DashboardFolder) => {
-  const copiedItems = items.map(item => item.clone());
+  const copiedItems = items.map(item => cloneItem(item));
   cutItemsToFolder(copiedItems, folder);
   return copiedItems;
 }
