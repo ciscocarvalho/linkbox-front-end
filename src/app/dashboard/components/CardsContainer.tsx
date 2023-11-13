@@ -26,6 +26,10 @@ import { itemIsFolder } from '../util';
 import ItemDragOverlay from './ItemDragOverlay';
 import DashboardFolder from '../DashboardFolder';
 import { findByIDInDashboard } from '../util/findInDashboard';
+import { move } from '../util/actions/move';
+import { moveMany } from '../util/actions/moveMany';
+import { repositionMany } from '../util/actions/repositionMany';
+import { reposition } from '../util/actions/reposition';
 
 const getClientVerticalPositionRelativeToElementCenter = (
   clientY: number,
@@ -86,17 +90,17 @@ const CardsContainer: React.FC<CardsContainerProps> = ({ items }) => {
 
   const moveToFolder = (folder: DashboardFolder) => {
     if (manySelected) {
-      dispatch({ type: "move_many", items: selected, folder: folder });
+      moveMany(selected, folder, dispatch);
       dispatch({ type: "reset_selection" });
     } else if (activeID) {
       const item = findByIDInDashboard(dashboard, activeID);
       if (item) {
-        dispatch({ type: "move", item, folder: folder });
+        move(item, folder, dispatch);
       }
     }
   }
 
-  const reposition = (active: Active, newIndex: number) => {
+  const repositionAfterDrag = (active: Active, newIndex: number) => {
     const strategy = overInfo!.positionRelativeToCenter === "above" ? "before" : "after";
 
     if (manySelected) {
@@ -107,10 +111,10 @@ const CardsContainer: React.FC<CardsContainerProps> = ({ items }) => {
         .filter(index => index !== -1)
         .toSorted();
 
-      dispatch({ type: "reposition_many", indexes, newIndex, strategy });
+      repositionMany(dashboard.currentFolder, indexes, newIndex, strategy, dispatch);
     } else {
       const currentIndex = items.findIndex(item => item.id === active.id);
-      dispatch({ type: "reposition", currentIndex, newIndex, strategy });
+      reposition(dashboard.currentFolder, currentIndex, newIndex, strategy, dispatch);
     }
   }
 
@@ -125,7 +129,7 @@ const CardsContainer: React.FC<CardsContainerProps> = ({ items }) => {
       if (itemIsFolder(overItem) && overInfo!.isPositionCloseToCenter) {
         moveToFolder(overItem);
       } else {
-        reposition(active, newIndex);
+        repositionAfterDrag(active, newIndex);
       }
     }
 

@@ -3,6 +3,9 @@ import React, { useContext } from 'react';
 import { DashboardContext, DashboardDispatchContext } from '../contexts/DashboardContext';
 import { inputNewItem } from "../util";
 import IconButton from '../../components/IconButton';
+import { add } from '../util/actions/add';
+import { paste } from '../util/actions/paste';
+import { goBack } from '../util/actions/goBack';
 
 const CardsHeader = () => {
   const dashboard = useContext(DashboardContext);
@@ -15,7 +18,7 @@ const CardsHeader = () => {
     <div className="flex justify-center items-center gap-[20px]">
       {
         inSubfolder
-          ? <IconButton onClick={() => dispatch({ type: "go_back" })} icon="arrow_back" />
+          ? <IconButton onClick={() => goBack(currentFolder, dispatch)} icon="arrow_back" />
           : null
       }
     </div>
@@ -28,7 +31,7 @@ const CardsHeader = () => {
             <IconButton
               onClick={(e) => {
                 e.stopPropagation();
-                dispatch({ type: "paste", folder: currentFolder })
+                paste(dashboard, currentFolder, dispatch);
               }}
               icon="content_paste"
             />
@@ -42,7 +45,7 @@ const CardsHeader = () => {
           if (!item) {
             return;
           };
-          dispatch({ type: "add", item });
+          add(dashboard.currentFolder, item, dispatch);
         }}
         icon="add"
       />

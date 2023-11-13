@@ -53,8 +53,6 @@ class DashboardFolder extends DashboardItem {
     }
 
     moveChildToAnotherFolder(child: DashboardItem, folder: DashboardFolder) {
-        if (!this.contains(child)) return;
-
         this.removeChild(child);
         folder.addChild(child);
     }

@@ -4,6 +4,9 @@ import DashboardItem from '../../DashboardItem';
 import * as util from '../../util';
 import IconButton from '../../../components/IconButton';
 import DashboardLink from '../../DashboardLink';
+import { remove } from '../../util/actions/remove';
+import { edit } from '../../util/actions/edit';
+import DashboardFolder from '../../DashboardFolder';
 
 interface BtnsContainerProps {
   item: DashboardItem;
@@ -23,16 +26,16 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
   const showRegular = hovering && !inSmallScreenWidth;
   const isSelected = dashboard.selected.includes(item);
 
-  const edit = () => {
+  const editItem = () => {
     if (item instanceof DashboardLink) {
       const linkInfo = util.inputLinkInfo();
       if (linkInfo) {
-        dispatch({ type: "edit", item, updatedFields: linkInfo });
+        edit(item, linkInfo, dispatch);
       }
     } else {
       const folderInfo = util.inputFolderInfo();
       if (folderInfo) {
-        dispatch({ type: "edit", item, updatedFields: folderInfo });
+        edit(item as DashboardFolder, folderInfo, dispatch);
       }
     }
   }
@@ -41,7 +44,7 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
 
   const listenerForColorChange = () => {
     const backgroundColor = colorInput.current!.value;
-    dispatch({ type: "edit", item, updatedFields: { backgroundColor } });
+    edit(item, { backgroundColor }, dispatch);
     colorInput.current?.removeEventListener("change", listenerForColorChange);
   }
 
@@ -98,13 +101,13 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
               icon="edit"
               onClick={(e) => {
                 e.stopPropagation();
-                edit();
+                editItem();
               }}
               className={showRegular}
             />
             <IconButton
               icon="delete"
-              onClick={(e) => { e.stopPropagation(); dispatch({ type: "remove", item }); }}
+              onClick={(e) => { e.stopPropagation(); remove(item, dispatch); }}
               className={showRegular}
             />
           </>

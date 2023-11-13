@@ -10,9 +10,6 @@ export type DashboardItemType = "folder" | "link";
 export type OnClickEvent = DOMAttributes<HTMLElement>["onClick"];
 
 export type DashboardAction = {
-  type: "add";
-  item: DashboardItem;
-} | {
   type: "remove" | "undo_copy" | "undo_cut";
   item: DashboardItem;
 } | {
@@ -30,44 +27,20 @@ export type DashboardAction = {
   items: DashboardItem[];
   behavior?: "inclusive" | "exclusive";
 } | {
-  type: "remove_many";
-  items: DashboardItem[];
-} | {
   type:
-    "go_back" |
     "reset_selection" |
     "reset_display" |
     "reset_clipboard" |
     "reset_clipboard_copy" |
     "reset_clipboard_cut";
 } | {
-  type: "paste" | "open_folder" | "display_folder";
+  type: "open_folder" | "display_folder";
   folder: DashboardFolder;
 } | {
   type: "open_link";
   link: DashboardLink;
 } | {
-  type: "edit";
-  item: DashboardItem;
-  updatedFields: Partial<DashboardFolder | DashboardLink>;
-} | {
-  type: "reposition";
-  currentIndex: number;
-  newIndex: number;
-  strategy: "before" | "after";
-} | {
-  type: "reposition_many";
-  indexes: number[];
-  newIndex: number;
-  strategy: "before" | "after";
-} | {
-  type: "move";
-  item: DashboardItem;
-  folder: DashboardFolder;
-} | {
-  type: "move_many";
-  items: DashboardItem[];
-  folder: DashboardFolder;
+  type: "refresh";
 }
 
 export type TDashboard = {

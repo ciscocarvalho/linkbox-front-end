@@ -2,6 +2,7 @@
 import React, { useContext } from 'react';
 import { DashboardContext, DashboardDispatchContext } from '../contexts/DashboardContext';
 import IconButton from '../../components/IconButton';
+import { removeMany } from '../util/actions/removeMany';
 
 const CardsFooter: React.FC = () => {
   const dashboard = useContext(DashboardContext);
@@ -19,7 +20,7 @@ const CardsFooter: React.FC = () => {
   }
 
   const deleteSelected = () => {
-    dispatch({ type: "remove_many", items: selected });
+    removeMany(selected, dispatch);
     dispatch({ type: "reset_selection" });
   }
 
