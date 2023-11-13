@@ -1,6 +1,5 @@
 "use client";
-import React, { useReducer } from "react";
-import DashboardFolder from "./DashboardFolder";
+import React, { useEffect, useReducer, useState } from "react";
 import SearchBar from "./components/SearchBar";
 import { DashboardView } from "./types";
 import { dashboardReducer } from "./util/dashboardReducer";
@@ -11,18 +10,48 @@ import CardsFooter from "./components/CardsFooter";
 import InputContainer from "../components/InputContainer";
 import InputIcon from "../components/InputIcon";
 import Icon from "../components/Icon";
+import fetchJsonPayload from "../../Services/fetchJsonPayload";
+import { openFolder } from "./util/actions/openFolder";
+import { includesItem } from "./util";
 
 const Dashboard: React.FC = () => {
-  const initialFolder = new DashboardFolder();
   const initialDashboard: DashboardView = {
     displayedItems: [],
     selected: [],
     clipboard: { copied: [], cut: [] },
-    currentFolder: initialFolder,
+    currentFolder: null as any,
   };
   const [dashboard, dispatch] = useReducer(dashboardReducer, initialDashboard);
+  const [userLoggedIn, setUserLoggedIn] = useState(true);
+
+  useEffect(() => {
+    const getInitialFolder = async () => {
+      const { dashboards } = await fetchJsonPayload("get", "/dashboards");
+      if (!dashboards) {
+        setUserLoggedIn(false);
+        return;
+      }
+      return dashboards.find((dashboard: any) => dashboard.name === "default").tree;
+    }
+
+    getInitialFolder().then(async (folder) => {
+      if (folder) {
+        await openFolder(folder, dispatch);
+      }
+    });
+  }, []);
+
+  if (!userLoggedIn) {
+    window.location.href = "login";
+    return null;
+  }
+
+  if (!dashboard.currentFolder) {
+    return null;
+  }
+
   const { clipboard, displayedItems } = dashboard;
-  const validItems = displayedItems.filter(item => !clipboard.cut.includes(item));
+  const validItems = displayedItems.filter(item => !includesItem(clipboard.cut, item));
   const hasItems = displayedItems.length > 0;
 
   return (

@@ -1,15 +1,12 @@
-import DashboardFolder from "./DashboardFolder";
-import DashboardItem from "./DashboardItem";
-import DashboardLink from "./DashboardLink";
-import { DashboardItemID, DashboardItemType } from "./types";
+import { DashboardFolder, DashboardItem, DashboardItemID, DashboardItemType, DashboardLink } from "./types";
 
-export const getItemType = (item: DashboardItem) => item instanceof DashboardLink ? "link" : "folder";
+export const getItemType = (item: DashboardItem) => "url" in item ? "link" : "folder";
 
 export const inputFolderInfo = (defaultName?: string) => {
     const name = prompt("Nome: ", defaultName);
     if (name === null || !name.trim()) return null;
 
-    return { name }
+    return { name, items: [] }
 }
 
 export const inputLinkInfo = (defaultUrl?: string, defaultTitle?: string) => {
@@ -42,31 +39,35 @@ export const inputNewItem = () => {
     const linkInfo = inputLinkInfo();
 
     if (linkInfo) {
-      item = new DashboardLink(linkInfo.title, linkInfo.url);
+      item = linkInfo;
     }
   } else {
     const folderInfo = inputFolderInfo();
 
     if (folderInfo) {
-      item = new DashboardFolder(folderInfo.name);
+      item = folderInfo;
     }
   };
 
   return item;
 }
 
-export const itemIsFolder = (item: DashboardItem): item is DashboardFolder => item instanceof DashboardFolder;
+export const itemIsFolder = (item: DashboardItem): item is DashboardFolder => getItemType(item) === "folder";
 
-export const itemIsLink = (item: DashboardItem): item is DashboardLink => item instanceof DashboardLink;
+export const itemIsLink = (item: DashboardItem): item is DashboardLink => getItemType(item) === "link"
+
+export const includesItem = (arr: DashboardItem[], item: DashboardItem) => {
+  return arr.findIndex(v => compareItems(v, item)) !== -1
+}
 
 export const getItemID = (item: DashboardItem) => {
-  return item.id;
+  return item._id;
 };
 
 export const checkItemID = (item: DashboardItem, id: DashboardItemID) => {
-  return item.id === id;
+  return item._id === id;
 };
 
 export const compareItems = (a: DashboardItem, b: DashboardItem) => {
-  return a.id === b.id;
+  return a._id === b._id;
 };

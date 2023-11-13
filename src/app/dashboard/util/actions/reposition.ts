@@ -1,15 +1,19 @@
-import { Dispatch } from "react";
-import { DashboardAction } from "../../types";
-import DashboardFolder from "../../DashboardFolder";
-import { repositionItem } from "../services/repositionItem";
+import fetchJsonPayload from "../../../../Services/fetchJsonPayload";
+import { DashboardFolder } from "../../types";
+import { getItemID } from "../../util";
 
-export const reposition = (
-  currentFolder: DashboardFolder,
+export const reposition = async (
+  folder: DashboardFolder,
   currentIndex: number,
   newIndex: number,
-  strategy: "before" | "after",
-  dispatch: Dispatch<DashboardAction>
+  strategy: "before" | "after" = "after"
 ) => {
-  repositionItem(currentFolder, currentIndex, newIndex, strategy);
-  dispatch({ type: "refresh" });
+  const folderID = getItemID(folder);
+  const { path } = await fetchJsonPayload("get", `/path/${folderID}`);
+
+  return await fetchJsonPayload("post", `/reposition/${path}`, {
+    currentIndex,
+    newIndex,
+    strategy,
+  });
 };

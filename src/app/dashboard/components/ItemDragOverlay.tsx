@@ -1,14 +1,12 @@
 import React, { useContext } from "react";
-import DashboardItem from "../DashboardItem";
 import { DashboardContext } from "../contexts/DashboardContext";
-import { checkItemID, itemIsFolder } from "../util";
+import { checkItemID, getItemType, itemIsFolder } from "../util";
 import FolderDataContainer from "./FolderDataContainer";
 import LinkDataContainer from "./LinkDataContainer";
-import DashboardFolder from "../DashboardFolder";
-import DashboardLink from "../DashboardLink";
 import { DragOverlay, Modifier } from "@dnd-kit/core";
 import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import DragIndicator from "./DragIndicator";
+import { DashboardFolder, DashboardItem, DashboardLink } from "../types";
 
 const snapTopLeftToCursor: Modifier = (_ref) => {
   const { draggingNodeRect } = _ref;
@@ -26,20 +24,16 @@ const snapTopLeftToCursor: Modifier = (_ref) => {
 
 interface ItemDragOverlayProps {
   draggedItems: DashboardItem[];
-  active: DashboardItem;
+  active?: DashboardItem;
 }
 
 const ItemDragOverlay: React.FC<ItemDragOverlayProps> = ({ draggedItems, active }) => {
-  const typeOfActiveItem = itemIsFolder(active) ? "folder" : "link";
-  const dashboard = useContext(DashboardContext);
-  const { selected } = dashboard;
-  let className = "flex justify-between items-center min-h-[60px] h-[60px] py-[8px] px-[20px]";
-
-  if (selected.find(item => checkItemID(item, active?.id)) !== undefined) {
-    className += " bg-[#DDE3EC]";
+  if (!active) {
+    return null;
   }
 
-  className += " gap-[20px]";
+  const typeOfActiveItem = getItemType(active);
+  let className = "flex justify-between items-center min-h-[60px] h-[60px] py-[8px] px-[20px] bg-[#DDE3EC] gap-[20px]";
 
   const dataContainer = typeOfActiveItem === "folder"
       ? <FolderDataContainer folder={active as DashboardFolder} />

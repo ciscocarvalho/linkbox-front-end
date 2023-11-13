@@ -1,12 +1,11 @@
 import React, { useContext, useRef } from 'react';
 import { DashboardContext, DashboardDispatchContext } from '../../contexts/DashboardContext';
-import DashboardItem from '../../DashboardItem';
 import * as util from '../../util';
 import IconButton from '../../../components/IconButton';
-import DashboardLink from '../../DashboardLink';
 import { remove } from '../../util/actions/remove';
-import { edit } from '../../util/actions/edit';
-import DashboardFolder from '../../DashboardFolder';
+import { refreshDashboard } from '../../util/actions/refreshDashboard';
+import { update } from '../../util/actions/update';
+import { DashboardFolder, DashboardItem } from '../../types';
 
 interface BtnsContainerProps {
   item: DashboardItem;
@@ -24,27 +23,30 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
   const dashboard = useContext(DashboardContext);
   const dispatch = useContext(DashboardDispatchContext);
   const showRegular = hovering && !inSmallScreenWidth;
-  const isSelected = dashboard.selected.includes(item);
+  const isSelected = util.includesItem(dashboard.selected, item);
 
-  const editItem = () => {
-    if (item instanceof DashboardLink) {
+  const editItem = async () => {
+    if (util.itemIsLink(item)) {
       const linkInfo = util.inputLinkInfo();
       if (linkInfo) {
-        edit(item, linkInfo, dispatch);
+        await update(item, linkInfo);
       }
     } else {
       const folderInfo = util.inputFolderInfo();
       if (folderInfo) {
-        edit(item as DashboardFolder, folderInfo, dispatch);
+        await update(item as DashboardFolder, folderInfo);
       }
     }
+
+    await refreshDashboard(dashboard, dispatch);
   }
 
   const colorInput = useRef<HTMLInputElement>(null);
 
-  const listenerForColorChange = () => {
+  const listenerForColorChange = async () => {
     const backgroundColor = colorInput.current!.value;
-    edit(item, { backgroundColor }, dispatch);
+    await update(item, { backgroundColor });
+    await refreshDashboard(dashboard, dispatch);
     colorInput.current?.removeEventListener("change", listenerForColorChange);
   }
 
@@ -99,15 +101,18 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
             </IconButton>
             <IconButton
               icon="edit"
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.stopPropagation();
-                editItem();
+                await editItem();
               }}
               className={showRegular}
             />
             <IconButton
               icon="delete"
-              onClick={(e) => { e.stopPropagation(); remove(item, dispatch); }}
+              onClick={async (e) => {
+                e.stopPropagation();
+                await remove(item, dispatch);
+              }}
               className={showRegular}
             />
           </>

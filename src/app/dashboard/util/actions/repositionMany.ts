@@ -1,17 +1,13 @@
-import { Dispatch } from "react";
-import { DashboardAction } from "../../types";
-import DashboardFolder from "../../DashboardFolder";
-import DashboardItem from "../../DashboardItem";
-import { reposition } from "./reposition";
-import { getChildren } from "../services/getChildren";
+import { DashboardFolder, DashboardItem } from "../../types";
 import { compareItems } from "../../util";
+import { getChildren } from "./getChildren";
+import { reposition } from "./reposition";
 
-export const repositionMany = (
+export const repositionMany = async (
   currentFolder: DashboardFolder,
   indexes: number[],
   newIndex: number,
-  strategy: "before" | "after",
-  dispatch: Dispatch<DashboardAction>
+  strategy: "before" | "after"
 ) => {
   const children = getChildren(currentFolder);
   const smallestIndex = Math.min(...indexes);
@@ -21,16 +17,15 @@ export const repositionMany = (
     indexes = indexes.toReversed();
   }
 
-  const items = indexes.map(index => children[index]);
+  const items = indexes.map((index) => children[index]);
 
   const getItemIndex = (item: DashboardItem) => {
     const children = getChildren(currentFolder);
-    return children.findIndex(child => compareItems(child, item));
+    return children.findIndex((child) => compareItems(child, item));
   }
 
-  items.forEach(item => {
+  for (let item of items) {
     const index = getItemIndex(item);
-    reposition(currentFolder, index, newIndex, strategy, dispatch);
-  });
+    currentFolder = await reposition(currentFolder, index, newIndex, strategy);
+  }
 };
-

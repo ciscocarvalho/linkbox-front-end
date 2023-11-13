@@ -1,99 +1,121 @@
-import DashboardFolder from "../DashboardFolder";
-import DashboardItem from "../DashboardItem";
-import DashboardLink from "../DashboardLink";
-import { DashboardAction, DashboardView } from "../types";
-import { compareItems } from "../util";
-import { getChildren } from "./services/getChildren";
+import { DashboardAction, DashboardFolder, DashboardItem, DashboardLink, DashboardView } from "../types";
+import { compareItems, includesItem } from "../util";
+import { getChildren } from "./actions/getChildren";
 
 type Behavior = "inclusive" | "exclusive";
 
 const DEFAULT_BEHAVIOR = "inclusive";
 
-const removeOneFromClipboard = (dashboard: DashboardView, item: DashboardItem) => {
+const removeOneFromClipboard = (
+  dashboard: DashboardView,
+  item: DashboardItem
+) => {
   dashboard = undoCutOne(dashboard, item);
   dashboard = undoCopyOne(dashboard, item);
   return dashboard;
-}
+};
 
-const unselectOne = (dashboard: DashboardView, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const unselectOne = (
+  dashboard: DashboardView,
+  item: DashboardItem,
+  behavior: Behavior = DEFAULT_BEHAVIOR
+) => {
   if (behavior === "exclusive") {
     dashboard = selectAll(dashboard);
   }
 
-  dashboard.selected = dashboard.selected.filter(thisItem => !compareItems(thisItem, item));
+  dashboard.selected = dashboard.selected.filter(
+    (thisItem) => !compareItems(thisItem, item)
+  );
 
   return dashboard;
-}
+};
 
 const resetSelection = (dashboard: DashboardView) => {
   return unselectMany(dashboard, dashboard.selected);
-}
+};
 
-const selectOne = (dashboard: DashboardView, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const selectOne = (
+  dashboard: DashboardView,
+  item: DashboardItem,
+  behavior: Behavior = DEFAULT_BEHAVIOR
+) => {
   if (behavior === "inclusive") {
-    dashboard.selected.push(item);
+    if (!includesItem(dashboard.selected, item)) {
+      dashboard.selected.push(item);
+    }
   } else {
     dashboard.selected = [item];
   }
 
   return dashboard;
-}
+};
 
-const unselectMany = (dashboard: DashboardView, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const unselectMany = (
+  dashboard: DashboardView,
+  items: DashboardItem[],
+  behavior: Behavior = DEFAULT_BEHAVIOR
+) => {
   if (behavior === "exclusive") {
     dashboard = selectAll(dashboard);
   }
 
-  items.forEach(item => {
-    dashboard = unselectOne(dashboard, item)
+  items.forEach((item) => {
+    dashboard = unselectOne(dashboard, item);
   });
 
   return dashboard;
-}
+};
 
 const unselectAll = (dashboard: DashboardView) => {
   return unselectMany(dashboard, dashboard.displayedItems);
-}
+};
 
-const selectMany = (dashboard: DashboardView, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const selectMany = (
+  dashboard: DashboardView,
+  items: DashboardItem[],
+  behavior: Behavior = DEFAULT_BEHAVIOR
+) => {
   if (behavior === "exclusive") {
     dashboard = unselectAll(dashboard);
   }
 
-  items.forEach(item => {
-    dashboard = selectOne(dashboard, item)
+  items.forEach((item) => {
+    dashboard = selectOne(dashboard, item);
   });
 
   return dashboard;
-}
+};
 
 const selectAll = (dashboard: DashboardView) => {
   return selectMany(dashboard, dashboard.displayedItems);
-}
+};
 
 const removeOne = (dashboard: DashboardView, item: DashboardItem) => {
   dashboard = undisplayOne(dashboard, item);
   dashboard = removeOneFromClipboard(dashboard, item);
   dashboard = unselectOne(dashboard, item);
   return dashboard;
-}
+};
 
 const refresh = (dashboard: DashboardView) => {
   return displayFolder(dashboard, dashboard.currentFolder);
-}
+};
 
-const displayOne = (dashboard: DashboardView, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
-  if (!dashboard.displayedItems.includes(item)) {
-    if (behavior === "inclusive") {
-      dashboard.displayedItems.push(item);
-    } else {
-      dashboard = undisplayAll(dashboard);
-      dashboard.displayedItems = [item];
-    }
+const displayOne = (
+  dashboard: DashboardView,
+  item: DashboardItem,
+  behavior: Behavior = DEFAULT_BEHAVIOR
+) => {
+  if (behavior === "exclusive") {
+    dashboard = undisplayAll(dashboard);
+    dashboard.displayedItems = [item];
+  } else if (!includesItem(dashboard.displayedItems, item)) {
+    dashboard.displayedItems.push(item);
   }
 
   return dashboard;
-}
+};
 
 const undisplayOne = (dashboard: DashboardView, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
   if (behavior === "exclusive") {
@@ -110,77 +132,94 @@ const resetDisplay = (dashboard: DashboardView) => {
 }
 
 const displayFolder = (dashboard: DashboardView, folder: DashboardFolder) => {
+  dashboard.currentFolder = folder;
   dashboard.displayedItems = getChildren(folder);
   return dashboard;
 }
 
-const cutOne = (dashboard: DashboardView, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
-  if (behavior === "inclusive") {
-    dashboard.clipboard.cut.push(item);
-  } else {
+const cutOne = (
+  dashboard: DashboardView,
+  item: DashboardItem,
+  behavior: Behavior = DEFAULT_BEHAVIOR
+) => {
+  if (behavior === "exclusive") {
     dashboard.clipboard.cut = [item];
+  } else if (!includesItem(dashboard.clipboard.cut, item)) {
+    dashboard.clipboard.cut.push(item);
   }
 
   return dashboard;
-}
+};
 
 const undoCopyOne = (dashboard: DashboardView, item: DashboardItem) => {
   const copied = dashboard.clipboard.copied;
-  dashboard.clipboard.copied = copied.filter(itemCopied => !compareItems(itemCopied, item));
+  dashboard.clipboard.copied = copied.filter(
+    (itemCopied) => !compareItems(itemCopied, item)
+  );
   return dashboard;
-}
+};
 
 const undoCopyMany = (dashboard: DashboardView, items: DashboardItem[]) => {
-  items.forEach(item => {
+  items.forEach((item) => {
     dashboard = undoCopyOne(dashboard, item);
   });
 
   return dashboard;
-}
+};
 
 const undoCopyAll = (dashboard: DashboardView) => {
   return undoCopyMany(dashboard, dashboard.clipboard.copied);
-}
+};
 
 const undoCutOne = (dashboard: DashboardView, item: DashboardItem) => {
   const itemsCut = dashboard.clipboard.cut;
-  dashboard.clipboard.cut = itemsCut.filter(itemCut => !compareItems(itemCut, item));
+  dashboard.clipboard.cut = itemsCut.filter(
+    (itemCut) => !compareItems(itemCut, item)
+  );
   return dashboard;
-}
+};
 
 const undoCutMany = (dashboard: DashboardView, items: DashboardItem[]) => {
-  items.forEach(item => {
+  items.forEach((item) => {
     dashboard = undoCutOne(dashboard, item);
   });
 
   return dashboard;
-}
+};
 
 const undoCutAll = (dashboard: DashboardView) => {
   return undoCutMany(dashboard, dashboard.clipboard.cut);
-}
+};
 
-const cutMany = (dashboard: DashboardView, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const cutMany = (
+  dashboard: DashboardView,
+  items: DashboardItem[],
+  behavior: Behavior = DEFAULT_BEHAVIOR
+) => {
   if (behavior === "exclusive") {
     dashboard = undoCutAll(dashboard);
   }
 
-  items.forEach(item => {
-    dashboard = cutOne(dashboard, item)
+  items.forEach((item) => {
+    dashboard = cutOne(dashboard, item);
   });
 
   return dashboard;
-}
+};
 
-const copyOne = (dashboard: DashboardView, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
-  if (behavior === "inclusive") {
-    dashboard.clipboard.copied.push(item);
-  } else {
+const copyOne = (
+  dashboard: DashboardView,
+  item: DashboardItem,
+  behavior: Behavior = DEFAULT_BEHAVIOR
+) => {
+  if (behavior === "exclusive") {
     dashboard.clipboard.copied = [item];
+  } else if (!includesItem(dashboard.clipboard.copied, item)) {
+    dashboard.clipboard.copied.push(item);
   }
 
   return dashboard;
-}
+};
 
 const copyMany = (dashboard: DashboardView, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
   if (behavior === "exclusive") {

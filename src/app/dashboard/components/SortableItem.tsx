@@ -1,8 +1,9 @@
-import React, { ReactNode, useRef } from "react";
+import React, { ReactNode } from "react";
 import { useSortable } from "@dnd-kit/sortable";
+import { DashboardItemID } from "../types";
 
 interface SortableItemProps {
-  id: number;
+  id: DashboardItemID;
   children: ReactNode;
 }
 

@@ -19,8 +19,8 @@ const CardsFooter: React.FC = () => {
     dispatch({ type: "reset_selection" });
   }
 
-  const deleteSelected = () => {
-    removeMany(selected, dispatch);
+  const deleteSelected = async () => {
+    await removeMany(selected, dispatch);
     dispatch({ type: "reset_selection" });
   }
 

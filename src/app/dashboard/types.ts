@@ -1,9 +1,21 @@
 import { DOMAttributes } from "react";
-import DashboardItem from "./DashboardItem";
-import DashboardFolder from "./DashboardFolder";
-import DashboardLink from "./DashboardLink";
 
-export type DashboardItemID = DashboardItem["id"];
+export type DashboardItem = {
+  _id: string;
+  backgroundColor?: string;
+}
+
+export type DashboardLink = DashboardItem & {
+  url: string;
+  title: string;
+}
+
+export type DashboardFolder = DashboardItem & {
+  name: string;
+  items: DashboardItem[];
+}
+
+export type DashboardItemID = DashboardItem["_id"];
 
 export type DashboardItemType = "folder" | "link";
 

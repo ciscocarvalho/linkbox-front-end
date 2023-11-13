@@ -4,6 +4,7 @@ const fetchJsonPayload = async (method: string, route: string, bodyOptions?: obj
   const res = await fetch(`${BACKEND_URL}${route}`, {
     method,
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: bodyOptions ? JSON.stringify(bodyOptions) : undefined,
   });
 

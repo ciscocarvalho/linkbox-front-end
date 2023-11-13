@@ -1,36 +1,39 @@
 "use client";
-import React, { useContext, useRef, useState } from 'react';
-import { DashboardContext, DashboardDispatchContext } from '../contexts/DashboardContext';
-import ItemCard from './ItemCard';
 import {
+  Active,
+  ClientRect,
   DndContext,
-  closestCenter,
+  DragEndEvent,
+  DragMoveEvent,
+  DragStartEvent,
   KeyboardSensor,
   PointerSensor,
+  closestCenter,
   useSensor,
   useSensors,
-  DragMoveEvent,
-  ClientRect,
-  DragEndEvent,
-  Active,
-  DragStartEvent,
-} from '@dnd-kit/core';
+} from "@dnd-kit/core";
 import {
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import SortableItem from './SortableItem';
-import DashboardItem from '../DashboardItem';
-import { checkItemID, compareItems, getItemID, itemIsFolder } from '../util';
-import ItemDragOverlay from './ItemDragOverlay';
-import DashboardFolder from '../DashboardFolder';
-import { findByIDInDashboard } from '../util/findInDashboard';
-import { move } from '../util/actions/move';
-import { moveMany } from '../util/actions/moveMany';
-import { repositionMany } from '../util/actions/repositionMany';
-import { reposition } from '../util/actions/reposition';
-import { getChildren } from '../util/services/getChildren';
+} from "@dnd-kit/sortable";
+import React, { useContext, useRef, useState } from "react";
+import {
+  DashboardContext,
+  DashboardDispatchContext,
+} from "../contexts/DashboardContext";
+import { checkItemID, compareItems, getItemID, itemIsFolder } from "../util";
+import { getByID } from "../util/actions/getByID";
+import { getChildren } from "../util/actions/getChildren";
+import { move } from "../util/actions/move";
+import { moveMany } from "../util/actions/moveMany";
+import { refreshDashboard } from "../util/actions/refreshDashboard";
+import { reposition } from "../util/actions/reposition";
+import { repositionMany } from "../util/actions/repositionMany";
+import ItemCard from "./ItemCard";
+import ItemDragOverlay from "./ItemDragOverlay";
+import SortableItem from "./SortableItem";
+import { DashboardFolder, DashboardItem, DashboardItemID } from "../types";
 
 const getClientVerticalPositionRelativeToElementCenter = (
   clientY: number,
@@ -45,14 +48,18 @@ const getClientVerticalPositionRelativeToElementCenter = (
     centerMaxOffset = Math.round(centerMaxOffset * height);
   }
 
-  const isPositionCloseToCenter = clientY >= center - centerMaxOffset && clientY <= center + centerMaxOffset;
+  const isPositionCloseToCenter =
+    clientY >= center - centerMaxOffset && clientY <= center + centerMaxOffset;
 
   return { positionRelativeToCenter, isPositionCloseToCenter };
-}
+};
 
-const getCursorPositionInfo = (event: DragMoveEvent, items: DashboardItem[]) => {
+const getCursorPositionInfo = (
+  event: DragMoveEvent,
+  items: DashboardItem[]
+) => {
   const { over, active } = event;
-  const itemOver = items.find(item => checkItemID(item, over?.id as number));
+  const itemOver = items.find((item) => checkItemID(item, over?.id as DashboardItemID));
 
   if (!active.rect.current.translated || !over || !itemOver) {
     return;
@@ -65,11 +72,15 @@ const getCursorPositionInfo = (event: DragMoveEvent, items: DashboardItem[]) => 
     getClientVerticalPositionRelativeToElementCenter(cursorPosition, over.rect, 0.2);
 
   return { isPositionCloseToCenter, positionRelativeToCenter };
+};
+
+type OverInfo = NonNullable<ReturnType<typeof getCursorPositionInfo>> & {
+  id: DashboardItemID;
+};
+
+interface CardsContainerProps {
+  items: DashboardItem[];
 }
-
-type OverInfo = NonNullable<ReturnType<typeof getCursorPositionInfo>> & { id: number }
-
-interface CardsContainerProps { items: DashboardItem[] };
 
 const CardsContainer: React.FC<CardsContainerProps> = ({ items }) => {
   const cardsContainer = useRef(null);
@@ -85,70 +96,95 @@ const CardsContainer: React.FC<CardsContainerProps> = ({ items }) => {
   const childrenOfCurrentFolder = getChildren(currentFolder);
   const hasItems = items.length > 0;
   const [overInfo, setOverInfo] = useState<OverInfo | null>(null);
-  const [activeID, setActiveID] = useState<number | null>(null);
+  const [activeID, setActiveID] = useState<DashboardItemID | null>(null);
   const manySelected = selected.length > 1;
-  const active = childrenOfCurrentFolder.find(child => child.id === activeID);
+  const active = childrenOfCurrentFolder.find((child) => checkItemID(child, activeID as DashboardItemID));
 
-  const moveToFolder = (folder: DashboardFolder) => {
+  const moveToFolder = async (folder: DashboardFolder) => {
     if (manySelected) {
-      moveMany(selected, folder, dispatch);
+      await moveMany(selected, folder);
       dispatch({ type: "reset_selection" });
     } else if (activeID) {
-      const item = findByIDInDashboard(dashboard, activeID);
+      const item = await getByID(activeID);
       if (item) {
-        move(item, folder, dispatch);
+        await move(item, folder);
       }
     }
-  }
 
-  const repositionAfterDrag = (active: Active, newIndex: number) => {
-    const strategy = overInfo!.positionRelativeToCenter === "above" ? "before" : "after";
+    await refreshDashboard(dashboard, dispatch);
+  };
+
+  const repositionAfterDrag = async (active: Active, newIndex: number) => {
+    const strategy =
+      overInfo!.positionRelativeToCenter === "above" ? "before" : "after";
 
     if (manySelected) {
       const indexes = selected
-        .map(item => {
-          return childrenOfCurrentFolder.findIndex(child => compareItems(child, item));
+        .map((item) => {
+          return childrenOfCurrentFolder.findIndex((child) =>
+            compareItems(child, item)
+          );
         })
-        .filter(index => index !== -1)
+        .filter((index) => index !== -1)
         .toSorted();
 
-      repositionMany(dashboard.currentFolder, indexes, newIndex, strategy, dispatch);
+      await repositionMany(
+        dashboard.currentFolder,
+        indexes,
+        newIndex,
+        strategy
+      );
     } else {
-      const currentIndex = items.findIndex(item => checkItemID(item, active.id as number));
-      reposition(dashboard.currentFolder, currentIndex, newIndex, strategy, dispatch);
+      const currentIndex = items.findIndex((item) =>
+        checkItemID(item, active.id as DashboardItemID)
+      );
+      await reposition(
+        dashboard.currentFolder,
+        currentIndex,
+        newIndex,
+        strategy
+      );
     }
-  }
+  };
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
-    const overIsSelected = selected.find(item => checkItemID(item, over?.id as number)) !== undefined;
+    const overIsSelected =
+      selected.find((item) => checkItemID(item, over?.id as DashboardItemID)) !==
+      undefined;
 
     if (over !== null && active.id !== over.id && !overIsSelected) {
-      const newIndex = items.findIndex(item => checkItemID(item, over.id as number));
+      const newIndex = items.findIndex((item) =>
+        checkItemID(item, over.id as DashboardItemID)
+      );
       const overItem = items[newIndex];
 
       if (itemIsFolder(overItem) && overInfo!.isPositionCloseToCenter) {
-        moveToFolder(overItem);
+        await moveToFolder(overItem);
       } else {
-        repositionAfterDrag(active, newIndex);
+        await repositionAfterDrag(active, newIndex);
       }
     }
 
     setOverInfo(null);
-  }
+    (await getByID(getItemID(currentFolder))) as DashboardFolder;
+    await refreshDashboard(dashboard, dispatch);
+  };
 
-  const handleDragStart = ({ active }: DragStartEvent) => {
-    const activeIsSelected = selected.find(item => checkItemID(item, active.id as number)) !== undefined;
+  const handleDragStart = async ({ active }: DragStartEvent) => {
+    const activeIsSelected =
+      selected.find((item) => checkItemID(item, active.id as DashboardItemID)) !==
+      undefined;
 
     if (!activeIsSelected) {
-      const item = findByIDInDashboard(dashboard, active.id as number);
+      const item = await getByID(active.id as DashboardItemID);
       if (item) {
         dispatch({ type: "select", item, behavior: "exclusive" });
       }
     }
 
-    setActiveID(active.id as number);
-  }
+    setActiveID(active.id as DashboardItemID);
+  };
 
   const handleDragMove = (e: DragMoveEvent) => {
     const id = e.over?.id;
@@ -159,14 +195,16 @@ const CardsContainer: React.FC<CardsContainerProps> = ({ items }) => {
     }
 
     const hasChanged =
-      overInfo?.positionRelativeToCenter !== cursorPositionInfo.positionRelativeToCenter ||
-      overInfo?.isPositionCloseToCenter !== cursorPositionInfo.isPositionCloseToCenter ||
-      overInfo?.id !== id
+      overInfo?.positionRelativeToCenter !==
+        cursorPositionInfo.positionRelativeToCenter ||
+      overInfo?.isPositionCloseToCenter !==
+        cursorPositionInfo.isPositionCloseToCenter ||
+      overInfo?.id !== id;
 
     if (hasChanged) {
-      setOverInfo({ ...cursorPositionInfo, id: id as number });
+      setOverInfo({ ...cursorPositionInfo, id: id as DashboardItemID });
     }
-  }
+  };
 
   const handleOnClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
     if (e.target !== cardsContainer.current) {
@@ -175,7 +213,7 @@ const CardsContainer: React.FC<CardsContainerProps> = ({ items }) => {
 
     e.stopPropagation();
     dispatch({ type: "reset_selection" });
-  }
+  };
 
   return (
     <DndContext
@@ -185,35 +223,32 @@ const CardsContainer: React.FC<CardsContainerProps> = ({ items }) => {
       onDragMove={handleDragMove}
       onDragEnd={handleDragEnd}
     >
-      <SortableContext items={items} strategy={verticalListSortingStrategy}>
-        {
-          hasItems
-            ? <div
-              className={`h-[100%] flex flex-col overflow-y-auto`}
-
-              onClick={handleOnClick}
-              ref={cardsContainer}
-            >
-              {
-                items.map(
-                  (item, i) => (
-                    <SortableItem key={i} id={getItemID(item)}>
-                      <ItemCard item={item} key={i} overInfo={overInfo} />
-                    </SortableItem>
-                  )
-                )
-              }
-            </div>
-            : null
-        }
+      <SortableContext
+        items={items.map((item) => ({ ...item, id: getItemID(item) }))}
+        strategy={verticalListSortingStrategy}
+      >
+        {hasItems ? (
+          <div
+            className={`h-[100%] flex flex-col overflow-y-auto`}
+            onClick={handleOnClick}
+            ref={cardsContainer}
+          >
+            {items.map((item, i) => {
+              return (
+                <SortableItem key={i} id={getItemID(item)}>
+                  <ItemCard item={item} key={i} overInfo={overInfo} />
+                </SortableItem>
+              );
+            })}
+          </div>
+        ) : null}
       </SortableContext>
       <ItemDragOverlay
-        draggedItems={manySelected ? selected : (active ? [active] : [])}
-        active={active!}
+        draggedItems={manySelected ? selected : active ? [active] : []}
+        active={active}
       />
     </DndContext>
   );
-}
-
+};
 
 export default CardsContainer;

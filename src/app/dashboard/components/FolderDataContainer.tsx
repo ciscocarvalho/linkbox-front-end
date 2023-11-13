@@ -1,6 +1,6 @@
 import React from 'react';
-import DashboardFolder from '../DashboardFolder';
 import Icon from '../../components/Icon';
+import { DashboardFolder } from '../types';
 
 interface FolderDataContainer {
   folder: DashboardFolder;

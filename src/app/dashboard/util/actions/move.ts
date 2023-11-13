@@ -1,14 +1,17 @@
-import { Dispatch } from "react";
-import DashboardItem from "../../DashboardItem";
-import { DashboardAction } from "../../types";
-import DashboardFolder from "../../DashboardFolder";
-import { moveItem } from "../services/moveItem";
+import fetchJsonPayload from "../../../../Services/fetchJsonPayload";
+import { getItemID, getItemType } from "../../util";
+import { DashboardFolder, DashboardItem } from "../../types";
 
-export const move = (
+export const move = async (
   item: DashboardItem,
-  folder: DashboardFolder,
-  dispatch: Dispatch<DashboardAction>
+  targetFolder: DashboardFolder,
 ) => {
-  moveItem(item, folder);
-  dispatch({ type: "refresh" });
-};
+  const itemType = getItemType(item);
+  const itemID = getItemID(item);
+  const targetFolderID = getItemID(targetFolder);
+
+  const { path }: { path: string } = await fetchJsonPayload("get", `/path/${itemID}`);
+  const { path: targetPath }: { path: string } = await fetchJsonPayload("get", `/path/${targetFolderID}`);
+
+  await fetchJsonPayload("post", `/move/${itemType}/${path}`, { targetPath });
+}

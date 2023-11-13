@@ -1,11 +1,12 @@
 import { Dispatch } from "react";
-import DashboardItem from "../../DashboardItem";
-import { DashboardAction } from "../../types";
+import { DashboardAction, DashboardItem } from "../../types";
 import { remove } from "./remove";
 
-export const removeMany = (
+export const removeMany = async (
   items: DashboardItem[],
   dispatch: Dispatch<DashboardAction>
 ) => {
-  items.forEach(item => { remove(item, dispatch) });
+  for (let item of items) {
+    await remove(item, dispatch);
+  }
 };

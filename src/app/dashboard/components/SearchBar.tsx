@@ -1,10 +1,10 @@
 "use client";
 import React, { useContext, useRef } from 'react';
-import DashboardItem from '../DashboardItem';
-import { itemIsFolder, itemIsLink } from '../util';
+import Input from "../../components/Input";
 import { DashboardContext, DashboardDispatchContext } from '../contexts/DashboardContext';
-import Input from '../../components/Input';
-import { getChildren } from '../util/services/getChildren';
+import { itemIsFolder, itemIsLink } from "../util";
+import { getChildren } from "../util/actions/getChildren";
+import { DashboardItem } from '../types';
 
 const SearchBar: React.FC<JSX.IntrinsicElements["input"]> = ({ ...inputProps }) => {
   const dashboard = useContext(DashboardContext);

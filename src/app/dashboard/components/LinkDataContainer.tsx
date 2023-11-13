@@ -1,5 +1,5 @@
 import React from 'react';
-import DashboardLink from '../DashboardLink';
+import { DashboardLink } from '../types';
 
 interface LinkDataContainerProps {
   link: DashboardLink;

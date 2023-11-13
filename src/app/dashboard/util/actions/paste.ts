@@ -1,30 +1,35 @@
 import { Dispatch } from "react";
-import DashboardItem from "../../DashboardItem";
-import { DashboardAction, DashboardView } from "../../types";
-import DashboardFolder from "../../DashboardFolder";
-import { cloneItem } from "../services/cloneItem";
-import { getParent } from "../services/getParent";
-import { addItem } from "../services/addItem";
-import { moveItem } from "../services/moveItem";
+import { DashboardAction, DashboardFolder, DashboardItem, DashboardView } from "../../types";
+import { add } from "./add";
+import { clone } from "./clone";
+import { getParent } from "./getParent";
+import { move } from "./move";
+import { refreshDashboard } from "./refreshDashboard";
 
-const cutItemsToFolder = (items: DashboardItem[], folder: DashboardFolder) => {
-  items.forEach(item => {
-    const parent = getParent(item);
+const cutItemsToFolder = async (
+  items: DashboardItem[],
+  folder: DashboardFolder
+) => {
+  for (const item of items) {
+    const parent = await getParent(item);
     if (parent) {
-      moveItem(item, folder);
+      await move(item, folder);
     } else {
-      addItem(folder, item);
+      await add(folder, item);
     }
-  });
-}
+  }
+};
 
-const copyItemsToFolder = (items: DashboardItem[], folder: DashboardFolder) => {
-  const copiedItems = items.map(item => cloneItem(item));
-  cutItemsToFolder(copiedItems, folder);
+const copyItemsToFolder = async (
+  items: DashboardItem[],
+  folder: DashboardFolder
+) => {
+  const copiedItems = items.map((item) => clone(item));
+  await cutItemsToFolder(copiedItems, folder);
   return copiedItems;
-}
+};
 
-export const paste = (
+export const paste = async (
   dashboard: DashboardView,
   folder: DashboardFolder,
   dispatch: Dispatch<DashboardAction>
@@ -32,9 +37,7 @@ export const paste = (
   const { cut, copied } = dashboard.clipboard;
   dispatch({ type: "reset_clipboard" });
 
-  cutItemsToFolder(cut, folder);
-  dispatch({ type: "display_many", items: cut });
-
-  const items = copyItemsToFolder(copied, folder);
-  dispatch({ type: "display_many", items: items });
+  await cutItemsToFolder(cut, folder);
+  await copyItemsToFolder(copied, folder);
+  await refreshDashboard(dashboard, dispatch);
 };

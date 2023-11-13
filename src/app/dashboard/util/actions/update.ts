@@ -1,11 +1,10 @@
-import { Dispatch } from "react";
-import { DashboardAction, DashboardItem } from "../../types";
 import fetchJsonPayload from "../../../../Services/fetchJsonPayload";
+import { DashboardItem } from "../../types";
 import { getItemID, getItemType } from "../../util";
 
-export const remove = async (
-  item: DashboardItem,
-  dispatch: Dispatch<DashboardAction>
+export const update = async <T extends DashboardItem>(
+  item: T,
+  updatedFields: Partial<T>
 ) => {
   const itemID = getItemID(item);
   const { path }: { path: string } = await fetchJsonPayload("get", `/path/${itemID}`);
@@ -16,6 +15,5 @@ export const remove = async (
 
   const itemType = getItemType(item);
   const route = `/${itemType === "folder" ? "folders" : "links"}/${path}`;
-  await fetchJsonPayload("delete", route);
-  dispatch({ type: "remove", item });
+  await fetchJsonPayload("put", route, updatedFields);
 };

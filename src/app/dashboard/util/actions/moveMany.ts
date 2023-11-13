@@ -1,13 +1,11 @@
-import { Dispatch } from "react";
-import DashboardItem from "../../DashboardItem";
-import { DashboardAction } from "../../types";
-import DashboardFolder from "../../DashboardFolder";
+import { DashboardFolder, DashboardItem } from "../../types";
 import { move } from "./move";
 
-export const moveMany = (
+export const moveMany = async (
   items: DashboardItem[],
   folder: DashboardFolder,
-  dispatch: Dispatch<DashboardAction>
 ) => {
-  items.forEach(item => { move(item, folder, dispatch) });
+  for (let item of items) {
+    await move(item, folder);
+  }
 };

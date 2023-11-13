@@ -1,13 +1,12 @@
 "use client";
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import DashboardFolder from '../DashboardFolder';
-import DashboardLink from '../DashboardLink';
 import FolderDataContainer from "./FolderDataContainer"
 import LinkDataContainer from "./LinkDataContainer"
-import { checkItemID, getItemID, getItemType, itemIsFolder } from '../util';
-import DashboardItem from '../DashboardItem';
+import { checkItemID, getItemID, getItemType, includesItem, itemIsFolder } from '../util';
 import { DashboardContext, DashboardDispatchContext } from '../contexts/DashboardContext';
 import BtnsContainer from './ItemCard/BtnsContainer';
+import { openFolder } from '../util/actions/openFolder';
+import { DashboardFolder, DashboardItem, DashboardLink } from '../types';
 
 interface ItemCardProps { item: DashboardItem };
 
@@ -19,7 +18,7 @@ let clickTimeout: ReturnType<typeof setTimeout>;
 let currentCard: HTMLDivElement | null;
 
 const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
-  const [backgroundColor, setBackgroundColor] = useState(item.backgroundColor);
+  let [backgroundColor, setBackgroundColor] = useState(item.backgroundColor);
   const [hovering, setHovering] = useState(false);
   const [inSmallScreenWidth, setInSmallScreenWidth] = useState(isInSmallScreenWidth());
   const itemType = getItemType(item);
@@ -27,18 +26,18 @@ const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
   const card = useRef<HTMLDivElement>(null);
   const dashboard = useContext(DashboardContext);
   const dispatch = useContext(DashboardDispatchContext);
-  const isSelected = dashboard.selected.includes(item);
+  const isSelected = includesItem(dashboard.selected, item);
 
   const onSingleClick = () => {
     dispatch({ type: "select", item, behavior: "exclusive" });
   }
 
-  const onDoubleClick = () => {
+  const onDoubleClick = async () => {
     if (card.current) {
       if (itemType === "link") {
         dispatch({ type: "open_link", link: item })
       } else {
-        dispatch({ type: "open_folder", folder: item })
+        await openFolder(item, dispatch);
       }
     }
   }
@@ -72,14 +71,16 @@ const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
   let className = "flex justify-between items-center min-h-[60px] h-[60px] py-[8px] px-[20px]";
 
   if (isSelected || hovering) {
-    className += " bg-[#DDE3EC]";
+    // className += " bg-[#DDE3EC]";
+    backgroundColor = "#DDE3EC";
   } else if (backgroundColor) {
-    className += ` bg-[${backgroundColor}]`;
+    // className += ` bg-[${backgroundColor}]`;
   }
 
   if (overInfo && checkItemID(item, overInfo.id) && !isSelected) {
     if (overInfo.isPositionCloseToCenter && itemIsFolder(item)) {
-      className += ` !bg-[#DDE3EC]`;
+      // className += ` !bg-[#DDE3EC]`;
+      backgroundColor = "#DDE3EC";
     } else {
       switch (overInfo.positionRelativeToCenter) {
         case "below": {
@@ -96,7 +97,7 @@ const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
 
   className += " select-none";
 
-  const handleOnClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
+  const handleOnClick: React.MouseEventHandler<HTMLDivElement> = async (e) => {
     e.stopPropagation();
     const oldClickItem = clickedItem;
     clickedItem = item;
@@ -114,7 +115,7 @@ const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
         clickCount = 0;
       }, 500);
     } else {
-      onDoubleClick();
+      await onDoubleClick();
       clearTimeout(clickTimeout);
       clickCount = 0;
     }
@@ -126,6 +127,7 @@ const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
     ref={card}
     style={{
       cursor: "default",
+      backgroundColor,
     }}
     onMouseOver={() => setHovering(true)}
     onMouseOut={() => setHovering(false)}
