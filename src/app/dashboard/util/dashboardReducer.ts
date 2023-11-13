@@ -15,12 +15,11 @@ const removeOneFromClipboard = (dashboard: TDashboard, item: DashboardItem) => {
 }
 
 const unselectOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
-  if (behavior === "inclusive") {
-    dashboard.selected = dashboard.selected.filter(thisItem => thisItem.id !== item.id);
-  } else {
+  if (behavior === "exclusive") {
     dashboard = selectAll(dashboard);
-    dashboard.selected = dashboard.selected.filter(thisItem => thisItem.id !== item.id);
   }
+
+  dashboard.selected = dashboard.selected.filter(thisItem => thisItem.id !== item.id);
 
   return dashboard;
 }
