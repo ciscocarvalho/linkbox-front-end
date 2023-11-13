@@ -1,6 +1,7 @@
 import { Dispatch } from "react";
 import { DashboardAction } from "../../types";
 import DashboardFolder from "../../DashboardFolder";
+import { repositionItem } from "../services/repositionItem";
 
 export const reposition = (
   currentFolder: DashboardFolder,
@@ -9,7 +10,6 @@ export const reposition = (
   strategy: "before" | "after",
   dispatch: Dispatch<DashboardAction>
 ) => {
-  currentFolder.repositionChild(currentIndex, newIndex, strategy);
-
+  repositionItem(currentFolder, currentIndex, newIndex, strategy);
   dispatch({ type: "refresh" });
 };

@@ -1,6 +1,7 @@
 import DashboardFolder from "../DashboardFolder";
 import DashboardItem from "../DashboardItem";
 import { DashboardItemID, TDashboard } from "../types";
+import { getChildren } from "./services/getChildren";
 
 const traverseUpFolder = (folder: DashboardFolder, fn: (folder: DashboardFolder) => boolean | void) => {
   let currentFolder = folder;
@@ -31,7 +32,7 @@ const traverseDownFolder = (folder: DashboardFolder, fn: (folder: DashboardFolde
     return;
   }
 
-  const children = currentFolder.getChildren();
+  const children = getChildren(currentFolder);
   const subfolders = children.filter((item: DashboardItem) => item instanceof DashboardFolder);
 
   for (let subfolder of subfolders as DashboardFolder[]) {
@@ -79,7 +80,7 @@ export const findInDashboard = (dashboard: TDashboard, predicate: Function) => {
       }
     }
 
-    item = folder.getChildren().find((item) => predicate(item));
+    item = getChildren(folder).find((item) => predicate(item));
 
     if (item) {
       result = item;

@@ -3,6 +3,7 @@ import { DashboardAction } from "../../types";
 import DashboardFolder from "../../DashboardFolder";
 import DashboardItem from "../../DashboardItem";
 import { reposition } from "./reposition";
+import { getChildren } from "../services/getChildren";
 
 export const repositionMany = (
   currentFolder: DashboardFolder,
@@ -11,7 +12,7 @@ export const repositionMany = (
   strategy: "before" | "after",
   dispatch: Dispatch<DashboardAction>
 ) => {
-  const children = currentFolder.getChildren();
+  const children = getChildren(currentFolder);
   const smallestIndex = Math.min(...indexes);
   const movingBack = newIndex <= smallestIndex;
 
@@ -22,7 +23,7 @@ export const repositionMany = (
   const items = indexes.map(index => children[index]);
 
   const getItemIndex = (item: DashboardItem) => {
-    const children = currentFolder.getChildren();
+    const children = getChildren(currentFolder);
     return children.findIndex(child => child.id === item.id);
   }
 

@@ -4,12 +4,13 @@ import DashboardItem from '../DashboardItem';
 import { itemIsFolder, itemIsLink } from '../util';
 import { DashboardContext, DashboardDispatchContext } from '../contexts/DashboardContext';
 import Input from '../../components/Input';
+import { getChildren } from '../util/services/getChildren';
 
 const SearchBar: React.FC<JSX.IntrinsicElements["input"]> = ({ ...inputProps }) => {
   const dashboard = useContext(DashboardContext);
   const dispatch = useContext(DashboardDispatchContext);
   const searchBar = useRef<HTMLInputElement>(null);
-  const allItems = dashboard.currentFolder.getChildren();
+  const allItems = getChildren(dashboard.currentFolder);
 
   const setItems = (items: DashboardItem[]) => {
     dispatch({ type: "undisplay_many", items: allItems })

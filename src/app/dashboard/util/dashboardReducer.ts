@@ -2,6 +2,7 @@ import DashboardFolder from "../DashboardFolder";
 import DashboardItem from "../DashboardItem";
 import DashboardLink from "../DashboardLink";
 import { DashboardAction, TDashboard } from "../types";
+import { getChildren } from "./services/getChildren";
 
 type Behavior = "inclusive" | "exclusive";
 
@@ -109,7 +110,7 @@ const resetDisplay = (dashboard: TDashboard) => {
 }
 
 const displayFolder = (dashboard: TDashboard, folder: DashboardFolder) => {
-  dashboard.displayedItems = folder.getChildren();
+  dashboard.displayedItems = getChildren(folder);
   return dashboard;
 }
 

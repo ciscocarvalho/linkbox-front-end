@@ -30,6 +30,7 @@ import { move } from '../util/actions/move';
 import { moveMany } from '../util/actions/moveMany';
 import { repositionMany } from '../util/actions/repositionMany';
 import { reposition } from '../util/actions/reposition';
+import { getChildren } from '../util/services/getChildren';
 
 const getClientVerticalPositionRelativeToElementCenter = (
   clientY: number,
@@ -81,7 +82,7 @@ const CardsContainer: React.FC<CardsContainerProps> = ({ items }) => {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
-  const childrenOfCurrentFolder = currentFolder.getChildren();
+  const childrenOfCurrentFolder = getChildren(currentFolder);
   const hasItems = items.length > 0;
   const [overInfo, setOverInfo] = useState<OverInfo | null>(null);
   const [activeID, setActiveID] = useState<number | null>(null);
