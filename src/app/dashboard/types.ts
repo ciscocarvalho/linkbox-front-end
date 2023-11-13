@@ -48,5 +48,4 @@ export type TDashboard = {
   selected: DashboardItem[],
   clipboard: { copied: DashboardItem[], cut: DashboardItem[] },
   currentFolder: DashboardFolder,
-  parentFolder: DashboardFolder | null,
 }

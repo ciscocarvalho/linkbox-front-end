@@ -19,7 +19,6 @@ const Dashboard: React.FC = () => {
     selected: [],
     clipboard: { copied: [], cut: [] },
     currentFolder: initialFolder,
-    parentFolder: initialFolder.getParent(),
   };
   const [dashboard, dispatch] = useReducer(dashboardReducer, initialDashboard);
   const { clipboard, displayedItems } = dashboard;

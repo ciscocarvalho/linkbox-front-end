@@ -247,7 +247,6 @@ const openLink = (dashboard: TDashboard, link: DashboardLink) => {
 
 const openFolder = (dashboard: TDashboard, folder: DashboardFolder) => {
   dashboard.currentFolder = folder;
-  dashboard.parentFolder = dashboard.currentFolder.getParent();
   dashboard.selected = [];
   dashboard = displayFolder(dashboard, dashboard.currentFolder);
 
