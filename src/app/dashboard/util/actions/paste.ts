@@ -1,6 +1,6 @@
 import { Dispatch } from "react";
 import DashboardItem from "../../DashboardItem";
-import { DashboardAction, TDashboard } from "../../types";
+import { DashboardAction, DashboardView } from "../../types";
 import DashboardFolder from "../../DashboardFolder";
 import { cloneItem } from "../services/cloneItem";
 import { getParent } from "../services/getParent";
@@ -25,7 +25,7 @@ const copyItemsToFolder = (items: DashboardItem[], folder: DashboardFolder) => {
 }
 
 export const paste = (
-  dashboard: TDashboard,
+  dashboard: DashboardView,
   folder: DashboardFolder,
   dispatch: Dispatch<DashboardAction>
 ) => {

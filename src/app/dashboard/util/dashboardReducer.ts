@@ -1,7 +1,7 @@
 import DashboardFolder from "../DashboardFolder";
 import DashboardItem from "../DashboardItem";
 import DashboardLink from "../DashboardLink";
-import { DashboardAction, TDashboard } from "../types";
+import { DashboardAction, DashboardView } from "../types";
 import { compareItems } from "../util";
 import { getChildren } from "./services/getChildren";
 
@@ -9,13 +9,13 @@ type Behavior = "inclusive" | "exclusive";
 
 const DEFAULT_BEHAVIOR = "inclusive";
 
-const removeOneFromClipboard = (dashboard: TDashboard, item: DashboardItem) => {
+const removeOneFromClipboard = (dashboard: DashboardView, item: DashboardItem) => {
   dashboard = undoCutOne(dashboard, item);
   dashboard = undoCopyOne(dashboard, item);
   return dashboard;
 }
 
-const unselectOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const unselectOne = (dashboard: DashboardView, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
   if (behavior === "exclusive") {
     dashboard = selectAll(dashboard);
   }
@@ -25,11 +25,11 @@ const unselectOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behav
   return dashboard;
 }
 
-const resetSelection = (dashboard: TDashboard) => {
+const resetSelection = (dashboard: DashboardView) => {
   return unselectMany(dashboard, dashboard.selected);
 }
 
-const selectOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const selectOne = (dashboard: DashboardView, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
   if (behavior === "inclusive") {
     dashboard.selected.push(item);
   } else {
@@ -39,7 +39,7 @@ const selectOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavio
   return dashboard;
 }
 
-const unselectMany = (dashboard: TDashboard, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const unselectMany = (dashboard: DashboardView, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
   if (behavior === "exclusive") {
     dashboard = selectAll(dashboard);
   }
@@ -51,11 +51,11 @@ const unselectMany = (dashboard: TDashboard, items: DashboardItem[], behavior: B
   return dashboard;
 }
 
-const unselectAll = (dashboard: TDashboard) => {
+const unselectAll = (dashboard: DashboardView) => {
   return unselectMany(dashboard, dashboard.displayedItems);
 }
 
-const selectMany = (dashboard: TDashboard, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const selectMany = (dashboard: DashboardView, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
   if (behavior === "exclusive") {
     dashboard = unselectAll(dashboard);
   }
@@ -67,22 +67,22 @@ const selectMany = (dashboard: TDashboard, items: DashboardItem[], behavior: Beh
   return dashboard;
 }
 
-const selectAll = (dashboard: TDashboard) => {
+const selectAll = (dashboard: DashboardView) => {
   return selectMany(dashboard, dashboard.displayedItems);
 }
 
-const removeOne = (dashboard: TDashboard, item: DashboardItem) => {
+const removeOne = (dashboard: DashboardView, item: DashboardItem) => {
   dashboard = undisplayOne(dashboard, item);
   dashboard = removeOneFromClipboard(dashboard, item);
   dashboard = unselectOne(dashboard, item);
   return dashboard;
 }
 
-const refresh = (dashboard: TDashboard) => {
+const refresh = (dashboard: DashboardView) => {
   return displayFolder(dashboard, dashboard.currentFolder);
 }
 
-const displayOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const displayOne = (dashboard: DashboardView, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
   if (!dashboard.displayedItems.includes(item)) {
     if (behavior === "inclusive") {
       dashboard.displayedItems.push(item);
@@ -95,7 +95,7 @@ const displayOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavi
   return dashboard;
 }
 
-const undisplayOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const undisplayOne = (dashboard: DashboardView, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
   if (behavior === "exclusive") {
     dashboard = displayAll(dashboard);
   }
@@ -105,16 +105,16 @@ const undisplayOne = (dashboard: TDashboard, item: DashboardItem, behavior: Beha
   return dashboard;
 }
 
-const resetDisplay = (dashboard: TDashboard) => {
+const resetDisplay = (dashboard: DashboardView) => {
   return undisplayMany(dashboard, dashboard.displayedItems);
 }
 
-const displayFolder = (dashboard: TDashboard, folder: DashboardFolder) => {
+const displayFolder = (dashboard: DashboardView, folder: DashboardFolder) => {
   dashboard.displayedItems = getChildren(folder);
   return dashboard;
 }
 
-const cutOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const cutOne = (dashboard: DashboardView, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
   if (behavior === "inclusive") {
     dashboard.clipboard.cut.push(item);
   } else {
@@ -124,13 +124,13 @@ const cutOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavior =
   return dashboard;
 }
 
-const undoCopyOne = (dashboard: TDashboard, item: DashboardItem) => {
+const undoCopyOne = (dashboard: DashboardView, item: DashboardItem) => {
   const copied = dashboard.clipboard.copied;
   dashboard.clipboard.copied = copied.filter(itemCopied => !compareItems(itemCopied, item));
   return dashboard;
 }
 
-const undoCopyMany = (dashboard: TDashboard, items: DashboardItem[]) => {
+const undoCopyMany = (dashboard: DashboardView, items: DashboardItem[]) => {
   items.forEach(item => {
     dashboard = undoCopyOne(dashboard, item);
   });
@@ -138,17 +138,17 @@ const undoCopyMany = (dashboard: TDashboard, items: DashboardItem[]) => {
   return dashboard;
 }
 
-const undoCopyAll = (dashboard: TDashboard) => {
+const undoCopyAll = (dashboard: DashboardView) => {
   return undoCopyMany(dashboard, dashboard.clipboard.copied);
 }
 
-const undoCutOne = (dashboard: TDashboard, item: DashboardItem) => {
+const undoCutOne = (dashboard: DashboardView, item: DashboardItem) => {
   const itemsCut = dashboard.clipboard.cut;
   dashboard.clipboard.cut = itemsCut.filter(itemCut => !compareItems(itemCut, item));
   return dashboard;
 }
 
-const undoCutMany = (dashboard: TDashboard, items: DashboardItem[]) => {
+const undoCutMany = (dashboard: DashboardView, items: DashboardItem[]) => {
   items.forEach(item => {
     dashboard = undoCutOne(dashboard, item);
   });
@@ -156,11 +156,11 @@ const undoCutMany = (dashboard: TDashboard, items: DashboardItem[]) => {
   return dashboard;
 }
 
-const undoCutAll = (dashboard: TDashboard) => {
+const undoCutAll = (dashboard: DashboardView) => {
   return undoCutMany(dashboard, dashboard.clipboard.cut);
 }
 
-const cutMany = (dashboard: TDashboard, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const cutMany = (dashboard: DashboardView, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
   if (behavior === "exclusive") {
     dashboard = undoCutAll(dashboard);
   }
@@ -172,7 +172,7 @@ const cutMany = (dashboard: TDashboard, items: DashboardItem[], behavior: Behavi
   return dashboard;
 }
 
-const copyOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const copyOne = (dashboard: DashboardView, item: DashboardItem, behavior: Behavior = DEFAULT_BEHAVIOR) => {
   if (behavior === "inclusive") {
     dashboard.clipboard.copied.push(item);
   } else {
@@ -182,7 +182,7 @@ const copyOne = (dashboard: TDashboard, item: DashboardItem, behavior: Behavior 
   return dashboard;
 }
 
-const copyMany = (dashboard: TDashboard, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const copyMany = (dashboard: DashboardView, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
   if (behavior === "exclusive") {
     dashboard = undoCopyAll(dashboard);
   }
@@ -194,7 +194,7 @@ const copyMany = (dashboard: TDashboard, items: DashboardItem[], behavior: Behav
   return dashboard;
 }
 
-const undisplayMany = (dashboard: TDashboard, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const undisplayMany = (dashboard: DashboardView, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
   if (behavior === "exclusive") {
     dashboard = displayAll(dashboard);
   }
@@ -206,11 +206,11 @@ const undisplayMany = (dashboard: TDashboard, items: DashboardItem[], behavior: 
   return dashboard;
 }
 
-const undisplayAll = (dashboard: TDashboard) => {
+const undisplayAll = (dashboard: DashboardView) => {
   return undisplayMany(dashboard, dashboard.displayedItems);
 }
 
-const displayMany = (dashboard: TDashboard, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
+const displayMany = (dashboard: DashboardView, items: DashboardItem[], behavior: Behavior = DEFAULT_BEHAVIOR) => {
   if (behavior === "exclusive") {
     dashboard = undisplayAll(dashboard);
   }
@@ -222,17 +222,17 @@ const displayMany = (dashboard: TDashboard, items: DashboardItem[], behavior: Be
   return dashboard;
 }
 
-const displayAll = (dashboard: TDashboard) => {
+const displayAll = (dashboard: DashboardView) => {
   return displayFolder(dashboard, dashboard.currentFolder);
 }
 
-const resetClipboard = (dashboard: TDashboard) => {
+const resetClipboard = (dashboard: DashboardView) => {
   dashboard = resetClipboardCut(dashboard);
   dashboard = resetClipboardCopy(dashboard);
   return dashboard;
 }
 
-const openLink = (dashboard: TDashboard, link: DashboardLink) => {
+const openLink = (dashboard: DashboardView, link: DashboardLink) => {
   let { url } = link;
 
   if (!!url && !/^https?:\/\//i.test(url)) {
@@ -244,7 +244,7 @@ const openLink = (dashboard: TDashboard, link: DashboardLink) => {
   return dashboard;
 }
 
-const openFolder = (dashboard: TDashboard, folder: DashboardFolder) => {
+const openFolder = (dashboard: DashboardView, folder: DashboardFolder) => {
   dashboard.currentFolder = folder;
   dashboard.selected = [];
   dashboard = displayFolder(dashboard, dashboard.currentFolder);
@@ -252,15 +252,15 @@ const openFolder = (dashboard: TDashboard, folder: DashboardFolder) => {
   return dashboard;
 }
 
-const resetClipboardCopy = (dashboard: TDashboard) => {
+const resetClipboardCopy = (dashboard: DashboardView) => {
   return undoCopyMany(dashboard, dashboard.clipboard.copied);
 }
 
-const resetClipboardCut = (dashboard: TDashboard) => {
+const resetClipboardCut = (dashboard: DashboardView) => {
   return undoCutMany(dashboard, dashboard.clipboard.cut);
 }
 
-export const dashboardReducer = (dashboard: TDashboard, action: DashboardAction) => {
+export const dashboardReducer = (dashboard: DashboardView, action: DashboardAction) => {
   dashboard = { ...dashboard };
 
   switch (action.type) {

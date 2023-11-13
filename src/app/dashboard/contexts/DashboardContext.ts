@@ -1,6 +1,6 @@
 import { Dispatch } from "react";
 import { createContext } from "react";
-import { TDashboard, DashboardAction } from "../types";
+import { DashboardView, DashboardAction } from "../types";
 
 type DashboardDispatch = Dispatch<DashboardAction>;
 
@@ -9,5 +9,5 @@ type DashboardDispatch = Dispatch<DashboardAction>;
 // to type check everytime we try to use the context, leading to too much
 // unecessary code. As long as we make sure the default value is provided
 // before a subcomponent tries to use it, everything is fine.
-export const DashboardContext = createContext<TDashboard>(null as any as TDashboard);
+export const DashboardContext = createContext<DashboardView>(null as any as DashboardView);
 export const DashboardDispatchContext = createContext<DashboardDispatch>(null as any as DashboardDispatch);

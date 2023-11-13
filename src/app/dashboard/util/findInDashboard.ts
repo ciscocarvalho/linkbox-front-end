@@ -1,6 +1,6 @@
 import DashboardFolder from "../DashboardFolder";
 import DashboardItem from "../DashboardItem";
-import { DashboardItemID, TDashboard } from "../types";
+import { DashboardItemID, DashboardView } from "../types";
 import { checkItemID } from "../util";
 import { getChildren } from "./services/getChildren";
 
@@ -41,7 +41,7 @@ const traverseDownFolder = (folder: DashboardFolder, fn: (folder: DashboardFolde
   }
 }
 
-const getDashboardRoot = (dashboard: TDashboard) => {
+const getDashboardRoot = (dashboard: DashboardView) => {
   let root = dashboard.currentFolder;
 
   traverseUpFolder(root, subFolder => {
@@ -57,7 +57,7 @@ const getDashboardRoot = (dashboard: TDashboard) => {
 }
 
 
-const traverseDashboard = (dashboard: TDashboard, fn: (folder: DashboardFolder) => boolean | void) => {
+const traverseDashboard = (dashboard: DashboardView, fn: (folder: DashboardFolder) => boolean | void) => {
   const root = getDashboardRoot(dashboard);
   traverseDownFolder(root, fn);
 }
@@ -66,7 +66,7 @@ const isRoot = (folder: DashboardFolder) => {
   return folder.getParent() === null;
 }
 
-export const findInDashboard = (dashboard: TDashboard, predicate: Function) => {
+export const findInDashboard = (dashboard: DashboardView, predicate: Function) => {
   let result: DashboardItem | null = null;
 
   traverseDashboard(dashboard, (folder) => {
@@ -91,7 +91,7 @@ export const findInDashboard = (dashboard: TDashboard, predicate: Function) => {
   return result as DashboardItem | null;
 }
 
-export const findByIDInDashboard = (dashboard: TDashboard, itemID: DashboardItemID) => {
+export const findByIDInDashboard = (dashboard: DashboardView, itemID: DashboardItemID) => {
   return findInDashboard(dashboard, (item: DashboardItem) => {
     return checkItemID(item, itemID);
   });

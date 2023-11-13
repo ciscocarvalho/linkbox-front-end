@@ -43,7 +43,7 @@ export type DashboardAction = {
   type: "refresh";
 }
 
-export type TDashboard = {
+export type DashboardView = {
   displayedItems: DashboardItem[],
   selected: DashboardItem[],
   clipboard: { copied: DashboardItem[], cut: DashboardItem[] },

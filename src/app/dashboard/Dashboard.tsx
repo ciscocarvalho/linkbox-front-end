@@ -2,7 +2,7 @@
 import React, { useReducer } from "react";
 import DashboardFolder from "./DashboardFolder";
 import SearchBar from "./components/SearchBar";
-import { TDashboard } from "./types";
+import { DashboardView } from "./types";
 import { dashboardReducer } from "./util/dashboardReducer";
 import { DashboardContext, DashboardDispatchContext } from './contexts/DashboardContext';
 import CardsContainer from "./components/CardsContainer";
@@ -14,7 +14,7 @@ import Icon from "../components/Icon";
 
 const Dashboard: React.FC = () => {
   const initialFolder = new DashboardFolder();
-  const initialDashboard: TDashboard = {
+  const initialDashboard: DashboardView = {
     displayedItems: [],
     selected: [],
     clipboard: { copied: [], cut: [] },
