@@ -42,7 +42,7 @@ const Dashboard: React.FC = () => {
   }, []);
 
   if (!userLoggedIn) {
-    window.location.href = "login";
+    window.location.href = "/login";
     return null;
   }
 
@@ -61,7 +61,7 @@ const Dashboard: React.FC = () => {
           <div className="flex justify-start flex-1">
             <a href="/">
               <div className="flex items-center gap-[20px]">
-                <img className="w-[40px]" src="images/Logo.svg" alt="LinkBox logo" />
+                <img className="w-[40px]" src="/images/Logo.svg" alt="LinkBox logo" />
                 <p className="text-[1.5rem] font-bold max-[651px]:hidden">LinkBox</p>
               </div>
             </a>

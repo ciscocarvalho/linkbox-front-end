@@ -14,7 +14,7 @@ const Page: React.FC = () => {
   }
 
   if (!cookies.token) {
-    window.location.href = "login";
+    window.location.href = "/login";
     return null;
   }
 

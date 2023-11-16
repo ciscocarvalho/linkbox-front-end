@@ -49,7 +49,7 @@ const CadastroForm: React.FC = () => {
 
         if (data.email) {
           alert("Você foi cadastrado");
-          window.location.href = "login";
+          window.location.href = "/login";
         } else {
           console.error(data.msg);
           alert("Ocorreu um erro ao cadastrar");
@@ -111,13 +111,13 @@ const CadastroForm: React.FC = () => {
 
         <a href="#">
           <GooglePrimaryButton className="flex justify-center items-center h-[60px] w-[279px] border-none rounded-[20px] bg-[#90CDF4] gap-[20px] max-[540px]:w-0" type="button">
-            <img src="images/Google logo.svg" />
+            <img src="/images/Google logo.svg" />
             <p className="max-[540px]:hidden">Continuar com o Google</p>
           </GooglePrimaryButton>
         </a>
 
         <div className="text-[15px]">
-          <a href="login" className="text-[#2795DB]">
+          <a href="/login" className="text-[#2795DB]">
             Já possui conta? Entrar
           </a>
         </div>

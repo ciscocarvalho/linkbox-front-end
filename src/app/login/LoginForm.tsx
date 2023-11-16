@@ -35,7 +35,7 @@ const LoginForm: React.FC = () => {
 
       if (data.auth) {
         setCookie("token", data.token);
-        window.location.href = "dashboard";
+        window.location.href = "/dashboard";
       } else {
         console.error(data.msg);
         alert("Ocorreu um erro ao entrar");

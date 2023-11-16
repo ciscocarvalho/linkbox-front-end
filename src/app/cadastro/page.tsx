@@ -15,13 +15,13 @@ const Page: React.FC = () => {
       <div className="bg-[#ffff] w-fit h-fit flex flex-col justify-center items-center rounded-[20px] p-[50px] max-[540px]:w-[100%] max-[540px]:h-[100%] max-[540px]:rounded-0 max-[540px]:gap-[100px] max-[540px]:p-0 max-[540px]:mb-[250px] max-[656px]:gap-[50px] max-[481px]:gap-0">
         <a href="/">
           <div className="flex justify-center items-center gap-[20px]">
-            <img className="w-[80px] h-[80px] max-[540px]:width-[40px]" src="images/Logo.svg" alt="LinkBox logo" />
+            <img className="w-[80px] h-[80px] max-[540px]:width-[40px]" src="/images/Logo.svg" alt="LinkBox logo" />
             <p className="text-[48px] font-bold max-[540px]:text-[28px]">LinkBox</p>
           </div>
         </a>
         <CadastroForm />
       </div>
-      <img src="images/Cadastro image.svg" className="w-[40%] max-[970px]:hidden" />
+      <img src="/images/Cadastro image.svg" className="w-[40%] max-[970px]:hidden" />
     </section>
   </div>
 };
