@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import React from 'react';
-import '../reset.css';
+import './reset.css';
 
 export const metadata: Metadata = {
   title: 'Erro 404',
