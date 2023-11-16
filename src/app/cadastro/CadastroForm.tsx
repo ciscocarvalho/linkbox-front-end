@@ -13,6 +13,7 @@ import Input from "../components/Input";
 import InputIcon from "../components/InputIcon";
 import FormInputError from "../components/FormInputError";
 import signup from "../../Services/Auth/signup";
+import { useCookies } from "react-cookie";
 
 const CadastroForm: React.FC = () => {
   const passwordInput = useRef<HTMLInputElement>(null);
@@ -23,6 +24,7 @@ const CadastroForm: React.FC = () => {
   const [usernameError, setUsernameError] = useState<string | undefined>();
   const [emailError, setEmailError] = useState<string | undefined>();
   const [passwordError, setPasswordError] = useState<string | undefined>();
+  const [_, setCookie] = useCookies(["token"]);
 
   return (
     <form
@@ -47,9 +49,9 @@ const CadastroForm: React.FC = () => {
 
         const data = await signup(email, password);
 
-        if (data.email) {
-          alert("Você foi cadastrado");
-          window.location.href = "/login";
+        if (data.auth) {
+          setCookie("token", data.token);
+          window.location.href = "/dashboard";
         } else {
           console.error(data.msg);
           alert("Ocorreu um erro ao cadastrar");

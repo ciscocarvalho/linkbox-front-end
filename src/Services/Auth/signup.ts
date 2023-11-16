@@ -1,8 +1,13 @@
 import fetchJsonPayload from "../fetchJsonPayload";
 
 type SignupResult = {
-  email?: string,
-  msg?: string,
+    auth: true,
+    user: string,
+    token: string
+} | {
+    auth: false,
+    token: null,
+    msg: string,
 };
 
 const signup = async (email: string, password: string): Promise<SignupResult> => {
