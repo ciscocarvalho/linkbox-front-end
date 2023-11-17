@@ -21,7 +21,7 @@ const page: React.FC = () => {
             </a>
             <nav>
             <li className="m-[5px]"><a href="/login" className="max-[500px]:text-[20px] border-b-[2px] border-solid border-[#00000000] duration-[.2s] hover:duration-[.2s] hover:border-b-[black]">Entrar</a></li>
-                <li className="m-[5px]"><a className="max-[500px]:text-[20px]" href="/cadastro"><span className="bg-[#90CDF4] p-[15px] rounded-[10px] duration-[.2s] hover:duration-[.2s] hover:bg-[#52a2d4] max-[500px]:hidden">Começe agora</span></a></li>
+                <li className="m-[5px]"><a className="max-[500px]:text-[20px]" href="/cadastro"><span className="bg-[#90CDF4] p-[15px] rounded-[10px] duration-[.2s] hover:duration-[.2s] hover:bg-[#52a2d4] max-[500px]:hidden">Começar agora</span></a></li>
 
             </nav>
         </header>
@@ -30,7 +30,7 @@ const page: React.FC = () => {
             <p className="text-[72px] text-center font-bold max-[950px]:text-[20px] max-[500px]:hidden max-[500px]:text-[30px] max-[500px]:w-[100%] max-[500px]:h-[250px] max-[280px]:text-[20px] max-[280px]:h-auto">O melhor lugar para organizar seus links!</p>
                 <p className="text-[30px] max-[950px]:text-[20px] max-[500px]:hidden">Use o LinkBox para uma organização sem dor de cabeça</p>
                 <a className="max-[500px]:text-[20px]" href="/cadastro">
-                    <span className="bg-[#90CDF4] p-[15px] rounded-[10px] duration-[.2s] hover:duration-[.2s] hover:bg-[#52a2d4] max-[500px]:text-[20px] max-[500px]:p-[20px] max-[500px]:px-[60px] max-[500px]:mb-[30px] max-[280px]:p-[15px]">Começe agora</span>
+                    <span className="bg-[#90CDF4] p-[15px] rounded-[10px] duration-[.2s] hover:duration-[.2s] hover:bg-[#52a2d4] max-[500px]:text-[20px] max-[500px]:p-[20px] max-[500px]:px-[60px] max-[500px]:mb-[30px] max-[280px]:p-[15px]">Começar agora</span>
                 </a>
             </div>
             <div className="max-[653px]:hidden">
