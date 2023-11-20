@@ -1,21 +1,20 @@
 import { Dispatch } from "react";
-import { DashboardAction, DashboardFolder, DashboardItem, DashboardView } from "../../types";
+import { DashboardAction, DashboardFolder, DashboardItem, DashboardItemCandidate, DashboardView } from "../../types";
 import { add } from "./add";
 import { clone } from "./clone";
-import { getParent } from "./getParent";
 import { move } from "./move";
 import { refreshDashboard } from "./refreshDashboard";
+import { itemIsCandidate } from "../../util";
 
 const cutItemsToFolder = async (
-  items: DashboardItem[],
+  items: (DashboardItem | DashboardItemCandidate)[],
   folder: DashboardFolder
 ) => {
   for (const item of items) {
-    const parent = await getParent(item);
-    if (parent) {
-      await move(item, folder);
-    } else {
+    if (itemIsCandidate(item)) {
       await add(folder, item);
+    } else {
+      await move(item, folder);
     }
   }
 };

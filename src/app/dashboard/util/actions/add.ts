@@ -1,8 +1,8 @@
 import fetchJsonPayload from "../../../../Services/fetchJsonPayload";
 import { getItemID, getItemType } from "../../util";
-import { DashboardFolder, DashboardItem } from "../../types";
+import { DashboardFolder, DashboardItemCandidate } from "../../types";
 
-export const add = async (folder: DashboardFolder, item: DashboardItem) => {
+export const add = async (folder: DashboardFolder, item: DashboardItemCandidate) => {
   const folderID = getItemID(folder);
   const { path: folderPath } = await fetchJsonPayload("get", `/path/${folderID}`);
 

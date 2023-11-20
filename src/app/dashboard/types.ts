@@ -15,6 +15,10 @@ export type DashboardFolder = DashboardItem & {
   items: DashboardItem[];
 }
 
+export type DashboardItemCandidate = Omit<DashboardItem, "_id">;
+export type DashboardLinkCandidate = Omit<DashboardLink, "_id">;
+export type DashboardFolderCandidate = Omit<DashboardFolder, "_id">;
+
 export type DashboardItemID = DashboardItem["_id"];
 
 export type DashboardItemType = "folder" | "link";

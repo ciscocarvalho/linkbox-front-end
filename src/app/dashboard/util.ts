@@ -1,6 +1,6 @@
-import { DashboardFolder, DashboardItem, DashboardItemID, DashboardItemType, DashboardLink } from "./types";
+import { DashboardFolder, DashboardItem, DashboardItemCandidate, DashboardItemID, DashboardItemType, DashboardLink } from "./types";
 
-export const getItemType = (item: DashboardItem) => "url" in item ? "link" : "folder";
+export const getItemType = (item: (DashboardItem | DashboardItemCandidate)) => "url" in item ? "link" : "folder";
 
 export const inputFolderInfo = (defaultName?: string) => {
     const name = prompt("Nome: ", defaultName);
@@ -55,6 +55,10 @@ export const inputNewItem = () => {
 export const itemIsFolder = (item: DashboardItem): item is DashboardFolder => getItemType(item) === "folder";
 
 export const itemIsLink = (item: DashboardItem): item is DashboardLink => getItemType(item) === "link"
+
+export const itemIsCandidate = (item: (DashboardItem | DashboardItemCandidate)): item is DashboardItemCandidate => {
+  return !("_id" in item);
+}
 
 export const includesItem = (arr: DashboardItem[], item: DashboardItem) => {
   return arr.findIndex(v => compareItems(v, item)) !== -1
