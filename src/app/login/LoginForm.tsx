@@ -3,6 +3,7 @@ import React, { useRef, useState } from 'react';
 import { getPasswordError, getEmailError } from "../Util/AuthForm";
 import PasswordVisibilityToggler from '../components/PasswordVisibilityToggler';
 import PrimaryButton from '../components/PrimaryButton';
+import GooglePrimaryButton from '../components/GooglePrimaryButton';
 import InputContainer from '../components/InputContainer';
 import Input from '../components/Input';
 import InputIcon from '../components/InputIcon';
@@ -42,26 +43,38 @@ const LoginForm: React.FC = () => {
       }
   }
 
-  return <form className="flex gap-[20px] flex-col justify-center items-center w-[70%] mt-[60px]" onSubmit={handleSubmit}>
-      <InputContainer>
-          <Input type="email" placeholder="Email" id="inputEmail" ref={email} />
-          <label htmlFor="inputEmail">
-              <InputIcon name="mail" />
-              <FormInputError message={emailError} />
-          </label>
-      </InputContainer>
+  return <form className="flex gap-[inherit] flex-col justify-center items-center w-full" onSubmit={handleSubmit}>
+      <div className="w-full gap-[10px] flex flex-col justify-center items-center">
+          <InputContainer>
+              <Input type="email" placeholder="Email" id="inputEmail" ref={email} />
+              <label htmlFor="inputEmail">
+                  <InputIcon name="mail" />
+                  <FormInputError message={emailError} />
+              </label>
+          </InputContainer>
 
-      <InputContainer>
-          <Input type="password" placeholder="Senha" id="input-senha" ref={password} />
-          <label htmlFor="input-senha">
-              <FormInputError message={passwordError} />
-          </label>
-          <PasswordVisibilityToggler passwordInputRef={password} />
-      </InputContainer>
+          <InputContainer>
+              <Input type="password" placeholder="Senha" id="input-senha" ref={password} />
+              <label htmlFor="input-senha">
+                  <FormInputError message={passwordError} />
+              </label>
+              <PasswordVisibilityToggler passwordInputRef={password} />
+          </InputContainer>
+      </div>
 
-      <PrimaryButton type="submit">
-          <span>Entrar</span>
-      </PrimaryButton>
+      <div className="w-full gap-[10px] flex flex-col justify-center items-center">
+        <PrimaryButton type="submit">
+            <span>Entrar</span>
+        </PrimaryButton>
+
+        <GooglePrimaryButton />
+      </div>
+
+      <div className="flex w-[279px] h-[60px] justify-center items-center">
+          <a href="/cadastro" className="text-[#2795DB]">
+              Ainda não possui conta? Cadastrar
+          </a>
+      </div>
   </form>
 };
 

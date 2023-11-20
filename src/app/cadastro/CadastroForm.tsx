@@ -28,7 +28,7 @@ const CadastroForm: React.FC = () => {
 
   return (
     <form
-      className="flex flex-col justify-center items-center w-[100%] h-[60%] gap-[20px] max-[540px]:h-fit"
+      className="flex flex-col justify-center items-center w-[100%] h-[60%] gap-[inherit] max-[540px]:h-fit"
       onSubmit={async (e) => {
         e.preventDefault();
 
@@ -58,7 +58,7 @@ const CadastroForm: React.FC = () => {
         }
       }}
     >
-      <div className="flex flex-col gap-[20px] p-[20px]">
+      <div className="flex flex-col gap-[10px] py-[20px] w-full">
         <InputContainer>
           <label htmlFor="input-nome">
             <Input
@@ -102,27 +102,26 @@ const CadastroForm: React.FC = () => {
       </div>
       <div className="flex gap-[10px]">
         <input className="w-[20px]" type="checkbox" ref={check} />
-        <h2 className="text-[18px] max-[356px]:text-[15px] max-[292px]:text-[12px]">
-          Li e concordo com os termos de uso
-        </h2>
+        <div className="w-full h-full">
+          <h2 className="text-[clamp(12px,4vw,18px)]">
+            Li e concordo com os termos de uso
+          </h2>
+        </div>
       </div>
-      <div className="flex flex-col justify-center items-center gap-[40px] max-[656px]:gap-[20px] max-[481px]:gap-[10px]">
+      <div className="flex flex-col justify-center items-center gap-[10px]">
         <PrimaryButton type="submit">
           Criar conta
         </PrimaryButton>
 
         <a href="#">
-          <GooglePrimaryButton className="flex justify-center items-center h-[60px] w-[279px] border-none rounded-[20px] bg-[#90CDF4] gap-[20px] max-[540px]:w-0" type="button">
-            <img src="/images/Google logo.svg" />
-            <p className="max-[540px]:hidden">Continuar com o Google</p>
-          </GooglePrimaryButton>
+          <GooglePrimaryButton />
         </a>
+      </div>
 
-        <div className="text-[15px]">
-          <a href="/login" className="text-[#2795DB]">
-            Já possui conta? Entrar
-          </a>
-        </div>
+      <div className="text-[15px]">
+        <a href="/login" className="text-[#2795DB]">
+          Já possui conta? Entrar
+        </a>
       </div>
     </form>
   );
