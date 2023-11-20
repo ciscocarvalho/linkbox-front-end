@@ -5,7 +5,7 @@ import IconButton from '../../../components/IconButton';
 import { remove } from '../../util/actions/remove';
 import { refreshDashboard } from '../../util/actions/refreshDashboard';
 import { update } from '../../util/actions/update';
-import { DashboardFolder, DashboardItem } from '../../types';
+import { DashboardFolder, DashboardFolderCandidate, DashboardItem } from '../../types';
 
 interface BtnsContainerProps {
   item: DashboardItem;
@@ -32,8 +32,9 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
         await update(item, linkInfo);
       }
     } else {
-      const folderInfo = util.inputFolderInfo();
+      const folderInfo = util.inputFolderInfo() as Partial<DashboardFolderCandidate> | null;
       if (folderInfo) {
+        delete folderInfo.items;
         await update(item as DashboardFolder, folderInfo);
       }
     }
