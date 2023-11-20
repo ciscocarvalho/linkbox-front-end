@@ -10,18 +10,17 @@ import { DashboardFolder, DashboardFolderCandidate, DashboardItem } from '../../
 interface BtnsContainerProps {
   item: DashboardItem;
   hovering: boolean;
-  inSmallScreenWidth: boolean;
   setBackgroundColor: Function;
 }
 
 const BtnsContainer: React.FC<BtnsContainerProps> = ({
   item,
   hovering,
-  inSmallScreenWidth,
   setBackgroundColor,
 }) => {
   const dashboard = useContext(DashboardContext);
   const dispatch = useContext(DashboardDispatchContext);
+  const inSmallScreenWidth = dashboard.inSmallScreenWidth;
   const showRegular = hovering && !inSmallScreenWidth;
   const isSelected = util.includesItem(dashboard.selected, item);
 

@@ -375,6 +375,10 @@ export const dashboardReducer = (dashboard: DashboardView, action: DashboardActi
     case "refresh": {
       return refresh(dashboard);
     }
+    case "in_small_screen_width": {
+      dashboard.inSmallScreenWidth = action.inSmallScreenWidth;
+      return dashboard;
+    }
     default: {
       return dashboard;
     }

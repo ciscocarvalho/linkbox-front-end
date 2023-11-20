@@ -14,12 +14,15 @@ import fetchJsonPayload from "../../Services/fetchJsonPayload";
 import { openFolder } from "./util/actions/openFolder";
 import { includesItem } from "./util";
 
+const isInSmallScreenWidth = () => window.innerWidth <= 651;
+
 const Dashboard: React.FC = () => {
   const initialDashboard: DashboardView = {
     displayedItems: [],
     selected: [],
     clipboard: { copied: [], cut: [] },
     currentFolder: null as any,
+    inSmallScreenWidth: isInSmallScreenWidth(),
   };
   const [dashboard, dispatch] = useReducer(dashboardReducer, initialDashboard);
   const [userLoggedIn, setUserLoggedIn] = useState(true);
@@ -39,6 +42,21 @@ const Dashboard: React.FC = () => {
         await openFolder(folder, dispatch);
       }
     });
+  }, []);
+
+  useEffect(() => {
+    const listener = () => {
+      const inSmallScreenWidth = isInSmallScreenWidth();
+      if (dashboard.inSmallScreenWidth !== inSmallScreenWidth) {
+        dispatch({ type: "in_small_screen_width", inSmallScreenWidth });
+      }
+    }
+
+    window.addEventListener("resize", listener);
+
+    return () => {
+      window.removeEventListener("resize", listener);
+    }
   }, []);
 
   if (!userLoggedIn) {

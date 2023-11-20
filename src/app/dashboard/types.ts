@@ -56,6 +56,9 @@ export type DashboardAction = {
   type: "open_link";
   link: DashboardLink;
 } | {
+  type: "in_small_screen_width";
+  inSmallScreenWidth: boolean;
+} | {
   type: "refresh";
 }
 
@@ -64,4 +67,5 @@ export type DashboardView = {
   selected: DashboardItem[],
   clipboard: { copied: DashboardItem[], cut: DashboardItem[] },
   currentFolder: DashboardFolder,
+  inSmallScreenWidth: boolean,
 }

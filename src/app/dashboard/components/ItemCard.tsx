@@ -10,8 +10,6 @@ import { DashboardFolder, DashboardItem, DashboardLink } from '../types';
 
 interface ItemCardProps { item: DashboardItem };
 
-const isInSmallScreenWidth = () => window.innerWidth <= 651;
-
 let clickCount = 0;
 let clickedItem: DashboardItem;
 let clickTimeout: ReturnType<typeof setTimeout>;
@@ -20,7 +18,6 @@ let currentCard: HTMLDivElement | null;
 const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
   let [backgroundColor, setBackgroundColor] = useState(item.backgroundColor);
   const [hovering, setHovering] = useState(false);
-  const [inSmallScreenWidth, setInSmallScreenWidth] = useState(isInSmallScreenWidth());
   const itemType = getItemType(item);
   const computedProps = { [`data-${itemType}-id`]: getItemID(item).toString() };
   const card = useRef<HTMLDivElement>(null);
@@ -53,18 +50,6 @@ const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
 
     return () => {
       document.removeEventListener("click", listener);
-    }
-  }, []);
-
-  useEffect(() => {
-    const listener = () => {
-      setInSmallScreenWidth(isInSmallScreenWidth());
-    }
-
-    window.addEventListener("resize", listener);
-
-    return () => {
-      window.removeEventListener("resize", listener);
     }
   }, []);
 
@@ -141,7 +126,6 @@ const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
     }
     <BtnsContainer
       hovering={hovering && !overInfo}
-      inSmallScreenWidth={inSmallScreenWidth}
       item={item}
       setBackgroundColor={setBackgroundColor}
     />

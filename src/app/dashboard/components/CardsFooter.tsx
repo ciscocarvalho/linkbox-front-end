@@ -24,13 +24,13 @@ const CardsFooter: React.FC = () => {
     dispatch({ type: "reset_selection" });
   }
 
-  if (selected.length <= 1) {
+  if (selected.length === 0 || (selected.length === 1 && !dashboard.inSmallScreenWidth)) {
     return null;
   }
 
   return (
     <footer className={`bg-[#efeded] flex flex-wrap justify-end items-center mt-auto gap-x-[20px] gap-y-0 px-0 py-[8px]`}>
-      <p className="p-[20px]">{selected.length} Selecionados</p>
+      <p className="p-[20px]">{selected.length} {selected.length === 1 ? "Selecionado" : "Selecionados"}</p>
       <div className="flex justify-center items-center">
         <IconButton onClick={copySelected} icon="content_copy" />
         <IconButton onClick={cutSelected} icon="cut" />
