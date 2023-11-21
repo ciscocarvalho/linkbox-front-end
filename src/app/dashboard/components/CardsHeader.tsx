@@ -2,13 +2,11 @@
 import { useContext, useEffect, useState } from "react";
 import IconButton from "../../components/IconButton";
 import { DashboardContext, DashboardDispatchContext } from '../contexts/DashboardContext';
-import { inputNewItem } from "../util";
-import { add } from "../util/actions/add";
+import AddItemModal from "./AddItemModal";
 import { getParent } from "../util/actions/getParent";
 import { goBack } from "../util/actions/goBack";
 import { paste } from "../util/actions/paste";
 import { refreshDashboard } from "../util/actions/refreshDashboard";
-import { DashboardItem } from "../types";
 
 const CardsHeader = () => {
   const dashboard = useContext(DashboardContext);
@@ -17,6 +15,7 @@ const CardsHeader = () => {
   const clipboardInUse =
     clipboard.cut.length > 0 || clipboard.copied.length > 0;
   const [inSubfolder, setInSubfolder] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
     getParent(currentFolder).then((parent) => {
@@ -54,17 +53,9 @@ const CardsHeader = () => {
           </>
         ) : null}
 
-        <IconButton
-          onClick={async () => {
-            const item = inputNewItem();
-            if (!item) {
-              return;
-            }
-            await add(dashboard.currentFolder, item as any as DashboardItem);
-            await refreshDashboard(dashboard, dispatch);
-          }}
-          icon="add"
-        />
+        <IconButton onClick={() => setOpenModal(true)} icon="add" />
+
+        <AddItemModal openModal={openModal} setOpenModal={setOpenModal} />
 
         {inSubfolder ? <p>{currentFolder.name}</p> : null}
       </div>
