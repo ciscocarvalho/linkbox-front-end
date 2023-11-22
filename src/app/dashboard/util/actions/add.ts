@@ -11,6 +11,13 @@ export const add = async (folder: DashboardFolder, item: DashboardItemCandidate)
   }
 
   const itemType = getItemType(item);
-  const route = `/${itemType === "folder" ? "folders" : "links"}/${folderPath}`;
+  let route;
+
+  if (itemType === "folder") {
+    route = `/folders/${folderPath}`;
+  } else {
+    route = `/links/default/${folderID}`;
+  }
+
   return await fetchJsonPayload("post", route, item);
 };

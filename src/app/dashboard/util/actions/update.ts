@@ -14,6 +14,13 @@ export const update = async <T extends DashboardItem>(
   }
 
   const itemType = getItemType(item);
-  const route = `/${itemType === "folder" ? "folders" : "links"}/${path}`;
+  let route;
+
+  if (itemType === "folder") {
+    route = `/folders/${path}`;
+  } else {
+    route = `/links/default/${itemID}`;
+  }
+
   await fetchJsonPayload("put", route, updatedFields);
 };

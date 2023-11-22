@@ -6,7 +6,7 @@ export const getByID = async (id: DashboardItemID) => {
   const { path } = await fetchJsonPayload("get", `/path/${id}`);
   let payload;
 
-  payload = await fetchJsonPayload("get", `/links/${path}`);
+  payload = await fetchJsonPayload("get", `/links/default/${id}`);
 
   if (itemIsLink(payload)) {
     return payload;
