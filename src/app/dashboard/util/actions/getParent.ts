@@ -4,10 +4,11 @@ import { getItemID } from "../../util";
 
 export const getParent = async (item: DashboardItem) => {
   const itemID = getItemID(item);
-  const { path }: { path: string } = await fetchJsonPayload("get", `/path/${itemID}`);
+  let { path }: { path: string } = await fetchJsonPayload("get", `/path/${itemID}`);
+  path = path === "" ? "default" :  `default/${path}`;
 
-  if (!path) {
-    return;
+  if (path === undefined) {
+    return null;
   }
 
   const location = path.split("/");
