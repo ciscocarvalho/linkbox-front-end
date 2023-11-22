@@ -7,20 +7,8 @@ export const update = async <T extends DashboardItem>(
   updatedFields: Partial<T>
 ) => {
   const itemID = getItemID(item);
-  const { path }: { path: string } = await fetchJsonPayload("get", `/path/${itemID}`);
-
-  if (!path) {
-    return;
-  }
-
   const itemType = getItemType(item);
-  let route;
-
-  if (itemType === "folder") {
-    route = `/folders/${path}`;
-  } else {
-    route = `/links/default/${itemID}`;
-  }
+  const route = `/${itemType === "folder" ? "folders" : "links"}/default/${itemID}`;
 
   await fetchJsonPayload("put", route, updatedFields);
 };

@@ -3,7 +3,6 @@ import fetchJsonPayload from "../../../../Services/fetchJsonPayload";
 import { itemIsFolder, itemIsLink } from "../../util";
 
 export const getByID = async (id: DashboardItemID) => {
-  const { path } = await fetchJsonPayload("get", `/path/${id}`);
   let payload;
 
   payload = await fetchJsonPayload("get", `/links/default/${id}`);
@@ -12,7 +11,7 @@ export const getByID = async (id: DashboardItemID) => {
     return payload;
   }
 
-  payload = await fetchJsonPayload("get", `/folders/${path}`);
+  payload = await fetchJsonPayload("get", `/folders/default/${id}`);
 
   if (itemIsFolder(payload)) {
     return payload;
