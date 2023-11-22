@@ -1,20 +1,15 @@
 import { Dispatch } from "react";
 import { DashboardAction, DashboardFolder } from "../../types";
-import { getItemID } from "../../util";
-import fetchJsonPayload from "../../../../Services/fetchJsonPayload";
+import { getItemID, itemIsFolder } from "../../util";
+import { getByID } from "./getByID";
 
 export const openFolder = async (
   folder: DashboardFolder,
   dispatch: Dispatch<DashboardAction>
 ) => {
-  const folderID = getItemID(folder);
-  const { path: folderPath } = await fetchJsonPayload("get", `/path/${folderID}`);
+  const retrievedFolder = await getByID(getItemID(folder)) as DashboardFolder | undefined;
 
-  if (!folderPath) {
-    return;
+  if (retrievedFolder && itemIsFolder(retrievedFolder)) {
+    dispatch({ type: "open_folder", folder: retrievedFolder });
   }
-
-  folder = await fetchJsonPayload("get", `/folders/${folderPath}`);
-
-  dispatch({ type: "open_folder", folder });
 };
