@@ -10,8 +10,5 @@ export const move = async (
   const itemID = getItemID(item);
   const targetFolderID = getItemID(targetFolder);
 
-  const { path }: { path: string } = await fetchJsonPayload("get", `/path/${itemID}`);
-  const { path: targetPath }: { path: string } = await fetchJsonPayload("get", `/path/${targetFolderID}`);
-
-  await fetchJsonPayload("post", `/move/${itemType}/${path}`, { targetPath });
+  await fetchJsonPayload("post", `/move/${itemType}/default/${itemID}`, { parentId: targetFolderID });
 }
