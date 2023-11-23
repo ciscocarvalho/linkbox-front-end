@@ -47,9 +47,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const listener = () => {
       const inSmallScreenWidth = isInSmallScreenWidth();
-      if (dashboard.inSmallScreenWidth !== inSmallScreenWidth) {
-        dispatch({ type: "in_small_screen_width", inSmallScreenWidth });
-      }
+      dispatch({ type: "in_small_screen_width", inSmallScreenWidth });
     }
 
     window.addEventListener("resize", listener);
