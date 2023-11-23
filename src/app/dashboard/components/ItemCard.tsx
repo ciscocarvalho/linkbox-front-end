@@ -41,7 +41,7 @@ const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
 
   useEffect(() => {
     const listener = ({ target }: MouseEvent) => {
-      if (target && target !== currentCard) {
+      if (target && !currentCard?.contains(target as any)) {
         clickCount = 0;
       }
     }
