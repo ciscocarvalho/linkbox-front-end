@@ -12,8 +12,8 @@ const LinkDataContainer: React.FC<LinkDataContainerProps> = ({ link }) => {
     </div>
 
     <div>
-      <p className="text-[18px]">{link.title}</p>
-      <p className="text-[12px]">{link.url}</p>
+      <p className="text-[18px] line-clamp-1">{link.title}</p>
+      <p className="text-[12px] line-clamp-1">{link.url}</p>
     </div>
   </div>;
 };

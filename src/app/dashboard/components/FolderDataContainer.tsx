@@ -11,7 +11,7 @@ const FolderDataContainer: React.FC<FolderDataContainer> = ({ folder }) => {
     <div className="flex justify-center items-center w-[32px] h-[32px]">
       <Icon name="folder" />
     </div>
-    <p className="text-[18px]">{folder.name}</p>
+    <p className="text-[18px] line-clamp-1">{folder.name}</p>
   </div>;
 };
 

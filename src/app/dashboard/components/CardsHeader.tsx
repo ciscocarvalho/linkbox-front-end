@@ -57,7 +57,7 @@ const CardsHeader = () => {
 
         <AddItemModal openModal={openModal} setOpenModal={setOpenModal} />
 
-        {inSubfolder ? <p>{currentFolder.name}</p> : null}
+        {inSubfolder ? <p className="line-clamp-1">{currentFolder.name}</p> : null}
       </div>
     </header>
   );
