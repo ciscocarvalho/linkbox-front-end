@@ -5,7 +5,6 @@ import {
   getUsernameError,
   getEmailError,
 } from "../Util/AuthForm";
-import GooglePrimaryButton from "../components/GooglePrimaryButton";
 import PrimaryButton from "../components/PrimaryButton";
 import signup from "../../Services/Auth/signup";
 import { useCookies } from "react-cookie";
@@ -119,10 +118,6 @@ const CadastroForm: React.FC = () => {
         <PrimaryButton type="submit">
           Criar conta
         </PrimaryButton>
-
-        <a href="#">
-          <GooglePrimaryButton />
-        </a>
       </div>
 
       <div className="text-[15px]">

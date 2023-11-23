@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { getPasswordError, getEmailError } from "../Util/AuthForm";
 import PrimaryButton from '../components/PrimaryButton';
-import GooglePrimaryButton from '../components/GooglePrimaryButton';
 import { useCookies } from 'react-cookie';
 import login from '../../Services/Auth/login';
 import MyTextInput from '../components/Form/MyTextInput';
@@ -88,8 +87,6 @@ const LoginForm: React.FC = () => {
         <PrimaryButton type="submit">
             <span>Entrar</span>
         </PrimaryButton>
-
-        <GooglePrimaryButton />
       </div>
 
       <div className="flex w-[279px] h-[60px] justify-center items-center">
