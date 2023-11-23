@@ -1,53 +1,60 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   getPasswordError,
   getUsernameError,
   getEmailError,
 } from "../Util/AuthForm";
-import PasswordVisibilityToggler from "../components/PasswordVisibilityToggler";
 import GooglePrimaryButton from "../components/GooglePrimaryButton";
 import PrimaryButton from "../components/PrimaryButton";
-import InputContainer from "../components/InputContainer";
-import Input from "../components/Input";
-import InputIcon from "../components/InputIcon";
-import FormInputError from "../components/FormInputError";
 import signup from "../../Services/Auth/signup";
 import { useCookies } from "react-cookie";
+import Icon from "../components/Icon";
+import MyTextInput from "../components/Form/MyTextInput";
 
 const CadastroForm: React.FC = () => {
-  const passwordInput = useRef<HTMLInputElement>(null);
-  const emailInput = useRef<HTMLInputElement>(null);
-  const usernameInput = useRef<HTMLInputElement>(null);
   const check = useRef<HTMLInputElement>(null);
-
-  const [usernameError, setUsernameError] = useState<string | undefined>();
-  const [emailError, setEmailError] = useState<string | undefined>();
-  const [passwordError, setPasswordError] = useState<string | undefined>();
+  const [username, setUsername] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
+  const [password, setPassword] = useState<string | null>(null);
+  const [usernameError, setUsernameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [_, setCookie] = useCookies(["token"]);
 
+  const setErrors = (force: boolean = false) => {
+    if (username !== null || force) {
+      setUsernameError(getUsernameError(username ?? ""));
+    }
+    if (email !== null || force) {
+      setEmailError(getEmailError(email ?? ""));
+    }
+    if (password !== null || force) {
+      setPasswordError(getPasswordError(password ?? ""));
+    }
+  }
+
+  useEffect(() => {
+    setErrors();
+  }, [username, email, password]);
+
+  const toggleShowPassword = () => {
+    setShowPassword((showPassword) => !showPassword);
+  }
+
   return (
-    <form
-      className="flex flex-col justify-center items-center w-[100%] h-[60%] gap-[inherit] max-[540px]:h-fit"
+    <form className="flex flex-col justify-center items-center gap-[inherit] w-[100%] h-[60%] max-[540px]:h-fit"
       onSubmit={async (e) => {
         e.preventDefault();
 
-        const username = usernameInput.current!.value;
-        const email = emailInput.current!.value;
-        const password = passwordInput.current!.value
+        setErrors(true);
 
-        const newUsernameError = getUsernameError(username);
-        const newEmailError = getEmailError(email);
-        const newPasswordError = getPasswordError(password);
-
-        if (newUsernameError || newEmailError || newPasswordError || !check.current!.checked) {
-          setUsernameError(newUsernameError);
-          setEmailError(newEmailError);
-          setPasswordError(newPasswordError);
+        if (usernameError || emailError || passwordError || !check.current!.checked) {
           return;
         }
 
-        const data = await signup(email, password);
+        const data = await signup(email!, password!);
 
         if (data.auth) {
           setCookie("token", data.token);
@@ -58,47 +65,47 @@ const CadastroForm: React.FC = () => {
         }
       }}
     >
-      <div className="flex flex-col gap-[10px] py-[20px] w-full">
-        <InputContainer>
-          <label htmlFor="input-nome">
-            <Input
-              type="text"
-              placeholder="Nome"
-              id="input-nome"
-              ref={usernameInput}
-            />
-            <FormInputError message={usernameError} />
-          </label>
-          <label htmlFor="input-nome">
-            <InputIcon name="edit" />
-          </label>
-        </InputContainer>
-        <InputContainer>
-          <div>
-            <Input
-              type="email"
-              placeholder="Email"
-              id="input-email"
-              ref={emailInput}
-            />
-            <FormInputError message={emailError} />
+      <div className="flex flex-col pt-[20px] w-full h-fit">
+        <div>
+          <MyTextInput
+            placeholder="Nome"
+            id="username"
+            name="username"
+            value={username ?? ""}
+            setValue={setUsername}
+            error={usernameError}
+            rightIcon={() => <Icon name="edit" />}
+          />
+        </div>
+        <div>
+          <MyTextInput
+            placeholder="Email"
+            id="email"
+            name="email"
+            value={email ?? ""}
+            setValue={setEmail}
+            error={emailError}
+            rightIcon={() => <Icon name="mail" />}
+          />
+        </div>
+        {/* flowbite-react doesn't provide a straightforward way to handle onClick on TextInput icon: https://github.com/themesberg/flowbite-react/issues/734 */}
+        <div className="relative">
+          <MyTextInput
+            placeholder="Senha"
+            id="password"
+            name="password"
+            value={password ?? ""}
+            setValue={setPassword}
+            error={passwordError}
+            type={showPassword ? "text" : "password"}
+          />
+          <div
+            onClick={toggleShowPassword}
+            className={`absolute top-[10px] right-[10px] hover:cursor-pointer select-none`}
+          >
+            <Icon name={showPassword ? "visibility_off" : "visibility"}/>
           </div>
-          <label htmlFor="input-email">
-            <InputIcon name="mail" />
-          </label>
-        </InputContainer>
-        <InputContainer>
-          <label>
-            <Input
-              type="password"
-              placeholder="Senha"
-              id="input-senha"
-              ref={passwordInput}
-            />
-            <FormInputError message={passwordError} />
-          </label>
-          <PasswordVisibilityToggler passwordInputRef={passwordInput} />
-        </InputContainer>
+        </div>
       </div>
       <div className="flex gap-[10px]">
         <input className="w-[20px]" type="checkbox" ref={check} />

@@ -4,12 +4,16 @@ export const getPasswordError = (password: string) => {
   } else if (password.length < 7) {
     return "A senha precisa ter mais de 7 caracteries.";
   }
+
+  return "";
 };
 
 export const getUsernameError = (username: string) => {
   if (username === "") {
     return "Nome de usuario é obrigatório";
   }
+
+  return "";
 };
 
 export const getEmailError = (email: string) => {
@@ -23,4 +27,6 @@ export const getEmailError = (email: string) => {
   if (!emailRegex.test(email)) {
     return "Por favor insira um email válido.";
   }
+
+  return "";
 };

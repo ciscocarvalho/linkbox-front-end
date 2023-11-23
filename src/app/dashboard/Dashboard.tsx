@@ -7,9 +7,6 @@ import { DashboardContext, DashboardDispatchContext } from './contexts/Dashboard
 import CardsContainer from "./components/CardsContainer";
 import CardsHeader from "./components/CardsHeader";
 import CardsFooter from "./components/CardsFooter";
-import InputContainer from "../components/InputContainer";
-import InputIcon from "../components/InputIcon";
-import Icon from "../components/Icon";
 import fetchJsonPayload from "../../Services/fetchJsonPayload";
 import { openFolder } from "./util/actions/openFolder";
 import { includesItem } from "./util";
@@ -82,14 +79,9 @@ const Dashboard: React.FC = () => {
               </div>
             </a>
           </div>
-          <InputContainer className="flex-1">
-            <div className="min-w-[250px] max-w-[600px]">
-              <SearchBar type="text" placeholder="Pesquise" id="inputPesquisa" />
-            </div>
-            <label htmlFor="inputPesquisa">
-              <InputIcon name="search" />
-            </label>
-          </InputContainer>
+          <div className="min-w-[250px] max-w-[600px] flex-1">
+            <SearchBar type="text" placeholder="Pesquise" id="inputPesquisa" />
+          </div>
           <div className="flex-1 max-[651px]:hidden" />
         </nav>
 

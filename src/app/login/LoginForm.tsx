@@ -1,65 +1,87 @@
 "use client";
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getPasswordError, getEmailError } from "../Util/AuthForm";
-import PasswordVisibilityToggler from '../components/PasswordVisibilityToggler';
 import PrimaryButton from '../components/PrimaryButton';
 import GooglePrimaryButton from '../components/GooglePrimaryButton';
-import InputContainer from '../components/InputContainer';
-import Input from '../components/Input';
-import InputIcon from '../components/InputIcon';
-import FormInputError from '../components/FormInputError';
 import { useCookies } from 'react-cookie';
 import login from '../../Services/Auth/login';
+import MyTextInput from '../components/Form/MyTextInput';
+import Icon from '../components/Icon';
 
 const LoginForm: React.FC = () => {
-  const password = useRef<HTMLInputElement>(null);
-  const email = useRef<HTMLInputElement>(null);
-  const [passwordError, setPasswordError] = useState<string | undefined>();
-  const [emailError, setEmailError] = useState<string | undefined>();
+  const [email, setEmail] = useState<string | null>(null);
+  const [password, setPassword] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [_, setCookie] = useCookies(["token"]);
 
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
-      e.preventDefault();
-      const newEmail = email.current!.value;
-      const newPassword = password.current!.value;
-
-      const newEmailError = getEmailError(newEmail);
-      const newPasswordError = getPasswordError(newPassword);
-
-      if (newEmailError || newPasswordError) {
-          setEmailError(newEmailError);
-          setPasswordError(newPasswordError);
-          return;
-      }
-
-      const data = await login(newEmail, newPassword);
-
-      if (data.auth) {
-        setCookie("token", data.token);
-        window.location.href = "/dashboard";
-      } else {
-        console.error(data.msg);
-        alert("Ocorreu um erro ao entrar");
-      }
+  const setErrors = (force: boolean = false) => {
+    if (email !== null || force) {
+      setEmailError(getEmailError(email ?? ""));
+    }
+    if (password !== null || force) {
+      setPasswordError(getPasswordError(password ?? ""));
+    }
   }
 
-  return <form className="flex gap-[inherit] flex-col justify-center items-center w-full" onSubmit={handleSubmit}>
-      <div className="w-full gap-[10px] flex flex-col justify-center items-center">
-          <InputContainer>
-              <Input type="email" placeholder="Email" id="inputEmail" ref={email} />
-              <label htmlFor="inputEmail">
-                  <InputIcon name="mail" />
-                  <FormInputError message={emailError} />
-              </label>
-          </InputContainer>
+  useEffect(setErrors, [email, password]);
 
-          <InputContainer>
-              <Input type="password" placeholder="Senha" id="input-senha" ref={password} />
-              <label htmlFor="input-senha">
-                  <FormInputError message={passwordError} />
-              </label>
-              <PasswordVisibilityToggler passwordInputRef={password} />
-          </InputContainer>
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
+    e.preventDefault();
+
+    setErrors(true);
+
+    if (emailError || passwordError) {
+      return;
+    }
+
+    const data = await login(email!, password!);
+
+    if (data.auth) {
+      setCookie("token", data.token);
+      window.location.href = "/dashboard";
+    } else {
+      console.error(data.msg);
+      alert("Ocorreu um erro ao entrar");
+    }
+  }
+
+  const toggleShowPassword = () => {
+    setShowPassword((showPassword) => !showPassword);
+  }
+
+  return <form className="flex pt-[20px] gap-[inherit] flex-col justify-center items-center w-full" onSubmit={handleSubmit}>
+      <div className="w-full gap-[10px] flex flex-col">
+        <div>
+          <MyTextInput
+            placeholder="Email"
+            id="email"
+            name="email"
+            value={email ?? ""}
+            setValue={setEmail}
+            error={emailError}
+            rightIcon={() => <Icon name="mail" />}
+          />
+        </div>
+        {/* flowbite-react doesn't provide a straightforward way to handle onClick on TextInput icon: https://github.com/themesberg/flowbite-react/issues/734 */}
+        <div className="relative">
+          <MyTextInput
+            placeholder="Senha"
+            id="password"
+            name="password"
+            value={password ?? ""}
+            setValue={setPassword}
+            error={passwordError}
+            type={showPassword ? "text" : "password"}
+          />
+          <div
+            onClick={toggleShowPassword}
+            className={`absolute top-[10px] right-[10px] hover:cursor-pointer select-none`}
+          >
+            <Icon name={showPassword ? "visibility_off" : "visibility"}/>
+          </div>
+        </div>
       </div>
 
       <div className="w-full gap-[10px] flex flex-col justify-center items-center">

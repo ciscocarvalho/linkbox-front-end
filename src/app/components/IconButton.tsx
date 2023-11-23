@@ -1,7 +1,7 @@
 import React, { MouseEventHandler } from "react";
 import Icon from "./Icon";
 
-interface ButtonProps {
+type ButtonProps = React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
   onClick: MouseEventHandler<HTMLDivElement>;
   icon: string;
   children?: React.ReactNode;

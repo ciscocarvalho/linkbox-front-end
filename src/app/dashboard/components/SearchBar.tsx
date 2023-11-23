@@ -1,12 +1,13 @@
 "use client";
 import React, { useContext, useRef } from 'react';
-import Input from "../../components/Input";
 import { DashboardContext, DashboardDispatchContext } from '../contexts/DashboardContext';
 import { itemIsFolder, itemIsLink } from "../util";
 import { getChildren } from "../util/actions/getChildren";
 import { DashboardItem } from '../types';
+import Icon from '../../components/Icon';
+import { TextInput } from 'flowbite-react';
 
-const SearchBar: React.FC<JSX.IntrinsicElements["input"]> = ({ ...inputProps }) => {
+const SearchBar: React.FC<JSX.IntrinsicElements["input"]> = () => {
   const dashboard = useContext(DashboardContext);
   const dispatch = useContext(DashboardDispatchContext);
   const searchBar = useRef<HTMLInputElement>(null);
@@ -17,27 +18,29 @@ const SearchBar: React.FC<JSX.IntrinsicElements["input"]> = ({ ...inputProps }) 
     dispatch({ type: "display_many", items: items })
   }
 
+  const filterItems = (query: string) => {
+    if (!query) {
+      setItems(allItems);
+      return;
+    }
+
+    setItems(allItems.filter((item) => {
+      if (itemIsFolder(item)) {
+        const { name } = item;
+        return name && name.includes(query);
+      } else if (itemIsLink(item)) {
+        const { title, url } = item;
+        return title.includes(query) || url.includes(query);
+      }
+    }))
+  }
+
   return (
-    <Input
-      onInput={() => {
-        const query = searchBar.current?.value;
-
-        if (!query) {
-          setItems(allItems);
-          return;
-        }
-
-        setItems(allItems.filter((item) => {
-          if (itemIsFolder(item)) {
-            const { name } = item;
-            return name && name.includes(query);
-          } else if (itemIsLink(item)) {
-            const { title, url } = item;
-            return title.includes(query) || url.includes(query);
-          }
-        }))
-      }}
-      {...inputProps}
+    <TextInput
+      type="text"
+      placeholder="Pesquise"
+      rightIcon={() => <Icon name="search" />}
+      onInput={(e: any) => filterItems(e.target.value)}
       ref={searchBar}
     />
   );
