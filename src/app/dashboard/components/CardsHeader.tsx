@@ -7,6 +7,7 @@ import { getParent } from "../util/actions/getParent";
 import { goBack } from "../util/actions/goBack";
 import { paste } from "../util/actions/paste";
 import { refreshDashboard } from "../util/actions/refreshDashboard";
+import FolderBreadcrumb from "./FolderBreadcrumb";
 
 const CardsHeader = () => {
   const dashboard = useContext(DashboardContext);
@@ -34,7 +35,7 @@ const CardsHeader = () => {
           />
         ) : null}
 
-        {inSubfolder ? <p className="line-clamp-1">{currentFolder.name}</p> : null}
+        <FolderBreadcrumb folder={currentFolder} />
       </div>
 
       <div className="flex justify-center items-center gap-[20px]">
