@@ -56,15 +56,11 @@ const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
   let className = "flex justify-between items-center min-h-[60px] h-[60px] py-[8px] px-[20px]";
 
   if (isSelected || hovering) {
-    // className += " bg-[#DDE3EC]";
     backgroundColor = "#DDE3EC";
-  } else if (backgroundColor) {
-    // className += ` bg-[${backgroundColor}]`;
   }
 
   if (overInfo && checkItemID(item, overInfo.id) && !isSelected) {
     if (overInfo.isPositionCloseToCenter && itemIsFolder(item)) {
-      // className += ` !bg-[#DDE3EC]`;
       backgroundColor = "#DDE3EC";
     } else {
       switch (overInfo.positionRelativeToCenter) {
