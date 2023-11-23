@@ -89,11 +89,9 @@ const LoginForm: React.FC = () => {
         </PrimaryButton>
       </div>
 
-      <div className="flex w-[279px] h-[60px] justify-center items-center">
-          <a href="/cadastro" className="text-[#2795DB]">
-              Ainda não possui conta? Cadastrar
-          </a>
-      </div>
+      <a href="/cadastro" className="text-[#2795DB] mt-[30px]">
+          Ainda não possui conta? Cadastrar
+      </a>
   </form>
 };
 

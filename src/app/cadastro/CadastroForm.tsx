@@ -12,7 +12,6 @@ import Icon from "../components/Icon";
 import MyTextInput from "../components/Form/MyTextInput";
 
 const CadastroForm: React.FC = () => {
-  const check = useRef<HTMLInputElement>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
@@ -49,7 +48,7 @@ const CadastroForm: React.FC = () => {
 
         setErrors(true);
 
-        if (usernameError || emailError || passwordError || !check.current!.checked) {
+        if (usernameError || emailError || passwordError) {
           return;
         }
 
@@ -106,25 +105,15 @@ const CadastroForm: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="flex gap-[10px]">
-        <input className="w-[20px]" type="checkbox" ref={check} />
-        <div className="w-full h-full">
-          <h2 className="text-[clamp(12px,4vw,18px)]">
-            Li e concordo com os termos de uso
-          </h2>
-        </div>
-      </div>
       <div className="flex flex-col justify-center items-center gap-[10px]">
         <PrimaryButton type="submit">
           Criar conta
         </PrimaryButton>
       </div>
 
-      <div className="text-[15px]">
-        <a href="/login" className="text-[#2795DB]">
-          Já possui conta? Entrar
-        </a>
-      </div>
+      <a href="/login" className="text-[15px] text-[#2795DB] mt-[30px]">
+        Já possui conta? Entrar
+      </a>
     </form>
   );
 };
