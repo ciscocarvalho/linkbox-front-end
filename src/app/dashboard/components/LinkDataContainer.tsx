@@ -7,7 +7,7 @@ interface LinkDataContainerProps {
 
 const LinkDataContainer: React.FC<LinkDataContainerProps> = ({ link }) => {
   return <div className="flex items-center gap-[20px]">
-    <div className="flex justify-center items-center w-[32px] h-[32px]">
+    <div className="flex justify-center items-center min-w-[32px] w-[32px] h-[32px]">
       <img src={`https://www.google.com/s2/favicons?domain=${link.url}&sz=32`} />
     </div>
 

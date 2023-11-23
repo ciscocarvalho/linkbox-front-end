@@ -74,7 +74,7 @@ const Dashboard: React.FC = () => {
     <DashboardContext.Provider value={dashboard}>
       <DashboardDispatchContext.Provider value={dispatch}>
         <nav className="flex justify-between p-[24px] bg-[#2795DB] items-center gap-[20px] max-[651px]:justify-around max-[651px]:p-[24px]">
-          <div className="flex justify-start flex-1">
+          <div className="flex justify-start flex-1 min-w-[fit-content]">
             <a href="/">
               <div className="flex items-center gap-[20px]">
                 <img className="w-[40px]" src="/images/Logo.svg" alt="LinkBox logo" />
