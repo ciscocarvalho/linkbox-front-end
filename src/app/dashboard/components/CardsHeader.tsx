@@ -33,6 +33,8 @@ const CardsHeader = () => {
             icon="arrow_back"
           />
         ) : null}
+
+        {inSubfolder ? <p className="line-clamp-1">{currentFolder.name}</p> : null}
       </div>
 
       <div className="flex justify-center items-center gap-[20px]">
@@ -56,8 +58,6 @@ const CardsHeader = () => {
         <IconButton onClick={() => setOpenModal(true)} icon="add" />
 
         <AddItemModal openModal={openModal} setOpenModal={setOpenModal} />
-
-        {inSubfolder ? <p className="line-clamp-1">{currentFolder.name}</p> : null}
       </div>
     </header>
   );
