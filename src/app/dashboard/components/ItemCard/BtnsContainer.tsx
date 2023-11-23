@@ -105,7 +105,6 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
                 e.stopPropagation();
                 await editItem();
               }}
-              className={showRegular}
             />
             <IconButton
               icon="delete"
@@ -113,7 +112,6 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
                 e.stopPropagation();
                 await remove(item, dispatch);
               }}
-              className={showRegular}
             />
           </>
           : null
