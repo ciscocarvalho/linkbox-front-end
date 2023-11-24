@@ -1,8 +1,8 @@
 export const getPasswordError = (password: string) => {
   if (password === "") {
     return "A senha é obrigatória.";
-  } else if (password.length < 7) {
-    return "A senha precisa ter mais de 7 caracteries.";
+  } else if (password.length <= 6) {
+    return "A senha precisa ter mais de 6 caracteries.";
   }
 
   return "";
