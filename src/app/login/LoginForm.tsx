@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import { getPasswordError, getEmailError } from "../Util/AuthForm";
+import { getEmailError } from "../Util/AuthForm";
 import PrimaryButton from '../components/PrimaryButton';
 import { useCookies } from 'react-cookie';
 import login from '../../Services/Auth/login';
@@ -11,16 +11,12 @@ const LoginForm: React.FC = () => {
   const [email, setEmail] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
   const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [_, setCookie] = useCookies(["token"]);
 
   const setErrors = (force: boolean = false) => {
     if (email !== null || force) {
       setEmailError(getEmailError(email ?? ""));
-    }
-    if (password !== null || force) {
-      setPasswordError(getPasswordError(password ?? ""));
     }
   }
 
@@ -31,7 +27,7 @@ const LoginForm: React.FC = () => {
 
     setErrors(true);
 
-    if (emailError || passwordError) {
+    if (emailError) {
       return;
     }
 
@@ -71,7 +67,7 @@ const LoginForm: React.FC = () => {
             name="password"
             value={password ?? ""}
             setValue={setPassword}
-            error={passwordError}
+            error={""}
             type={showPassword ? "text" : "password"}
           />
           <div
