@@ -53,6 +53,10 @@ const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
     }
   }, []);
 
+  useEffect(() => {
+    setBackgroundColor(item.backgroundColor);
+  }, [item]);
+
   let className = "flex justify-between items-center min-h-[60px] h-[60px] py-[8px] px-[20px]";
 
   if (isSelected || hovering) {
