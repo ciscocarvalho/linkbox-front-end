@@ -21,9 +21,9 @@ const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
   const itemType = getItemType(item);
   const computedProps = { [`data-${itemType}-id`]: getItemID(item).toString() };
   const card = useRef<HTMLDivElement>(null);
-  const dashboard = useContext(DashboardContext);
+  const { selected, inSmallScreenWidth } = useContext(DashboardContext);
   const dispatch = useContext(DashboardDispatchContext);
-  const isSelected = includesItem(dashboard.selected, item);
+  const isSelected = includesItem(selected, item);
 
   const onSingleClick = () => {
     dispatch({ type: "select", item, behavior: "exclusive" });
@@ -106,6 +106,14 @@ const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
     }
   }
 
+  let btnsVariant: "select_only" | "all" | null = null;
+
+  if (inSmallScreenWidth) {
+    btnsVariant = "select_only";
+  } else if (hovering && !overInfo) {
+    btnsVariant = "all";
+  }
+
   return <div
     className={`border-t-[2px] first:border-t-[1px] first:border-t-solid first:border-t-[#BBC8DC] border-b-[1px] border-b-solid border-b-[#BBC8DC] ${className}`}
     draggable={true}
@@ -124,11 +132,13 @@ const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
         ? <FolderDataContainer folder={item as DashboardFolder} />
         : <LinkDataContainer link={item as DashboardLink} />
     }
-    <BtnsContainer
-      hovering={hovering && !overInfo}
-      item={item}
-      setBackgroundColor={setBackgroundColor}
-    />
+    {
+      !btnsVariant ? null : <BtnsContainer
+        item={item}
+        setBackgroundColor={setBackgroundColor}
+        variant={btnsVariant}
+      />
+    }
   </div>;
 };
 

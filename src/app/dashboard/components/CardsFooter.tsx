@@ -3,6 +3,7 @@ import React, { useContext } from 'react';
 import { DashboardContext, DashboardDispatchContext } from '../contexts/DashboardContext';
 import IconButton from '../../components/IconButton';
 import { removeMany } from '../util/actions/removeMany';
+import BtnsContainer from './ItemCard/BtnsContainer';
 
 const CardsFooter: React.FC = () => {
   const dashboard = useContext(DashboardContext);
@@ -31,11 +32,19 @@ const CardsFooter: React.FC = () => {
   return (
     <footer className={`bg-[#efeded] flex flex-wrap justify-end items-center mt-auto gap-x-[20px] gap-y-0 px-0 py-[8px]`}>
       <p className="p-[20px]">{selected.length} {selected.length === 1 ? "Selecionado" : "Selecionados"}</p>
-      <div className="flex justify-center items-center">
-        <IconButton onClick={copySelected} icon="content_copy" />
-        <IconButton onClick={cutSelected} icon="cut" />
-        <IconButton onClick={deleteSelected} icon="delete" />
-      </div>
+      {
+        (selected.length === 1)
+          ? <BtnsContainer
+            item={selected[0]}
+            setBackgroundColor={() => {}}
+            variant={"non_select_only"}
+          />
+          : <div className="flex justify-center items-center">
+            <IconButton onClick={copySelected} icon="content_copy" />
+            <IconButton onClick={cutSelected} icon="cut" />
+            <IconButton onClick={deleteSelected} icon="delete" />
+          </div>
+      }
     </footer>
   );
 };

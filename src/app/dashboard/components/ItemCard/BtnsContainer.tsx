@@ -9,19 +9,17 @@ import { DashboardFolder, DashboardFolderCandidate, DashboardItem } from '../../
 
 interface BtnsContainerProps {
   item: DashboardItem;
-  hovering: boolean;
   setBackgroundColor: Function;
+  variant?: "all" | "select_only" | "non_select_only";
 }
 
 const BtnsContainer: React.FC<BtnsContainerProps> = ({
   item,
-  hovering,
   setBackgroundColor,
+  variant = "all",
 }) => {
   const dashboard = useContext(DashboardContext);
   const dispatch = useContext(DashboardDispatchContext);
-  const inSmallScreenWidth = dashboard.inSmallScreenWidth;
-  const showRegular = hovering && !inSmallScreenWidth;
   const isSelected = util.includesItem(dashboard.selected, item);
 
   const editItem = async () => {
@@ -53,7 +51,7 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
   return (
     <div className={`flex gap-[8px]`}>
       {
-        hovering || inSmallScreenWidth
+        variant !== "non_select_only"
           ? <IconButton
             icon={isSelected ? "check_box" : "check_box_outline_blank"}
             onClick={(e) => {
@@ -65,7 +63,7 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
       }
 
       {
-        showRegular
+        variant !== "select_only"
           ? <>
             <IconButton
               icon="content_copy"
