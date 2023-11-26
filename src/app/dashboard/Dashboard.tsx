@@ -10,6 +10,10 @@ import CardsFooter from "./components/CardsFooter";
 import fetchJsonPayload from "../../Services/fetchJsonPayload";
 import { openFolder } from "./util/actions/openFolder";
 import { includesItem } from "./util";
+import IconButton from "../components/IconButton";
+import { Dropdown } from "flowbite-react";
+import logout from "../../Services/Auth/logout";
+import Icon from "../components/Icon";
 
 const isInSmallScreenWidth = () => window.innerWidth <= 651;
 
@@ -70,7 +74,7 @@ const Dashboard: React.FC = () => {
   return (
     <DashboardContext.Provider value={dashboard}>
       <DashboardDispatchContext.Provider value={dispatch}>
-        <nav className="flex justify-between p-[24px] bg-[#2795DB] items-center gap-[20px] max-[651px]:justify-around max-[651px]:p-[24px]">
+        <nav className="flex justify-between p-[24px] bg-[#2795DB] items-center gap-[40px] max-[651px]:gap-[20px] max-[651px]:justify-around max-[651px]:p-[24px]">
           <div className="flex justify-start flex-1 min-w-[fit-content]">
             <a href="/">
               <div className="flex items-center gap-[20px]">
@@ -79,10 +83,14 @@ const Dashboard: React.FC = () => {
               </div>
             </a>
           </div>
-          <div className="min-w-[250px] max-w-[600px] flex-1">
+          <div className="min-w-[50%] max-w-[600px] flex-1">
             <SearchBar type="text" placeholder="Pesquise" id="inputPesquisa" />
           </div>
-          <div className="flex-1 max-[651px]:hidden" />
+          <div className="flex-1 flex justify-end">
+            <Dropdown label="" placement="bottom-end" renderTrigger={() => <div><IconButton icon="more_vert" /></div> }>
+              <Dropdown.Item icon={() => <Icon name="logout" />} onClick={logout}><span className="ml-[10px]">Sair</span></Dropdown.Item>
+            </Dropdown>
+          </div>
         </nav>
 
         <main className="h-[100%] flex flex-col overflow-y-auto">
