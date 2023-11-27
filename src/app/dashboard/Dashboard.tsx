@@ -14,10 +14,13 @@ import IconButton from "../components/IconButton";
 import { Dropdown } from "flowbite-react";
 import logout from "../../Services/Auth/logout";
 import Icon from "../components/Icon";
+import { useCookies } from "react-cookie";
 
 const isInSmallScreenWidth = () => window.innerWidth <= 651;
 
 const Dashboard: React.FC = () => {
+  const [_, __, removeCookie] = useCookies(["token"]);
+
   const initialDashboard: DashboardView = {
     displayedItems: [],
     selected: [],
@@ -67,6 +70,11 @@ const Dashboard: React.FC = () => {
     return null;
   }
 
+  const handleLogout = async () => {
+    await logout();
+    removeCookie("token");
+  }
+
   const { clipboard, displayedItems } = dashboard;
   const validItems = displayedItems.filter(item => !includesItem(clipboard.cut, item));
   const hasItems = displayedItems.length > 0;
@@ -88,7 +96,7 @@ const Dashboard: React.FC = () => {
           </div>
           <div className="flex-1 flex justify-end">
             <Dropdown label="" placement="bottom-end" renderTrigger={() => <div><IconButton icon="more_vert" /></div> }>
-              <Dropdown.Item icon={() => <Icon name="logout" />} onClick={logout}><span className="ml-[10px]">Sair</span></Dropdown.Item>
+              <Dropdown.Item icon={() => <Icon name="logout" />} onClick={handleLogout}><span className="ml-[10px]">Sair</span></Dropdown.Item>
             </Dropdown>
           </div>
         </nav>
