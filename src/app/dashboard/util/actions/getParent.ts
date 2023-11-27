@@ -20,7 +20,5 @@ export const getParent = async (item: DashboardItem) => {
   }
 
   const { _id: parentID } = await fetchJsonPayload("get", `/id/${parentPath}`);
-  const parent = await fetchJsonPayload("get", `/folders/default/${parentID}`);
-
-  return parent;
+  return parent = await fetchJsonPayload("get", `/item/default/${parentID}`);
 }

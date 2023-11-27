@@ -1,16 +1,13 @@
 import { Dispatch } from "react";
 import { DashboardAction, DashboardItem } from "../../types";
 import fetchJsonPayload from "../../../../Services/fetchJsonPayload";
-import { getItemID, getItemType } from "../../util";
+import { getItemID } from "../../util";
 
 export const remove = async (
   item: DashboardItem,
   dispatch: Dispatch<DashboardAction>
 ) => {
   const itemID = getItemID(item);
-  const itemType = getItemType(item);
-  const route = `/${itemType === "folder" ? "folders" : "links"}/default/${itemID}`;
-
-  await fetchJsonPayload("delete", route);
+  await fetchJsonPayload("delete", `/item/default/${itemID}`);
   dispatch({ type: "remove", item });
 };
