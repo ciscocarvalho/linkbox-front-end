@@ -9,9 +9,11 @@ export const reposition = async (
   strategy: "before" | "after" = "after"
 ) => {
   const folderID = getItemID(folder);
-  return await fetchJsonPayload("post", `/reposition/default/${folderID}`, {
+  const { data: { folder: updatedFolder } } = await fetchJsonPayload("post", `/reposition/default/${folderID}`, {
     currentIndex,
     newIndex,
     strategy,
   });
+
+  return updatedFolder;
 };

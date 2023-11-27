@@ -33,7 +33,7 @@ const LoginForm: React.FC = () => {
 
     const data = await login(email!, password!);
 
-    if (data.auth) {
+    if (data?.auth) {
       setCookie("token", data.token);
       window.location.href = "/dashboard";
     } else {

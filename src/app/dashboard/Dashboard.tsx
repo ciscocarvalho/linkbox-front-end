@@ -33,7 +33,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     const getInitialFolder = async () => {
-      const { dashboards } = await fetchJsonPayload("get", "/dashboards");
+      const { data: { dashboards } } = await fetchJsonPayload("get", "/dashboards");
       if (!dashboards) {
         setUserLoggedIn(false);
         return;

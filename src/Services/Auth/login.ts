@@ -11,7 +11,8 @@ type SigninResult = {
 };
 
 const login = async (email: string, password: string): Promise<SigninResult> => {
-  return await fetchJsonPayload("post", "/auth/signin", { email, password });
+  const { data } = await fetchJsonPayload("post", "/auth/signin", { email, password });
+  return data;
 };
 
 export default login;

@@ -54,7 +54,7 @@ const CadastroForm: React.FC = () => {
 
         const data = await signup(email!, password!);
 
-        if (data.auth) {
+        if (data?.auth) {
           setCookie("token", data.token);
           window.location.href = "/dashboard";
         } else {
