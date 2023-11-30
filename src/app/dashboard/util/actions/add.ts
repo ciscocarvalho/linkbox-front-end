@@ -4,6 +4,6 @@ import { DashboardFolder, DashboardItemCandidate } from "../../types";
 
 export const add = async (folder: DashboardFolder, item: DashboardItemCandidate) => {
   const folderID = getItemID(folder);
-  const { data: { item: addedItem } } = await fetchJsonPayload("post", `/item/default/${folderID}`, item);
+  const { data: { item: addedItem } } = await fetchJsonPayload("post", `/items/default/${folderID}`, item);
   return addedItem;
 };

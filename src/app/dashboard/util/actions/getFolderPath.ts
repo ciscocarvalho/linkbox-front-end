@@ -4,6 +4,6 @@ import { getItemID } from "../../util";
 
 export const getFolderPath = async (folder: DashboardFolder) => {
   const folderID = getItemID(folder);
-  const { data: { path } } = await fetchJsonPayload("get", `/path/${folderID}`);
+  const { data: { path } } = await fetchJsonPayload("get", `/paths/${folderID}`);
   return path;
 }

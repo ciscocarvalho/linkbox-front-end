@@ -7,5 +7,5 @@ export const update = async <T extends DashboardItem>(
   updatedFields: Partial<T>
 ) => {
   const itemID = getItemID(item);
-  await fetchJsonPayload("put", `/item/default/${itemID}`, updatedFields);
+  await fetchJsonPayload("put", `/items/default/${itemID}`, updatedFields);
 };

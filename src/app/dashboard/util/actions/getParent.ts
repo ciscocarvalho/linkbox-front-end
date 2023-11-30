@@ -4,7 +4,7 @@ import { getItemID } from "../../util";
 
 export const getParent = async (item: DashboardItem) => {
   const itemID = getItemID(item);
-  let { data: { path } }: { data: { path: string } } = await fetchJsonPayload("get", `/path/${itemID}`);
+  let { data: { path } }: { data: { path: string } } = await fetchJsonPayload("get", `/paths/${itemID}`);
   path = path === "" ? "default" :  `default/${path}`;
 
   if (path === undefined) {
@@ -19,7 +19,7 @@ export const getParent = async (item: DashboardItem) => {
     return null;
   }
 
-  const { data: { id: parentID } } = await fetchJsonPayload("get", `/id/${parentPath}`);
-  const { data: { item: parent } } = await fetchJsonPayload("get", `/item/default/${parentID}`);
+  const { data: { id: parentID } } = await fetchJsonPayload("get", `/ids/${parentPath}`);
+  const { data: { item: parent } } = await fetchJsonPayload("get", `/items/default/${parentID}`);
   return parent;
 }

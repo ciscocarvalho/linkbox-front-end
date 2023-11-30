@@ -8,6 +8,6 @@ export const remove = async (
   dispatch: Dispatch<DashboardAction>
 ) => {
   const itemID = getItemID(item);
-  await fetchJsonPayload("delete", `/item/default/${itemID}`);
+  await fetchJsonPayload("delete", `/items/default/${itemID}`);
   dispatch({ type: "remove", item });
 };
