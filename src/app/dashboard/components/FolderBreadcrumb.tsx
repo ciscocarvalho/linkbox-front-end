@@ -2,16 +2,11 @@ import React, { Dispatch, useContext, useEffect, useState } from 'react';
 import { Breadcrumb, CustomFlowbiteTheme, Flowbite } from 'flowbite-react';
 import { HiHome } from 'react-icons/hi';
 import { DashboardAction, DashboardFolder } from '../types';
-import { getFolderPath } from '../util/actions/getFolderPath';
 import { getFolderByPath } from '../util/actions/getFolderByPath';
-import { DashboardDispatchContext } from '../contexts/DashboardContext';
+import { DashboardContext, DashboardDispatchContext } from '../contexts/DashboardContext';
 
 interface FolderBreadcrumbProps {
   folder: DashboardFolder;
-}
-
-const pathToLocation = (path: string) => {
-  return path ? path.split("/") : [];
 }
 
 const locationToPath = (location: string[]) => {
@@ -20,14 +15,8 @@ const locationToPath = (location: string[]) => {
 
 const goToLocation = async  (location: string[], dispatch: Dispatch<DashboardAction>) => {
   const path = locationToPath(location);
-  const folder = await getFolderByPath(path);
-  dispatch({ type: "open_folder", folder });
-}
-
-const getFolderLocation = async (folder: DashboardFolder) => {
-  const path = await getFolderPath(folder);
-  const location = pathToLocation(path);
-  return location;
+  const folderWithData = await getFolderByPath(path);
+  dispatch({ type: "open_folder", folder: folderWithData.item, data: folderWithData });
 }
 
 const breadcrumbTheme: CustomFlowbiteTheme = {
@@ -45,13 +34,13 @@ const breadcrumbTheme: CustomFlowbiteTheme = {
 
 const FolderBreadcrumb: React.FC<FolderBreadcrumbProps> = ({ folder }) => {
   const [location, setLocation] = useState<string[] | null>(null);
+  const dashboard = useContext(DashboardContext);
   const dispatch = useContext(DashboardDispatchContext);
 
   useEffect(() => {
-    getFolderLocation(folder).then((folderLocation) => {
-      setLocation(folderLocation);
-    });
-  }, [folder]);
+    let newLocation = dashboard.dataOfCurrentFolder.location;
+    setLocation(newLocation);
+  }, [dashboard.dataOfCurrentFolder.location]);
 
   return (
     <Flowbite theme={{ theme: breadcrumbTheme }}>

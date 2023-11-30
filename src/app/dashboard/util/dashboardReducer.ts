@@ -283,9 +283,10 @@ const openLink = (dashboard: DashboardView, link: DashboardLink) => {
   return dashboard;
 }
 
-const openFolder = (dashboard: DashboardView, folder: DashboardFolder) => {
+const openFolder = (dashboard: DashboardView, folder: DashboardFolder, folderData: DashboardView["dataOfCurrentFolder"]) => {
   dashboard.currentFolder = folder;
   dashboard.selected = [];
+  dashboard.dataOfCurrentFolder = folderData;
   dashboard = displayFolder(dashboard, dashboard.currentFolder);
 
   return dashboard;
@@ -346,7 +347,7 @@ export const dashboardReducer = (dashboard: DashboardView, action: DashboardActi
       return openLink(dashboard, action.link);
     }
     case "open_folder": {
-      return openFolder(dashboard, action.folder);
+      return openFolder(dashboard, action.folder, action.data);
     }
     case "undisplay_many": {
       return undisplayMany(dashboard, action.items, action.behavior);

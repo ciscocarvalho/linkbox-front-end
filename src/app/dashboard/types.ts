@@ -15,6 +15,15 @@ export type DashboardFolder = DashboardItem & {
   items: DashboardItem[];
 }
 
+export type DashboardItemWithData = {
+  item: DashboardItem;
+  type: "folder" | "link";
+  dashboard: Omit<Dashboard, "tree"> & { tree: Omit<Pick<Dashboard, "tree">["tree"], "items"> };
+  parent: DashboardFolder | null;
+  path: string;
+  location: string[];
+}
+
 export type DashboardItemCandidate = Omit<DashboardItem, "_id">;
 export type DashboardLinkCandidate = Omit<DashboardLink, "_id">;
 export type DashboardFolderCandidate = Omit<DashboardFolder, "_id">;
@@ -23,7 +32,25 @@ export type DashboardItemID = DashboardItem["_id"];
 
 export type DashboardItemType = "folder" | "link";
 
+export type Dashboard = {
+  name: string;
+  tree: {
+    items: DashboardFolder["items"];
+    _id: string;
+  };
+  _id: string;
+}
+
 export type OnClickEvent = DOMAttributes<HTMLElement>["onClick"];
+
+export type DashboardView = {
+  displayedItems: DashboardItem[],
+  selected: DashboardItem[],
+  clipboard: { copied: DashboardItem[], cut: DashboardItem[] },
+  currentFolder: DashboardFolder,
+  dataOfCurrentFolder: Omit<DashboardItemWithData, "item" | "type">;
+  inSmallScreenWidth: boolean,
+}
 
 export type DashboardAction = {
   type: "remove" | "undo_copy" | "undo_cut";
@@ -52,6 +79,7 @@ export type DashboardAction = {
 } | {
   type: "open_folder" | "display_folder";
   folder: DashboardFolder;
+  data: DashboardView["dataOfCurrentFolder"];
 } | {
   type: "open_link";
   link: DashboardLink;
@@ -60,12 +88,4 @@ export type DashboardAction = {
   inSmallScreenWidth: boolean;
 } | {
   type: "refresh";
-}
-
-export type DashboardView = {
-  displayedItems: DashboardItem[],
-  selected: DashboardItem[],
-  clipboard: { copied: DashboardItem[], cut: DashboardItem[] },
-  currentFolder: DashboardFolder,
-  inSmallScreenWidth: boolean,
 }

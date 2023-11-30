@@ -1,15 +1,15 @@
 import { Dispatch } from "react";
-import { DashboardAction, DashboardFolder } from "../../types";
-import { getParent } from "./getParent";
+import { DashboardAction, DashboardView } from "../../types";
 import { openFolder } from "./openFolder";
+import { getItemID } from "../../util";
 
 export const goBack = async (
-  currentFolder: DashboardFolder,
+  dashboard: DashboardView,
   dispatch: Dispatch<DashboardAction>
 ) => {
-  const parent = await getParent(currentFolder);
+  const parent = dashboard.dataOfCurrentFolder.parent;
 
   if (parent) {
-    await openFolder(parent, dispatch);
+    await openFolder(getItemID(parent), dispatch);
   }
 };

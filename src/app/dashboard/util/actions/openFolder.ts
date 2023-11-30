@@ -1,15 +1,22 @@
 import { Dispatch } from "react";
-import { DashboardAction, DashboardFolder } from "../../types";
-import { getItemID, itemIsFolder } from "../../util";
+import { DashboardAction } from "../../types";
+import { itemIsFolder } from "../../util";
 import { getByID } from "./getByID";
 
 export const openFolder = async (
-  folder: DashboardFolder,
+  folderId: string,
   dispatch: Dispatch<DashboardAction>
 ) => {
-  const retrievedFolder = await getByID(getItemID(folder)) as DashboardFolder | undefined;
+  const folderWithData = await getByID(folderId);
+  const folder = itemIsFolder(folderWithData?.item) ? folderWithData?.item : null;
+  const data = { ...folderWithData };
 
-  if (retrievedFolder && itemIsFolder(retrievedFolder)) {
-    dispatch({ type: "open_folder", folder: retrievedFolder });
+  if (data) {
+    delete data.item;
+    delete data.type;
+  }
+
+  if (folder) {
+    dispatch({ type: "open_folder", folder, data });
   }
 };

@@ -1,11 +1,11 @@
-import { DashboardFolder, DashboardItem } from "../../types";
+import { DashboardItemID } from "../../types";
 import { move } from "./move";
 
 export const moveMany = async (
-  items: DashboardItem[],
-  folder: DashboardFolder,
+  itemIDs: DashboardItemID[],
+  folderID: DashboardItemID,
 ) => {
-  for (let item of items) {
-    await move(item, folder);
+  for (let itemID of itemIDs) {
+    await move(itemID, folderID);
   }
 };

@@ -102,13 +102,10 @@ const CardsContainer: React.FC<CardsContainerProps> = ({ items }) => {
 
   const moveToFolder = async (folder: DashboardFolder) => {
     if (manySelected) {
-      await moveMany(selected, folder);
+      await moveMany(selected.map((item) => getItemID(item)), getItemID(folder));
       dispatch({ type: "reset_selection" });
     } else if (activeID) {
-      const item = await getByID(activeID);
-      if (item) {
-        await move(item, folder);
-      }
+      await move(activeID, getItemID(folder));
     }
 
     await refreshDashboard(dashboard, dispatch);
@@ -167,7 +164,6 @@ const CardsContainer: React.FC<CardsContainerProps> = ({ items }) => {
     }
 
     setOverInfo(null);
-    (await getByID(getItemID(currentFolder))) as DashboardFolder;
     await refreshDashboard(dashboard, dispatch);
   };
 
@@ -177,7 +173,7 @@ const CardsContainer: React.FC<CardsContainerProps> = ({ items }) => {
       undefined;
 
     if (!activeIsSelected) {
-      const item = await getByID(active.id as DashboardItemID);
+      const item = (await getByID(active.id as DashboardItemID))?.item;
       if (item) {
         dispatch({ type: "select", item, behavior: "exclusive" });
       }

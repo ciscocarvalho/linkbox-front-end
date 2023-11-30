@@ -7,14 +7,13 @@ import { DashboardContext, DashboardDispatchContext } from './contexts/Dashboard
 import CardsContainer from "./components/CardsContainer";
 import CardsHeader from "./components/CardsHeader";
 import CardsFooter from "./components/CardsFooter";
-import fetchJsonPayload from "../../Services/fetchJsonPayload";
-import { openFolder } from "./util/actions/openFolder";
 import { includesItem } from "./util";
 import IconButton from "../components/IconButton";
 import { Dropdown } from "flowbite-react";
 import logout from "../../Services/Auth/logout";
 import Icon from "../components/Icon";
 import { useCookies } from "react-cookie";
+import { getFolderByPath } from "./util/actions/getFolderByPath";
 
 const isInSmallScreenWidth = () => window.innerWidth <= 651;
 
@@ -26,6 +25,7 @@ const Dashboard: React.FC = () => {
     selected: [],
     clipboard: { copied: [], cut: [] },
     currentFolder: null as any,
+    dataOfCurrentFolder: null as any,
     inSmallScreenWidth: isInSmallScreenWidth(),
   };
   const [dashboard, dispatch] = useReducer(dashboardReducer, initialDashboard);
@@ -33,17 +33,19 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     const getInitialFolder = async () => {
-      const { data: { dashboards } } = await fetchJsonPayload("get", "/dashboards");
-      if (!dashboards) {
+      const folderWithData = await getFolderByPath("");
+
+      if (!folderWithData) {
         setUserLoggedIn(false);
         return;
       }
-      return dashboards.find((dashboard: any) => dashboard.name === "default").tree;
+
+      return folderWithData;
     }
 
-    getInitialFolder().then(async (folder) => {
-      if (folder) {
-        await openFolder(folder, dispatch);
+    getInitialFolder().then(async (folderWithData) => {
+      if (folderWithData) {
+        dispatch({ type: "open_folder", folder: folderWithData.item, data: folderWithData });
       }
     });
   }, []);

@@ -1,5 +1,5 @@
 import { Dispatch } from "react";
-import { DashboardAction, DashboardFolder, DashboardView } from "../../types";
+import { DashboardAction, DashboardView } from "../../types";
 import { getByID } from "./getByID";
 import { getItemID } from "../../util";
 
@@ -8,9 +8,9 @@ export const refreshDashboard = async (
   dispatch: Dispatch<DashboardAction>
 ) => {
   const folderID = getItemID(dashboard.currentFolder);
-  const folder = await getByID(folderID) as DashboardFolder | undefined;
+  const folderWithData = await getByID(folderID);
 
-  if (folder) {
-    dispatch({ type: "display_folder", folder });
+  if (folderWithData) {
+    dispatch({ type: "display_folder", folder: folderWithData.item, data: folderWithData });
   }
 };

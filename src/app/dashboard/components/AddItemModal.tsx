@@ -7,6 +7,7 @@ import PrimaryButton from '../../components/PrimaryButton';
 import { add } from '../util/actions/add';
 import { refreshDashboard } from '../util/actions/refreshDashboard';
 import { DashboardItem } from '../types';
+import { getItemID } from '../util';
 
 interface ItemFormProps {
   addItem: Function;
@@ -212,7 +213,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ openModal, setOpenModal }) 
   const dispatch = useContext(DashboardDispatchContext);
 
   const addItem = async (item: DashboardItem) => {
-    const payload = await add(dashboard.currentFolder, item as any as DashboardItem);
+    const payload = await add(getItemID(dashboard.currentFolder), item as any as DashboardItem);
 
     if (payload.msg) {
       return payload;

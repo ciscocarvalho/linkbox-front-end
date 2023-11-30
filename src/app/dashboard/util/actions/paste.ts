@@ -1,42 +1,42 @@
 import { Dispatch } from "react";
-import { DashboardAction, DashboardFolder, DashboardItem, DashboardItemCandidate, DashboardView } from "../../types";
+import { DashboardAction, DashboardItem, DashboardItemCandidate, DashboardItemID, DashboardView } from "../../types";
 import { add } from "./add";
 import { clone } from "./clone";
 import { move } from "./move";
 import { refreshDashboard } from "./refreshDashboard";
-import { itemIsCandidate } from "../../util";
+import { getItemID, itemIsCandidate } from "../../util";
 
 const cutItemsToFolder = async (
   items: (DashboardItem | DashboardItemCandidate)[],
-  folder: DashboardFolder
+  folderID: DashboardItemID
 ) => {
   for (const item of items) {
     if (itemIsCandidate(item)) {
-      await add(folder, item);
+      await add(folderID, item);
     } else {
-      await move(item, folder);
+      await move(getItemID(item), folderID);
     }
   }
 };
 
 const copyItemsToFolder = async (
   items: DashboardItem[],
-  folder: DashboardFolder
+  folderID: DashboardItemID
 ) => {
   const copiedItems = items.map((item) => clone(item));
-  await cutItemsToFolder(copiedItems, folder);
+  await cutItemsToFolder(copiedItems, folderID);
   return copiedItems;
 };
 
 export const paste = async (
   dashboard: DashboardView,
-  folder: DashboardFolder,
+  folderID: DashboardItemID,
   dispatch: Dispatch<DashboardAction>
 ) => {
   const { cut, copied } = dashboard.clipboard;
   dispatch({ type: "reset_clipboard" });
 
-  await cutItemsToFolder(cut, folder);
-  await copyItemsToFolder(copied, folder);
+  await cutItemsToFolder(cut, folderID);
+  await copyItemsToFolder(copied, folderID);
   await refreshDashboard(dashboard, dispatch);
 };

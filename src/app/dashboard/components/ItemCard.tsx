@@ -34,7 +34,7 @@ const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
       if (itemType === "link") {
         dispatch({ type: "open_link", link: item })
       } else {
-        await openFolder(item, dispatch);
+        await openFolder(getItemID(item), dispatch);
       }
     }
   }
