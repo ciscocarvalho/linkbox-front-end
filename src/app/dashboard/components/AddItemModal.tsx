@@ -208,7 +208,7 @@ interface AddItemModalProps {
 
 const AddItemModal: React.FC<AddItemModalProps> = ({ openModal, setOpenModal }) => {
   const emailInputRef = useRef<HTMLInputElement>(null);
-  const [itemType, setItemType] = useState("folder");
+  const [itemType, setItemType] = useState("link");
   const dashboard = useContext(DashboardContext);
   const dispatch = useContext(DashboardDispatchContext);
 
@@ -231,8 +231,8 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ openModal, setOpenModal }) 
           <h3 className="text-xl">Adicionar item</h3>
           <div>
             <Select required onChange={(e) => setItemType(e.target.value)} defaultValue={itemType}>
-              <option value="folder">Pasta</option>
               <option value="link">Link</option>
+              <option value="folder">Pasta</option>
             </Select>
           </div>
         </div>
