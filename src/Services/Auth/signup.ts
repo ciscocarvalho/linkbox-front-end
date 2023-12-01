@@ -1,7 +1,13 @@
 import fetchJsonPayload from "../fetchJsonPayload";
 
-const signup = async (email: string, password: string) => {
-  const { data } = await fetchJsonPayload("post", "/auth/signup", { email, password });
+type signupData = {
+  username: string;
+  email: string;
+  password: string;
+}
+
+const signup = async (signupData: signupData) => {
+  const { data } = await fetchJsonPayload("post", "/auth/signup", signupData);
   return data;
 };
 

@@ -52,7 +52,11 @@ const CadastroForm: React.FC = () => {
           return;
         }
 
-        const data = await signup(email!, password!);
+        const data = await signup({
+          username: username!,
+          email: email!,
+          password: password!,
+        });
 
         if (data?.auth) {
           setCookie("token", data.token);

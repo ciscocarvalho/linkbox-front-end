@@ -14,11 +14,13 @@ import logout from "../../Services/Auth/logout";
 import Icon from "../components/Icon";
 import { useCookies } from "react-cookie";
 import { getFolderByPath } from "./util/actions/getFolderByPath";
+import { useCurrentUser } from "../../hooks/useCurrentUser";
 
 const isInSmallScreenWidth = () => window.innerWidth <= 651;
 
 const Dashboard: React.FC = () => {
   const [_, __, removeCookie] = useCookies(["token"]);
+  const { currentUser, loading: loadingCurrentUser } = useCurrentUser();
 
   const initialDashboard: DashboardView = {
     displayedItems: [],
@@ -97,7 +99,15 @@ const Dashboard: React.FC = () => {
             <SearchBar type="text" placeholder="Pesquise" id="inputPesquisa" />
           </div>
           <div className="flex-1 flex justify-end">
-            <Dropdown label="" placement="bottom-end" renderTrigger={() => <div><IconButton icon="more_vert" /></div> }>
+            <Dropdown label="" placement="bottom-end" renderTrigger={() => <div><IconButton icon="more_vert" /></div> } className="max-w-[250px]">
+              <Dropdown.Header>
+                <span className="block truncate text-lg">
+                  {loadingCurrentUser ? "Carregando..." : currentUser?.username ?? ""}
+                </span>
+                <span className="block truncate">
+                  {loadingCurrentUser ? "Carregando..." : currentUser?.email ?? ""}
+                </span>
+              </Dropdown.Header>
               <Dropdown.Item icon={() => <Icon name="logout" />} onClick={handleLogout}><span className="ml-[10px]">Sair</span></Dropdown.Item>
             </Dropdown>
           </div>
