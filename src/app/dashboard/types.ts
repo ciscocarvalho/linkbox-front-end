@@ -1,19 +1,21 @@
 import { DOMAttributes } from "react";
 
-export type DashboardItem = {
+type DashboardItemBase = {
   _id: string;
   backgroundColor?: string;
 }
 
-export type DashboardLink = DashboardItem & {
+export type DashboardLink = DashboardItemBase & {
   url: string;
   title: string;
 }
 
-export type DashboardFolder = DashboardItem & {
+export type DashboardFolder = DashboardItemBase & {
   name: string;
   items: DashboardItem[];
 }
+
+export type DashboardItem = DashboardLink | DashboardFolder;
 
 export type DashboardItemWithData = {
   item: DashboardItem;
@@ -49,7 +51,8 @@ export type DashboardView = {
   clipboard: { copied: DashboardItem[], cut: DashboardItem[] },
   currentFolder: DashboardFolder,
   dataOfCurrentFolder: Omit<DashboardItemWithData, "item" | "type">;
-  inSmallScreenWidth: boolean,
+  updatingItem?: DashboardItem;
+  inSmallScreenWidth: boolean;
 }
 
 export type DashboardAction = {
@@ -86,6 +89,9 @@ export type DashboardAction = {
 } | {
   type: "in_small_screen_width";
   inSmallScreenWidth: boolean;
+} | {
+  type: "change_updating_item";
+  item?: DashboardItem;
 } | {
   type: "refresh";
 }

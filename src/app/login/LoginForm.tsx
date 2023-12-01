@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import { getEmailError } from "../Util/AuthForm";
+import { getEmailError } from "../Util/validateUser";
 import PrimaryButton from '../components/PrimaryButton';
 import { useCookies } from 'react-cookie';
 import login from '../../Services/Auth/login';

@@ -102,6 +102,11 @@ const refresh = (dashboard: DashboardView) => {
   return displayFolder(dashboard, dashboard.currentFolder);
 };
 
+const changeUpdatingItem = (dashboard: DashboardView, item?: DashboardItem) => {
+  dashboard.updatingItem = item;
+  return dashboard;
+}
+
 const displayOne = (
   dashboard: DashboardView,
   item: DashboardItem,
@@ -379,6 +384,9 @@ export const dashboardReducer = (dashboard: DashboardView, action: DashboardActi
     case "in_small_screen_width": {
       dashboard.inSmallScreenWidth = action.inSmallScreenWidth;
       return dashboard;
+    }
+    case "change_updating_item": {
+      return changeUpdatingItem(dashboard, action.item);
     }
     default: {
       return dashboard;

@@ -5,7 +5,7 @@ import IconButton from '../../../components/IconButton';
 import { remove } from '../../util/actions/remove';
 import { refreshDashboard } from '../../util/actions/refreshDashboard';
 import { update } from '../../util/actions/update';
-import { DashboardFolder, DashboardFolderCandidate, DashboardItem } from '../../types';
+import { DashboardItem } from '../../types';
 
 interface BtnsContainerProps {
   item: DashboardItem;
@@ -21,23 +21,6 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
   const dashboard = useContext(DashboardContext);
   const dispatch = useContext(DashboardDispatchContext);
   const isSelected = util.includesItem(dashboard.selected, item);
-
-  const editItem = async () => {
-    if (util.itemIsLink(item)) {
-      const linkInfo = util.inputLinkInfo();
-      if (linkInfo) {
-        await update(item, linkInfo);
-      }
-    } else {
-      const folderInfo = util.inputFolderInfo() as Partial<DashboardFolderCandidate> | null;
-      if (folderInfo) {
-        delete folderInfo.items;
-        await update(item as DashboardFolder, folderInfo);
-      }
-    }
-
-    await refreshDashboard(dashboard, dispatch);
-  }
 
   const colorInput = useRef<HTMLInputElement>(null);
 
@@ -101,7 +84,7 @@ const BtnsContainer: React.FC<BtnsContainerProps> = ({
               icon="edit"
               onClick={async (e) => {
                 e.stopPropagation();
-                await editItem();
+                dispatch({ type: "change_updating_item", item });
               }}
             />
             <IconButton

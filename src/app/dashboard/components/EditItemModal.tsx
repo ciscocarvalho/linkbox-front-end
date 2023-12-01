@@ -1,18 +1,17 @@
 'use client';
-import { Label, Modal, TextInput, Select } from 'flowbite-react';
-import { useContext, useRef, useState } from 'react';
-import IconButton from "../../components/IconButton";
+import { Label, Modal, TextInput } from 'flowbite-react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { DashboardContext, DashboardDispatchContext } from '../contexts/DashboardContext';
 import PrimaryButton from '../../components/PrimaryButton';
-import { add } from '../util/actions/add';
 import { refreshDashboard } from '../util/actions/refreshDashboard';
-import { DashboardItem } from '../types';
-import { getItemID } from '../util';
-import { getFolderNameError } from '../../Util/validateFolder';
+import { DashboardFolder, DashboardItem, DashboardLink } from '../types';
+import { itemIsFolder } from '../util';
+import { update } from '../util/actions/update';
 import { getTitleError, getUrlError } from '../../Util/validateLink';
+import { getFolderNameError } from '../../Util/validateFolder';
 
 interface ItemFormProps {
-  addItem: Function;
+  editItem: Function;
 }
 
 interface ItemTextInputProps {
@@ -33,8 +32,10 @@ const ItemTextInput: React.FC<ItemTextInputProps> = ({ name, value, setValue, er
   />
 }
 
-const FolderForm: React.FC<ItemFormProps> = ({ addItem }) => {
-  const [name, setName] = useState("");
+type FolderFormProps = ItemFormProps & { folder: DashboardFolder };
+
+const FolderForm: React.FC<FolderFormProps> = ({ editItem, folder }) => {
+  const [name, setName] = useState(folder.name);
   let [nameError, setNameError] = useState("");
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
@@ -46,7 +47,7 @@ const FolderForm: React.FC<ItemFormProps> = ({ addItem }) => {
       return;
     }
 
-    const payload = await addItem({ name: name.trim(), items: [] });
+    const payload = await editItem({ name: name.trim() });
 
     if (!payload?.msg) {
       return;
@@ -63,19 +64,25 @@ const FolderForm: React.FC<ItemFormProps> = ({ addItem }) => {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-[inherit]">
+      <div className="space-y-6">
+        <h3 className="text-xl">Editar pasta</h3>
+      </div>
+
       <div>
         <Label htmlFor="name" value="Nome" />
         <ItemTextInput name="name" value={name} setValue={setName} error={nameError} />
       </div>
 
-      <PrimaryButton type="submit" className="w-fit h-fit py-[10px] px-[20px] self-end">Adicionar pasta</PrimaryButton>
+      <PrimaryButton type="submit" className="w-fit h-fit py-[10px] px-[20px] self-end">Salvar</PrimaryButton>
     </form>
   );
 }
 
-const LinkForm: React.FC<ItemFormProps> = ({ addItem }) => {
-  const [title, setTitle] = useState("");
-  const [url, setUrl] = useState("");
+type LinkFormProps = ItemFormProps & { link: DashboardLink };
+
+const LinkForm: React.FC<LinkFormProps> = ({ editItem, link }) => {
+  const [title, setTitle] = useState(link.title);
+  const [url, setUrl] = useState(link.url);
   let [titleError, setTitleError] = useState("");
   let [urlError, setUrlError] = useState("");
 
@@ -89,7 +96,7 @@ const LinkForm: React.FC<ItemFormProps> = ({ addItem }) => {
       return;
     }
 
-    const payload = await addItem({ title: title.trim(), url: url.trim() });
+    const payload = await editItem({ title: title.trim(), url: url.trim() });
 
     if (!payload?.msg) {
       return;
@@ -104,6 +111,10 @@ const LinkForm: React.FC<ItemFormProps> = ({ addItem }) => {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-[inherit]">
+      <div className="space-y-6">
+        <h3 className="text-xl">Editar link</h3>
+      </div>
+
       <div>
         <Label htmlFor="url" value="URL" />
         <ItemTextInput name="url" value={url} setValue={setUrl} error={urlError} />
@@ -114,55 +125,48 @@ const LinkForm: React.FC<ItemFormProps> = ({ addItem }) => {
         <ItemTextInput name="title" value={title} setValue={setTitle} error={titleError} />
       </div>
 
-      <PrimaryButton type="submit" className="w-fit h-fit py-[10px] px-[20px] self-end">Adicionar link</PrimaryButton>
+      <PrimaryButton type="submit" className="w-fit h-fit py-[10px] px-[20px] self-end">Salvar</PrimaryButton>
     </form>
   );
 }
 
-interface AddItemModalProps {
-  openModal: boolean;
-  setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const AddItemModal: React.FC<AddItemModalProps> = ({ openModal, setOpenModal }) => {
+const EditItemModal: React.FC = () => {
   const emailInputRef = useRef<HTMLInputElement>(null);
-  const [itemType, setItemType] = useState("link");
   const dashboard = useContext(DashboardContext);
   const dispatch = useContext(DashboardDispatchContext);
+  const { updatingItem: item } = dashboard;
+  const [openModal, setOpenModal] = useState(!!item);
 
-  const addItem = async (item: DashboardItem) => {
-    const payload = await add(getItemID(dashboard.currentFolder), item as any as DashboardItem);
+  useEffect(() => {
+    setOpenModal(!!item);
+  }, [item])
 
-    if (payload.msg) {
-      return payload;
-    } else {
-      await refreshDashboard(dashboard, dispatch);
-      setOpenModal(false);
-    }
+  if (!item) {
+    return;
+  }
+
+  const handleOnClose = () => {
+    dispatch({ type: "change_updating_item" });
+  }
+
+  const editItem = async (updatedFields: Partial<DashboardItem>) => {
+    await update(item, updatedFields);
+    await refreshDashboard(dashboard, dispatch);
+    setOpenModal(false);
   }
 
   return (
-    <Modal dismissible show={openModal} size="md" popup onClose={() => setOpenModal(false)} initialFocus={emailInputRef}>
+    <Modal dismissible show={openModal} size="md" popup onClose={handleOnClose} initialFocus={emailInputRef}>
       <Modal.Header />
       <Modal.Body className="flex flex-col gap-[20px]">
-        <div className="space-y-6">
-          <h3 className="text-xl">Adicionar item</h3>
-          <div>
-            <Select required onChange={(e) => setItemType(e.target.value)} defaultValue={itemType}>
-              <option value="link">Link</option>
-              <option value="folder">Pasta</option>
-            </Select>
-          </div>
-        </div>
-
         {
-          itemType === "folder"
-            ? <FolderForm addItem={addItem} />
-            : <LinkForm addItem={addItem} />
+          itemIsFolder(item)
+            ? <FolderForm editItem={editItem} folder={item} />
+            : <LinkForm editItem={editItem} link={item} />
         }
       </Modal.Body>
     </Modal>
   );
 }
 
-export default AddItemModal;
+export default EditItemModal;

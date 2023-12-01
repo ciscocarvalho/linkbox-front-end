@@ -15,6 +15,7 @@ import Icon from "../components/Icon";
 import { useCookies } from "react-cookie";
 import { getFolderByPath } from "./util/actions/getFolderByPath";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
+import EditItemModal from "./components/EditItemModal";
 
 const isInSmallScreenWidth = () => window.innerWidth <= 651;
 
@@ -30,8 +31,12 @@ const Dashboard: React.FC = () => {
     dataOfCurrentFolder: null as any,
     inSmallScreenWidth: isInSmallScreenWidth(),
   };
+
   const [dashboard, dispatch] = useReducer(dashboardReducer, initialDashboard);
   const [userLoggedIn, setUserLoggedIn] = useState(true);
+  const { clipboard, displayedItems, updatingItem } = dashboard;
+  const validItems = displayedItems.filter(item => !includesItem(clipboard.cut, item));
+  const hasItems = displayedItems.length > 0;
 
   useEffect(() => {
     const getInitialFolder = async () => {
@@ -79,10 +84,6 @@ const Dashboard: React.FC = () => {
     removeCookie("token");
   }
 
-  const { clipboard, displayedItems } = dashboard;
-  const validItems = displayedItems.filter(item => !includesItem(clipboard.cut, item));
-  const hasItems = displayedItems.length > 0;
-
   return (
     <DashboardContext.Provider value={dashboard}>
       <DashboardDispatchContext.Provider value={dispatch}>
@@ -114,6 +115,7 @@ const Dashboard: React.FC = () => {
         </nav>
 
         <main className="h-[100%] flex flex-col overflow-y-auto">
+          <EditItemModal />
           <CardsHeader />
           {
             hasItems

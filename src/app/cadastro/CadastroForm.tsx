@@ -4,7 +4,7 @@ import {
   getPasswordError,
   getUsernameError,
   getEmailError,
-} from "../Util/AuthForm";
+} from "../Util/validateUser";
 import PrimaryButton from "../components/PrimaryButton";
 import signup from "../../Services/Auth/signup";
 import { useCookies } from "react-cookie";
