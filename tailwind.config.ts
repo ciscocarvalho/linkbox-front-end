@@ -16,6 +16,9 @@ const config: Config = {
       },
     },
   },
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
   plugins: [require('flowbite/plugin')],
 }
 export default config
