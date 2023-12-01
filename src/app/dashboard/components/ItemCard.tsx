@@ -2,11 +2,12 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import FolderDataContainer from "./FolderDataContainer"
 import LinkDataContainer from "./LinkDataContainer"
-import { checkItemID, getItemID, getItemType, includesItem, itemIsFolder } from '../util';
+import { checkItemID, getItemID, getItemType, includesItem, itemIsFolder, itemIsLink } from '../util';
 import { DashboardContext, DashboardDispatchContext } from '../contexts/DashboardContext';
 import BtnsContainer from './ItemCard/BtnsContainer';
 import { openFolder } from '../util/actions/openFolder';
 import { DashboardFolder, DashboardItem, DashboardLink } from '../types';
+import { isMobile } from 'react-device-detect';
 
 interface ItemCardProps { item: DashboardItem };
 
@@ -25,17 +26,25 @@ const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
   const dispatch = useContext(DashboardDispatchContext);
   const isSelected = includesItem(selected, item);
 
-  const onSingleClick = () => {
-    dispatch({ type: "select", item, behavior: "exclusive" });
+  const openItem = async (item: DashboardItem) => {
+    if (itemIsLink(item)) {
+      dispatch({ type: "open_link", link: item })
+    } else {
+      await openFolder(getItemID(item), dispatch);
+    }
+  }
+
+  const onSingleClick = async () => {
+    if (isMobile) {
+      await openItem(item);
+    } else {
+      dispatch({ type: "select", item, behavior: "exclusive" });
+    }
   }
 
   const onDoubleClick = async () => {
-    if (card.current) {
-      if (itemType === "link") {
-        dispatch({ type: "open_link", link: item })
-      } else {
-        await openFolder(getItemID(item), dispatch);
-      }
+    if (!isMobile && card.current) {
+      await openItem(item);
     }
   }
 
@@ -94,7 +103,7 @@ const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
     }
 
     if (clickCount === 1) {
-      onSingleClick();
+      await onSingleClick();
       currentCard = card.current;
       clickTimeout = setTimeout(() => {
         clickCount = 0;
