@@ -17,8 +17,6 @@ import { getFolderByPath } from "./util/actions/getFolderByPath";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
 import EditItemModal from "./components/EditItemModal";
 
-const isInSmallScreenWidth = () => window.innerWidth <= 651;
-
 const Dashboard: React.FC = () => {
   const [_, __, removeCookie] = useCookies(["token"]);
   const { currentUser, loading: loadingCurrentUser } = useCurrentUser();
@@ -29,7 +27,6 @@ const Dashboard: React.FC = () => {
     clipboard: { copied: [], cut: [] },
     currentFolder: null as any,
     dataOfCurrentFolder: null as any,
-    inSmallScreenWidth: isInSmallScreenWidth(),
   };
 
   const [dashboard, dispatch] = useReducer(dashboardReducer, initialDashboard);
@@ -55,19 +52,6 @@ const Dashboard: React.FC = () => {
         dispatch({ type: "open_folder", folder: folderWithData.item, data: folderWithData });
       }
     });
-  }, []);
-
-  useEffect(() => {
-    const listener = () => {
-      const inSmallScreenWidth = isInSmallScreenWidth();
-      dispatch({ type: "in_small_screen_width", inSmallScreenWidth });
-    }
-
-    window.addEventListener("resize", listener);
-
-    return () => {
-      window.removeEventListener("resize", listener);
-    }
   }, []);
 
   if (!userLoggedIn) {

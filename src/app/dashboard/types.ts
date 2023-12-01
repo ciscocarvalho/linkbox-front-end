@@ -52,7 +52,6 @@ export type DashboardView = {
   currentFolder: DashboardFolder,
   dataOfCurrentFolder: Omit<DashboardItemWithData, "item" | "type">;
   updatingItem?: DashboardItem;
-  inSmallScreenWidth: boolean;
 }
 
 export type DashboardAction = {
@@ -86,9 +85,6 @@ export type DashboardAction = {
 } | {
   type: "open_link";
   link: DashboardLink;
-} | {
-  type: "in_small_screen_width";
-  inSmallScreenWidth: boolean;
 } | {
   type: "change_updating_item";
   item?: DashboardItem;

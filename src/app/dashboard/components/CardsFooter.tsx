@@ -4,10 +4,12 @@ import { DashboardContext, DashboardDispatchContext } from '../contexts/Dashboar
 import IconButton from '../../components/IconButton';
 import { removeMany } from '../util/actions/removeMany';
 import BtnsContainer from './ItemCard/BtnsContainer';
+import { useMobileView } from '../../../hooks/useMobileView';
 
 const CardsFooter: React.FC = () => {
   const dashboard = useContext(DashboardContext);
   const dispatch = useContext(DashboardDispatchContext);
+  const { mobileView } = useMobileView();
   const { selected } = dashboard;
 
   const copySelected = () => {
@@ -25,7 +27,7 @@ const CardsFooter: React.FC = () => {
     dispatch({ type: "reset_selection" });
   }
 
-  if (selected.length === 0 || (selected.length === 1 && !dashboard.inSmallScreenWidth)) {
+  if (selected.length === 0 || (selected.length === 1 && !mobileView)) {
     return null;
   }
 

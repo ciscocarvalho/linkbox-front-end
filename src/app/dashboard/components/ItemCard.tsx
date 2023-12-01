@@ -8,6 +8,7 @@ import BtnsContainer from './ItemCard/BtnsContainer';
 import { openFolder } from '../util/actions/openFolder';
 import { DashboardFolder, DashboardItem, DashboardLink } from '../types';
 import { isMobile } from 'react-device-detect';
+import { useMobileView } from '../../../hooks/useMobileView';
 
 interface ItemCardProps { item: DashboardItem };
 
@@ -19,10 +20,11 @@ let currentCard: HTMLDivElement | null;
 const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
   let [backgroundColor, setBackgroundColor] = useState(item.backgroundColor);
   const [hovering, setHovering] = useState(false);
+  const { mobileView } = useMobileView();
   const itemType = getItemType(item);
   const computedProps = { [`data-${itemType}-id`]: getItemID(item).toString() };
   const card = useRef<HTMLDivElement>(null);
-  const { selected, inSmallScreenWidth } = useContext(DashboardContext);
+  const { selected } = useContext(DashboardContext);
   const dispatch = useContext(DashboardDispatchContext);
   const isSelected = includesItem(selected, item);
 
@@ -117,7 +119,7 @@ const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
 
   let btnsVariant: "select_only" | "all" | null = null;
 
-  if (inSmallScreenWidth) {
+  if (mobileView) {
     btnsVariant = "select_only";
   } else if (hovering && !overInfo) {
     btnsVariant = "all";
