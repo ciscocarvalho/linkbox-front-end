@@ -53,17 +53,16 @@ const CadastroForm: React.FC = () => {
           return;
         }
 
-        const data = await signup({
+        const payload = await signup({
           username: username!,
           email: email!,
           password: password!,
         });
 
-        if (data?.auth) {
-          setToken(data.token);
+        if (payload?.data?.auth) {
+          setToken(payload.data.token);
           window.location.href = "/dashboard";
         } else {
-          console.error(data.msg);
           alert("Ocorreu um erro ao cadastrar");
         }
       }}

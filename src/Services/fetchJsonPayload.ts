@@ -1,8 +1,14 @@
 import { Cookies } from "react-cookie";
 import { BACKEND_URL } from "../constants";
 
-const checkUserAuthenticated = (payload: any) => {
-  return payload.error?.message !== "No current user authenticated";
+const checkUserAuthenticated = (payload: { errors?: Array<{ message: string }> }) => {
+  const errors = payload.errors;
+
+  if (!errors) {
+    return true;
+  }
+
+  return !errors.some((error) => error.message === "No current user authenticated");
 }
 
 const fetchJsonPayload = async (method: string, route: string, bodyOptions?: object) => {
@@ -18,6 +24,8 @@ const fetchJsonPayload = async (method: string, route: string, bodyOptions?: obj
   if (!checkUserAuthenticated(payload)) {
     new Cookies().remove("token");
   }
+
+  payload?.errors?.forEach((error: { message: string }) => console.error(error.message));
 
   return payload;
 }

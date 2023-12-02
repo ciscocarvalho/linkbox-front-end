@@ -34,11 +34,9 @@ const LoginForm: React.FC = () => {
     const payload = await login(email!, password!);
 
     if (payload.data?.auth) {
-      const token = payload.data.token;
-      setToken(token!);
+      setToken(payload.data.token);
       window.location.href = "/dashboard";
     } else {
-      console.error(payload.error?.message);
       alert("Ocorreu um erro ao entrar");
     }
   }

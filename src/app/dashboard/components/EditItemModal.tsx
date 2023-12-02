@@ -49,17 +49,13 @@ const FolderForm: React.FC<FolderFormProps> = ({ editItem, folder }) => {
 
     const payload = await editItem({ name: name.trim() });
 
-    if (!payload?.msg) {
-      return;
-    }
-
-    const error = payload.msg;
-
-    if (error === "Invalid folder name") {
-      setNameError("Nome inválido");
-    } else if (error === "Folder name already used") {
-      setNameError("Já existe uma pasta com esse nome");
-    }
+    payload?.errors?.forEach(({ message }: { message: string }) => {
+      if (message === "Invalid folder name") {
+        setNameError("Nome inválido");
+      } else if (message === "Folder name already used") {
+        setNameError("Já existe uma pasta com esse nome");
+      }
+    })
   }
 
   return (
@@ -98,15 +94,11 @@ const LinkForm: React.FC<LinkFormProps> = ({ editItem, link }) => {
 
     const payload = await editItem({ title: title.trim(), url: url.trim() });
 
-    if (!payload?.msg) {
-      return;
-    }
-
-    const error = payload.msg;
-
-    if (error === "Link url already used") {
-      setUrlError("Já existe um link com essa URL");
-    }
+    payload?.errors?.forEach(({ message }: { message: string }) => {
+      if (message === "Link url already used") {
+        setUrlError("Já existe um link com essa URL");
+      }
+    });
   }
 
   return (
@@ -150,9 +142,14 @@ const EditItemModal: React.FC = () => {
   }
 
   const editItem = async (updatedFields: Partial<DashboardItem>) => {
-    await update(item, updatedFields);
-    await refreshDashboard(dashboard, dispatch);
-    setOpenModal(false);
+    const payload = await update(item, updatedFields);
+
+    if (payload?.errors) {
+      return payload;
+    } else {
+      await refreshDashboard(dashboard, dispatch);
+      setOpenModal(false);
+    }
   }
 
   return (

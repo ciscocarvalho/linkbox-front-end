@@ -4,11 +4,11 @@ type SigninResult = {
   data?: {
     auth: boolean;
     user: string;
-    token: string | null;
+    token: string;
   };
-  error?: {
+  errors?: {
     message: string,
-  }
+  }[]
 };
 
 const login = async (email: string, password: string): Promise<SigninResult> => {
