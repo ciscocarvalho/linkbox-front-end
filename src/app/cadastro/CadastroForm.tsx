@@ -10,6 +10,7 @@ import signup from "../../Services/Auth/signup";
 import { useCookies } from "react-cookie";
 import Icon from "../components/Icon";
 import MyTextInput from "../components/Form/MyTextInput";
+import { useToken } from "../../hooks/useToken";
 
 const CadastroForm: React.FC = () => {
   const [username, setUsername] = useState<string | null>(null);
@@ -19,7 +20,7 @@ const CadastroForm: React.FC = () => {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [_, setCookie] = useCookies(["token"]);
+  const { setToken } = useToken();
 
   const setErrors = (force: boolean = false) => {
     if (username !== null || force) {
@@ -59,7 +60,7 @@ const CadastroForm: React.FC = () => {
         });
 
         if (data?.auth) {
-          setCookie("token", data.token);
+          setToken(data.token);
           window.location.href = "/dashboard";
         } else {
           console.error(data.msg);

@@ -2,17 +2,17 @@
 import React, { useEffect, useState } from 'react';
 import { getEmailError } from "../Util/validateUser";
 import PrimaryButton from '../components/PrimaryButton';
-import { useCookies } from 'react-cookie';
 import login from '../../Services/Auth/login';
 import MyTextInput from '../components/Form/MyTextInput';
 import Icon from '../components/Icon';
+import { useToken } from '../../hooks/useToken';
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
   const [emailError, setEmailError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [_, setCookie] = useCookies(["token"]);
+  const { setToken } = useToken();
 
   const setErrors = (force: boolean = false) => {
     if (email !== null || force) {
@@ -34,7 +34,8 @@ const LoginForm: React.FC = () => {
     const payload = await login(email!, password!);
 
     if (payload.data?.auth) {
-      setCookie("token", payload.data.token);
+      const token = payload.data.token;
+      setToken(token!);
       window.location.href = "/dashboard";
     } else {
       console.error(payload.error?.message);

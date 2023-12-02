@@ -1,15 +1,27 @@
 "use client";
-import React from 'react';
+import React, { useEffect } from 'react';
 import LoginForm from './LoginForm';
-import { useCookies } from 'react-cookie';
+import fetchJsonPayload from '../../Services/fetchJsonPayload';
+import { useToken } from '../../hooks/useToken';
 
 const Login: React.FC = () => {
-  const [cookies, _] = useCookies(["token"]);
+  const { getToken } = useToken();
 
-  if (cookies.token) {
-    window.location.href = "/dashboard";
-    return null;
-  }
+  useEffect(() => {
+    (async () => {
+      const token = getToken();
+
+      if (!token) {
+        return;
+      }
+
+      const payload = await fetchJsonPayload("get", "/me");
+
+      if (payload?.data?.user) {
+        window.location.href = "/dashboard";
+      }
+    })();
+  }, []);
 
   return <div className="bg-[#2795DB] flex items-center justify-center w-[100%] min-h-[inherit] gap-[80px] max-[540px]:bg-[#ffffff] p-[5px]">
     <img src="/images/side-image.svg" className="w-[40%] max-[1060px]:hidden" />

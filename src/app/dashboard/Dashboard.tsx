@@ -12,13 +12,13 @@ import IconButton from "../components/IconButton";
 import { Dropdown } from "flowbite-react";
 import logout from "../../Services/Auth/logout";
 import Icon from "../components/Icon";
-import { useCookies } from "react-cookie";
 import { getFolderByPath } from "./util/actions/getFolderByPath";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
 import EditItemModal from "./components/EditItemModal";
+import { useToken } from "../../hooks/useToken";
 
 const Dashboard: React.FC = () => {
-  const [_, __, removeCookie] = useCookies(["token"]);
+  const { removeToken } = useToken();
   const { currentUser, loading: loadingCurrentUser } = useCurrentUser();
 
   const initialDashboard: DashboardView = {
@@ -65,7 +65,7 @@ const Dashboard: React.FC = () => {
 
   const handleLogout = async () => {
     await logout();
-    removeCookie("token");
+    removeToken();
   }
 
   return (

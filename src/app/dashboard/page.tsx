@@ -2,18 +2,18 @@
 import React from 'react';
 import '../reset.css';
 import Dashboard from './Dashboard';
-import { useCookies } from 'react-cookie';
 import { useIsClient } from '../../hooks/useIsClient';
+import { useToken } from '../../hooks/useToken';
 
 const Page: React.FC = () => {
-  const [cookies] = useCookies(["token"]);
+  const { getToken } = useToken();
   const isClient = useIsClient();
 
   if (!isClient) {
     return null;
   }
 
-  if (!cookies.token) {
+  if (!getToken()) {
     window.location.href = "/login";
     return null;
   }
