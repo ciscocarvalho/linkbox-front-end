@@ -31,13 +31,13 @@ const LoginForm: React.FC = () => {
       return;
     }
 
-    const data = await login(email!, password!);
+    const payload = await login(email!, password!);
 
-    if (data?.auth) {
-      setCookie("token", data.token);
+    if (payload.data?.auth) {
+      setCookie("token", payload.data.token);
       window.location.href = "/dashboard";
     } else {
-      console.error(data.msg);
+      console.error(payload.error?.message);
       alert("Ocorreu um erro ao entrar");
     }
   }
