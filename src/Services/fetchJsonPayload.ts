@@ -12,12 +12,18 @@ const checkUserAuthenticated = (payload: { errors?: Array<{ message: string }> }
 }
 
 const fetchJsonPayload = async (method: string, route: string, bodyOptions?: object) => {
-  const res = await fetch(`${BACKEND_URL}${route}`, {
-    method,
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: bodyOptions ? JSON.stringify(bodyOptions) : undefined,
-  });
+  let res;
+
+  try {
+    res = await fetch(`${BACKEND_URL}${route}`, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: bodyOptions ? JSON.stringify(bodyOptions) : undefined,
+    });
+  } catch (error: any) {
+    return {};
+  }
 
   const payload = await res.json();
 

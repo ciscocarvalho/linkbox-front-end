@@ -1,7 +1,6 @@
 'use client';
-import { Label, Modal, TextInput, Select } from 'flowbite-react';
+import { Label, Modal, Select } from 'flowbite-react';
 import { useContext, useRef, useState } from 'react';
-import IconButton from "../../components/IconButton";
 import { DashboardContext, DashboardDispatchContext } from '../contexts/DashboardContext';
 import PrimaryButton from '../../components/PrimaryButton';
 import { add } from '../util/actions/add';
@@ -10,104 +9,74 @@ import { DashboardItem } from '../types';
 import { getItemID } from '../util';
 import { getFolderNameError } from '../../Util/validateFolder';
 import { getTitleError, getUrlError } from '../../Util/validateLink';
+import { Form } from '../../../hooks/useForm';
+import MyTextInput from '../../components/Form/MyTextInput';
+import { useValidationForm } from '../../../hooks/useValidationForm';
 
 interface ItemFormProps {
   addItem: Function;
 }
 
-interface ItemTextInputProps {
-  name: string;
-  value: string;
-  setValue: Function;
-  error: string;
-}
-
-const ItemTextInput: React.FC<ItemTextInputProps> = ({ name, value, setValue, error }) => {
-  return <TextInput
-    type="text"
-    name={name}
-    value={value}
-    onInput={(e: any) => setValue(e.target.value)}
-    color={error ? "failure" : undefined}
-    helperText={error ? <span>{error}</span> : null}
-  />
-}
-
 const FolderForm: React.FC<ItemFormProps> = ({ addItem }) => {
-  const [name, setName] = useState("");
-  let [nameError, setNameError] = useState("");
-
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
-    e.preventDefault();
-
-    setNameError(nameError = getFolderNameError(name));
-
-    if (nameError) {
-      return;
-    }
-
-    const payload = await addItem({ name: name.trim(), items: [] });
-
-    payload?.errors?.forEach(({ message }: { message: string }) => {
-      if (message === "Invalid folder name") {
-        setNameError("Nome inválido");
-      } else if (message === "Folder name already used") {
-        setNameError("Já existe uma pasta com esse nome");
-      }
-    });
+  const getPayload = async (form: Form) => {
+    return await addItem({ name: form.name.value.trim(), items: [] });
   }
 
-  return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-[inherit]">
-      <div>
-        <Label htmlFor="name" value="Nome" />
-        <ItemTextInput name="name" value={name} setValue={setName} error={nameError} />
-      </div>
+  const itemType = "ITEM_ERROR";
+  const form = { name: { value: "", validate: getFolderNameError } };
 
-      <PrimaryButton type="submit" className="w-fit h-fit py-[10px] px-[20px] self-end">Adicionar pasta</PrimaryButton>
-    </form>
+  const { context, errorModal } = useValidationForm(getPayload, itemType, form);
+  const { onSubmit, getValue, setters, getError } = context;
+
+  return (
+    <>
+      {errorModal}
+      <form onSubmit={onSubmit} className="flex flex-col gap-[inherit]">
+        <div>
+          <Label htmlFor="name" value="Nome" />
+          <MyTextInput variant="small" name="name" value={getValue("name")} setValue={setters.name} error={getError("name")} />
+        </div>
+
+        <PrimaryButton type="submit" className="w-fit h-fit py-[10px] px-[20px] self-end">Adicionar pasta</PrimaryButton>
+      </form>
+    </>
   );
 }
 
 const LinkForm: React.FC<ItemFormProps> = ({ addItem }) => {
-  const [title, setTitle] = useState("");
-  const [url, setUrl] = useState("");
-  let [titleError, setTitleError] = useState("");
-  let [urlError, setUrlError] = useState("");
-
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
-    e.preventDefault();
-
-    setTitleError(titleError = getTitleError(title));
-    setUrlError(urlError = getUrlError(url));
-
-    if (titleError || urlError) {
-      return;
-    }
-
-    const payload = await addItem({ title: title.trim(), url: url.trim() });
-
-    payload?.errors?.forEach(({ message }: { message: string }) => {
-      if (message === "Link url already used") {
-        setUrlError("Já existe um link com essa URL");
-      }
+  const getPayload = async (form: Form) => {
+    return await addItem({
+      title: form.title.value.trim(),
+      url: form.url.value.trim(),
     });
   }
 
+  const errorType = "ITEM_ERROR";
+  const form = {
+    title: { value: "", validate: getTitleError },
+    url: { value: "", validate: getUrlError },
+  };
+
+  const { context, errorModal } = useValidationForm(getPayload, errorType, form);
+  const { onSubmit, getValue, setters, getError } = context;
+
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-[inherit]">
-      <div>
-        <Label htmlFor="url" value="URL" />
-        <ItemTextInput name="url" value={url} setValue={setUrl} error={urlError} />
-      </div>
+    <>
+      {errorModal}
+      <form onSubmit={onSubmit} className="flex flex-col gap-[inherit]">
+        <div>
+          <Label htmlFor="url" value="URL" />
+          <MyTextInput variant="small" name="url" value={getValue("url")} setValue={setters.url} error={getError("url")} />
+        </div>
 
-      <div>
-        <Label htmlFor="title" value="Título" />
-        <ItemTextInput name="title" value={title} setValue={setTitle} error={titleError} />
-      </div>
+        <div>
+          <Label htmlFor="title" value="Título" />
+          <MyTextInput variant="small" name="title" value={getValue("title")} setValue={setters.title} error={getError("title")} />
+        </div>
 
-      <PrimaryButton type="submit" className="w-fit h-fit py-[10px] px-[20px] self-end">Adicionar link</PrimaryButton>
-    </form>
+        <PrimaryButton type="submit" className="w-fit h-fit py-[10px] px-[20px] self-end">Adicionar link</PrimaryButton>
+      </form>
+     </>
   );
 }
 

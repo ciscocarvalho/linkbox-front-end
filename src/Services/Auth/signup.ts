@@ -7,8 +7,7 @@ type signupData = {
 }
 
 const signup = async (signupData: signupData) => {
-  const { data } = await fetchJsonPayload("post", "/auth/signup", signupData);
-  return data;
+  return await fetchJsonPayload("post", "/auth/signup", signupData);
 };
 
 export default signup;

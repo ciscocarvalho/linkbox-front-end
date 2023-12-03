@@ -1,60 +1,54 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { getEmailError } from "../Util/validateUser";
 import PrimaryButton from '../components/PrimaryButton';
 import login from '../../Services/Auth/login';
 import MyTextInput from '../components/Form/MyTextInput';
 import Icon from '../components/Icon';
 import { useToken } from '../../hooks/useToken';
+import { Form } from '../../hooks/useForm';
+import { useValidationForm } from '../../hooks/useValidationForm';
 
 const LoginForm: React.FC = () => {
-  const [email, setEmail] = useState<string | null>(null);
-  const [password, setPassword] = useState<string | null>(null);
-  const [emailError, setEmailError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const { setToken } = useToken();
 
-  const setErrors = (force: boolean = false) => {
-    if (email !== null || force) {
-      setEmailError(getEmailError(email ?? ""));
-    }
-  }
-
-  useEffect(setErrors, [email, password]);
-
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
-    e.preventDefault();
-
-    setErrors(true);
-
-    if (emailError) {
-      return;
-    }
-
-    const payload = await login(email!, password!);
+  const getPayload = async (form: Form) => {
+    const payload = await login(form.email.value, form.password.value);
 
     if (payload.data?.auth) {
       setToken(payload.data.token);
       window.location.href = "/dashboard";
-    } else {
-      alert("Ocorreu um erro ao entrar");
+      return;
     }
+
+    return payload;
   }
+
+  const form = {
+    email: { value: "", validate: getEmailError },
+    password: { value: "" },
+  }
+
+  const { context, errorModal } = useValidationForm(getPayload, "AUTH_ERROR", form);
+  const { onSubmit, getValue, getError, setters } = context;
 
   const toggleShowPassword = () => {
     setShowPassword((showPassword) => !showPassword);
   }
 
-  return <form className="flex pt-[20px] gap-[inherit] flex-col justify-center items-center w-full" onSubmit={handleSubmit}>
+  return <>
+    {errorModal}
+    <form className="flex pt-[20px] gap-[inherit] flex-col justify-center items-center w-full" onSubmit={onSubmit}>
       <div className="w-full gap-[10px] flex flex-col">
         <div>
           <MyTextInput
             placeholder="Email"
             id="email"
             name="email"
-            value={email ?? ""}
-            setValue={setEmail}
-            error={emailError}
+            value={getValue("email")}
+            setValue={setters.email}
+            error={getError("email")}
             rightIcon={() => <Icon name="mail" />}
           />
         </div>
@@ -64,9 +58,9 @@ const LoginForm: React.FC = () => {
             placeholder="Senha"
             id="password"
             name="password"
-            value={password ?? ""}
-            setValue={setPassword}
-            error={""}
+            value={getValue("password")}
+            setValue={setters.password}
+            error={getError("password")}
             type={showPassword ? "text" : "password"}
           />
           <div
@@ -87,7 +81,8 @@ const LoginForm: React.FC = () => {
       <a href="/cadastro" className="text-[#2795DB] mt-[30px]">
           Ainda não possui conta? Cadastrar
       </a>
-  </form>
+    </form>
+  </>
 };
 
 export default LoginForm;

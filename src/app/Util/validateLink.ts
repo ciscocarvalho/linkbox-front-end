@@ -1,5 +1,5 @@
 export const getTitleError = (title: string) => {
-  if (title.match(/^\s$/g)) {
+  if (title.match(/^\s+$/g)) {
     return "Título não pode ser composto apenas de espaços em branco";
   }
 
@@ -26,7 +26,7 @@ export const getTitleError = (title: string) => {
 }
 
 export const getUrlError = (url: string) => {
-  if (url.match(/^\s$/g)) {
+  if (url.match(/^\s+$/g)) {
     return "URL não pode ser composta apenas de espaços em branco";
   }
 

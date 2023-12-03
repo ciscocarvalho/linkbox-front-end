@@ -5,13 +5,21 @@ type MyTextInputProps = React.ComponentProps<typeof TextInput> & {
   value: string;
   setValue: Function;
   error: string;
+  variant?: "normal" | "small";
 };
 
-const MyTextInput: React.FC<MyTextInputProps> = ({ name, value, setValue, error, ...props }) => {
+const MyTextInput: React.FC<MyTextInputProps> = ({
+  name,
+  value,
+  setValue,
+  error,
+  variant = "normal",
+  ...props
+}) => {
   const children = props.children;
   delete props.children;
 
-  return <div className="h-[80px]">
+  return <div className={variant === "normal" ? "h-[80px]" : "h-[60px]"}>
     <TextInput
       type="text"
       name={name}
