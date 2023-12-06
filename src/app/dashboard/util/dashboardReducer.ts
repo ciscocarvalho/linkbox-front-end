@@ -1,5 +1,5 @@
 import { DashboardAction, DashboardFolder, DashboardItem, DashboardLink, DashboardView } from "../types";
-import { compareItems, includesItem } from "../util";
+import { arraySwap, checkItemID, compareItems, getItemID, includesItem, itemIsInFolder } from "../util";
 import { getChildren } from "./actions/getChildren";
 
 type Behavior = "inclusive" | "exclusive";
@@ -116,7 +116,22 @@ const displayOne = (
     dashboard = undisplayAll(dashboard);
     dashboard.displayedItems = [item];
   } else if (!includesItem(dashboard.displayedItems, item)) {
-    dashboard.displayedItems.push(item);
+    const currentFolder = dashboard.currentFolder;
+    const inCurrentFolder = itemIsInFolder(item, currentFolder);
+
+    if (inCurrentFolder) {
+      const parentChildren = getChildren(currentFolder);
+      const index = parentChildren.findIndex((child) => checkItemID(child, getItemID(item)));
+      const displayedItems = dashboard.displayedItems;
+      displayedItems.unshift(item);
+
+      for (let i = 0; i < index; i++) {
+        arraySwap(displayedItems, i, i + 1);
+      }
+
+    } else {
+      dashboard.displayedItems.push(item);
+    }
   }
 
   return dashboard;
@@ -148,9 +163,12 @@ const cutOne = (
   behavior: Behavior = DEFAULT_BEHAVIOR
 ) => {
   if (behavior === "exclusive") {
+    dashboard = displayMany(dashboard, dashboard.clipboard.cut, "inclusive");
     dashboard.clipboard.cut = [item];
+    dashboard = undisplayOne(dashboard, item, "exclusive");
   } else if (!includesItem(dashboard.clipboard.cut, item)) {
     dashboard.clipboard.cut.push(item);
+    dashboard = undisplayOne(dashboard, item, "inclusive");
   }
 
   return dashboard;
@@ -178,9 +196,26 @@ const undoCopyAll = (dashboard: DashboardView) => {
 
 const undoCutOne = (dashboard: DashboardView, item: DashboardItem) => {
   const itemsCut = dashboard.clipboard.cut;
+  const affected: DashboardItem[] = [];
+
   dashboard.clipboard.cut = itemsCut.filter(
-    (itemCut) => !compareItems(itemCut, item)
+    (itemCut) => {
+      const shouldRemove = compareItems(itemCut, item)
+
+      if (shouldRemove) {
+        affected.push(itemCut);
+      }
+
+      return !shouldRemove;
+    }
   );
+
+  affected.forEach((item) => {
+    if (itemIsInFolder(item, dashboard.currentFolder)) {
+      dashboard = displayOne(dashboard, item, "inclusive");
+    }
+  })
+
   return dashboard;
 };
 

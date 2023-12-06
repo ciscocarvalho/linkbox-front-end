@@ -1,4 +1,5 @@
 import { DashboardFolder, DashboardItem, DashboardItemCandidate, DashboardItemID, DashboardItemType, DashboardLink } from "./types";
+import { getChildren } from "./util/actions/getChildren";
 
 export const getItemType = (item: (DashboardItem | DashboardItemCandidate)) => "url" in item ? "link" : "folder";
 
@@ -25,3 +26,13 @@ export const checkItemID = (item: DashboardItem, id: DashboardItemID) => {
 export const compareItems = (a: DashboardItem, b: DashboardItem) => {
   return a._id === b._id;
 };
+
+export const arraySwap = <T>(arr: T[], from: number, to: number) => {
+  const temp = arr[from];
+  arr[from] = arr[to];
+  arr[to] = temp;
+}
+
+export const itemIsInFolder = (item: DashboardItem, currentFolder: DashboardFolder) => {
+  return includesItem(getChildren(currentFolder), item);
+}

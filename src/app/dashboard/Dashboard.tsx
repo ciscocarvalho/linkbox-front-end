@@ -31,8 +31,7 @@ const Dashboard: React.FC = () => {
 
   const [dashboard, dispatch] = useReducer(dashboardReducer, initialDashboard);
   const [userLoggedIn, setUserLoggedIn] = useState(true);
-  const { clipboard, displayedItems, updatingItem } = dashboard;
-  const validItems = displayedItems.filter(item => !includesItem(clipboard.cut, item));
+  const { displayedItems } = dashboard;
   const hasItems = displayedItems.length > 0;
 
   useEffect(() => {
@@ -103,7 +102,7 @@ const Dashboard: React.FC = () => {
           <CardsHeader />
           {
             hasItems
-              ? <CardsContainer items={validItems} />
+              ? <CardsContainer items={displayedItems} />
               : <p className={"my-0 mx-auto w-[80%] h-[100%] flex justify-center items-center text-center text-[1.5rem] font-bold"}>
                 Esta pasta está vazia.
                 <br />
