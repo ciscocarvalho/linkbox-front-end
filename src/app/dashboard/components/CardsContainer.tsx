@@ -6,15 +6,14 @@ import {
   DragEndEvent,
   DragMoveEvent,
   DragStartEvent,
-  KeyboardSensor,
   PointerSensor,
+  TouchSensor,
   closestCenter,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
 import {
   SortableContext,
-  sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import React, { useContext, useRef, useState } from "react";
@@ -23,7 +22,6 @@ import {
   DashboardDispatchContext,
 } from "../contexts/DashboardContext";
 import { checkItemID, compareItems, getItemID, itemIsFolder } from "../util";
-import { getByID } from "../util/actions/getByID";
 import { getChildren } from "../util/actions/getChildren";
 import { move } from "../util/actions/move";
 import { moveMany } from "../util/actions/moveMany";
@@ -34,47 +32,45 @@ import ItemCard from "./ItemCard";
 import ItemDragOverlay from "./ItemDragOverlay";
 import SortableItem from "./SortableItem";
 import { DashboardFolder, DashboardItem, DashboardItemID } from "../types";
+import { isMobile } from "react-device-detect";
+import { usePointerEvent } from "../../../hooks/usePointerEvent";
 
 const getClientVerticalPositionRelativeToElementCenter = (
-  clientY: number,
+  pointerY: number,
   rect: ClientRect,
   centerMaxOffset: number
 ) => {
   const { top, height } = rect;
   const center = top + height / 2;
-  const positionRelativeToCenter = clientY >= center ? "below" : "above";
+  const positionRelativeToCenter = pointerY >= center ? "below" : "above";
 
   if (centerMaxOffset > 0 && centerMaxOffset < 1) {
     centerMaxOffset = Math.round(centerMaxOffset * height);
   }
 
-  const isPositionCloseToCenter =
-    clientY >= center - centerMaxOffset && clientY <= center + centerMaxOffset;
+  const closeToCenter =
+    pointerY >= center - centerMaxOffset && pointerY <= center + centerMaxOffset;
 
-  return { positionRelativeToCenter, isPositionCloseToCenter };
+  return { positionRelativeToCenter, closeToCenter };
 };
 
-const getCursorPositionInfo = (
+const getDragPointerPositionInfo = (
+  pointerY: number,
   event: DragMoveEvent,
-  items: DashboardItem[]
 ) => {
   const { over, active } = event;
-  const itemOver = items.find((item) => checkItemID(item, over?.id as DashboardItemID));
 
-  if (!active.rect.current.translated || !over || !itemOver) {
+  if (!active.rect.current.translated || !over) {
     return;
   }
 
-  const cursorPositionOnActivation = (event.activatorEvent as any).clientY;
-  const cursorPosition = cursorPositionOnActivation + event.delta.y;
+  const { closeToCenter, positionRelativeToCenter } =
+    getClientVerticalPositionRelativeToElementCenter(pointerY, over.rect, 0.2);
 
-  const { isPositionCloseToCenter, positionRelativeToCenter } =
-    getClientVerticalPositionRelativeToElementCenter(cursorPosition, over.rect, 0.2);
-
-  return { isPositionCloseToCenter, positionRelativeToCenter };
+  return { closeToCenter, positionRelativeToCenter };
 };
 
-type OverInfo = NonNullable<ReturnType<typeof getCursorPositionInfo>> & {
+type OverInfo = NonNullable<ReturnType<typeof getDragPointerPositionInfo>> & {
   id: DashboardItemID;
 };
 
@@ -88,12 +84,13 @@ const CardsContainer: React.FC<CardsContainerProps> = ({ items }) => {
   const dispatch = useContext(DashboardDispatchContext);
   const { selected, currentFolder } = dashboard;
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
-  );
+  const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 0 } });
+  const touchSensor = useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 8 } });
+  const sensors = useSensors(isMobile ? touchSensor : pointerSensor);
 
   const childrenOfCurrentFolder = getChildren(currentFolder);
+  const currentCursor = document.body.style.cursor;
+  const cursorBeforeDrag = useRef(currentCursor);
   const hasItems = items.length > 0;
   const [overInfo, setOverInfo] = useState<OverInfo | null>(null);
   const [activeID, setActiveID] = useState<DashboardItemID | null>(null);
@@ -156,7 +153,7 @@ const CardsContainer: React.FC<CardsContainerProps> = ({ items }) => {
       );
       const overItem = items[newIndex];
 
-      if (itemIsFolder(overItem) && overInfo!.isPositionCloseToCenter) {
+      if (itemIsFolder(overItem) && overInfo!.closeToCenter) {
         await moveToFolder(overItem);
       } else {
         await repositionAfterDrag(active, newIndex);
@@ -165,7 +162,10 @@ const CardsContainer: React.FC<CardsContainerProps> = ({ items }) => {
 
     setOverInfo(null);
     await refreshDashboard(dashboard, dispatch);
+    document.body.style.cursor = cursorBeforeDrag.current;
   };
+
+  const { pointerEvent } = usePointerEvent();
 
   const handleDragStart = async ({ active }: DragStartEvent) => {
     const activeIsSelected =
@@ -173,32 +173,40 @@ const CardsContainer: React.FC<CardsContainerProps> = ({ items }) => {
       undefined;
 
     if (!activeIsSelected) {
-      const item = (await getByID(active.id as DashboardItemID))?.item;
+      const id = active.id as DashboardItemID;
+      const item = dashboard.displayedItems.find((item) => checkItemID(item, id));
+
       if (item) {
         dispatch({ type: "select", item, behavior: "exclusive" });
       }
     }
 
     setActiveID(active.id as DashboardItemID);
+    cursorBeforeDrag.current = document.body.style.cursor;
+    // Setting cursor in body seems to be the only reliable way, also it's a
+    // recommendation from the `dnd-kit` author himself:
+    // https://github.com/clauderic/dnd-kit/issues/85#issuecomment-776010212
+    document.body.style.cursor = "grabbing";
   };
 
   const handleDragMove = (e: DragMoveEvent) => {
     const id = e.over?.id;
-    const cursorPositionInfo = getCursorPositionInfo(e, items);
+    const pointerY = pointerEvent.current!.y;
+    const pointerPositionInfo = getDragPointerPositionInfo(pointerY, e);
 
-    if (!id || !cursorPositionInfo) {
+    if (!id || !pointerPositionInfo) {
       return;
     }
 
     const hasChanged =
       overInfo?.positionRelativeToCenter !==
-        cursorPositionInfo.positionRelativeToCenter ||
-      overInfo?.isPositionCloseToCenter !==
-        cursorPositionInfo.isPositionCloseToCenter ||
+        pointerPositionInfo.positionRelativeToCenter ||
+      overInfo?.closeToCenter !==
+        pointerPositionInfo.closeToCenter ||
       overInfo?.id !== id;
 
     if (hasChanged) {
-      setOverInfo({ ...cursorPositionInfo, id: id as DashboardItemID });
+      setOverInfo({ ...pointerPositionInfo, id: id as DashboardItemID });
     }
   };
 

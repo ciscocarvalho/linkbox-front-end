@@ -70,12 +70,12 @@ const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
 
   let className = "flex justify-between items-center min-h-[60px] h-[60px] py-[8px] px-[20px]";
 
-  if (isSelected || hovering) {
+  if (isSelected || (hovering && !overInfo)) {
     backgroundColor = "#DDE3EC";
   }
 
   if (overInfo && checkItemID(item, overInfo.id) && !isSelected) {
-    if (overInfo.isPositionCloseToCenter && itemIsFolder(item)) {
+    if (overInfo.closeToCenter && itemIsFolder(item)) {
       backgroundColor = "#DDE3EC";
     } else {
       switch (overInfo.positionRelativeToCenter) {
@@ -129,10 +129,7 @@ const ItemCard: React.FC<ItemCardProps & any> = ({ item, overInfo }) => {
     className={`border-t-[2px] first:border-t-[1px] first:border-t-solid first:border-t-[#BBC8DC] border-b-[1px] border-b-solid border-b-[#BBC8DC] ${className}`}
     draggable={true}
     ref={card}
-    style={{
-      cursor: "default",
-      backgroundColor,
-    }}
+    style={{ backgroundColor }}
     onMouseOver={() => setHovering(true)}
     onMouseOut={() => setHovering(false)}
     onClick={handleOnClick}

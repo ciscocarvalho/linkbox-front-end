@@ -11,7 +11,7 @@ const DragIndicator: React.FC<DragIndicatorProps> = ({ amount }) => {
 
   return (
     <div className="flex justify-center items-center rounded-[100%] w-[20px] h-[20px] bg-[#BBC8DC] p-[20px]">
-      <p>{amount}</p>
+      <p>{amount > 99 ? "99+" : amount}</p>
     </div>
   );
 };

@@ -8,14 +8,10 @@ interface SortableItemProps {
 }
 
 const SortableItem: React.FC<SortableItemProps> = ({ id, children }) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-  } = useSortable({ id });
+  const { listeners, setNodeRef } = useSortable({ id });
 
   return (
-    <div ref={setNodeRef} {...attributes} {...listeners}>
+    <div tabIndex={0} ref={setNodeRef} {...listeners}>
       {children}
     </div>
   );
