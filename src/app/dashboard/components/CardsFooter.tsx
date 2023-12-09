@@ -5,12 +5,23 @@ import IconButton from '../../components/IconButton';
 import { removeMany } from '../util/actions/removeMany';
 import BtnsContainer from './ItemCard/BtnsContainer';
 import { useMobileView } from '../../../hooks/useMobileView';
+import { getChildren } from '../util/actions/getChildren';
 
 const CardsFooter: React.FC = () => {
   const dashboard = useContext(DashboardContext);
   const dispatch = useContext(DashboardDispatchContext);
   const { mobileView } = useMobileView();
-  const { selected } = dashboard;
+  const { selected, displayedItems } = dashboard;
+  const setOfSelected = new Set(selected);
+  const allSelected = displayedItems.every((item) => setOfSelected.has(item));
+
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      dispatch({ type: "reset_selection" });
+    } else {
+      dispatch({ type: "select_many", items: getChildren(dashboard.currentFolder) });
+    }
+  }
 
   const copySelected = () => {
     dispatch({ type: "copy_many", items: selected });
@@ -42,6 +53,7 @@ const CardsFooter: React.FC = () => {
             variant={"non_select_only"}
           />
           : <div className="flex justify-center items-center">
+            {<IconButton onClick={toggleSelectAll} icon={allSelected ? "check_box" : "check_box_outline_blank"} />}
             <IconButton onClick={copySelected} icon="content_copy" />
             <IconButton onClick={cutSelected} icon="cut" />
             <IconButton onClick={deleteSelected} icon="delete" />
