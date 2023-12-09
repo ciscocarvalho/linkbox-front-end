@@ -1,26 +1,15 @@
-"use client"
 import React from 'react';
-import '../reset.css';
+import { Metadata } from 'next';
 import Dashboard from './Dashboard';
-import { useIsClient } from '../../hooks/useIsClient';
-import { useToken } from '../../hooks/useToken';
+import '../reset.css';
+
+export const metadata: Metadata = {
+  icons: [{ rel: 'short icon', url: 'images/Logo.svg' } ],
+  manifest: 'manifest.json'
+}
 
 const Page: React.FC = () => {
-  const { getToken } = useToken();
-  const isClient = useIsClient();
-
-  if (!isClient) {
-    return null;
-  }
-
-  if (!getToken()) {
-    window.location.href = "/login";
-    return null;
-  }
-
-  return <div className="h-[100vh] flex flex-col">
-    <Dashboard />
-  </div>;
+  return <Dashboard />;
 };
 
 export default Page;

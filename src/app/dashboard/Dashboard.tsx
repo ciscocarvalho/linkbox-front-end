@@ -16,8 +16,9 @@ import { getFolderByPath } from "./util/actions/getFolderByPath";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
 import EditItemModal from "./components/EditItemModal";
 import { useToken } from "../../hooks/useToken";
+import { useIsClient } from '../../hooks/useIsClient';
 
-const Dashboard: React.FC = () => {
+const BaseDashboard: React.FC = () => {
   const { removeToken } = useToken();
   const { currentUser, loading: loadingCurrentUser } = useCurrentUser();
 
@@ -115,5 +116,23 @@ const Dashboard: React.FC = () => {
     </DashboardContext.Provider>
   );
 };
+
+const Dashboard: React.FC = () => {
+  const { getToken } = useToken();
+  const isClient = useIsClient();
+
+  if (!isClient) {
+    return null;
+  }
+
+  if (!getToken()) {
+    window.location.href = "/login";
+    return null;
+  }
+
+  return <div className="h-[100vh] flex flex-col">
+    <BaseDashboard />
+  </div>;
+}
 
 export default Dashboard;
