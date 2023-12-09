@@ -84,7 +84,7 @@ const CardsContainer: React.FC<CardsContainerProps> = ({ items }) => {
   const dispatch = useContext(DashboardDispatchContext);
   const { selected, currentFolder } = dashboard;
 
-  const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 0 } });
+  const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 8 } });
   const touchSensor = useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 8 } });
   const sensors = useSensors(isMobile ? touchSensor : pointerSensor);
 
