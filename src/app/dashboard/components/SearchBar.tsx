@@ -1,7 +1,7 @@
 "use client";
 import React, { useContext, useRef } from 'react';
 import { DashboardContext, DashboardDispatchContext } from '../contexts/DashboardContext';
-import { itemIsFolder, itemIsLink } from "../util";
+import { includesItem, itemIsFolder, itemIsLink } from "../util";
 import { getChildren } from "../util/actions/getChildren";
 import { DashboardItem } from '../types';
 import Icon from '../../components/Icon';
@@ -14,8 +14,8 @@ const SearchBar: React.FC<JSX.IntrinsicElements["input"]> = () => {
   const allItems = getChildren(dashboard.currentFolder);
 
   const setItems = (items: DashboardItem[]) => {
-    dispatch({ type: "undisplay_many", items: allItems })
-    dispatch({ type: "display_many", items: items })
+    items = items.filter((item) => !includesItem(dashboard.clipboard.cut, item));
+    dispatch({ type: "display_many", items, behavior: "exclusive" });
   }
 
   const filterItems = (query: string) => {

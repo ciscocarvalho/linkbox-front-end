@@ -125,7 +125,7 @@ const displayOne = (
       const displayedItems = dashboard.displayedItems;
       displayedItems.unshift(item);
 
-      for (let i = 0; i < index; i++) {
+      for (let i = 0; i < Math.min(index, displayedItems.length - 1); i++) {
         arraySwap(displayedItems, i, i + 1);
       }
 
@@ -165,7 +165,7 @@ const cutOne = (
   if (behavior === "exclusive") {
     dashboard = displayMany(dashboard, dashboard.clipboard.cut, "inclusive");
     dashboard.clipboard.cut = [item];
-    dashboard = undisplayOne(dashboard, item, "exclusive");
+    dashboard = undisplayOne(dashboard, item);
   } else if (!includesItem(dashboard.clipboard.cut, item)) {
     dashboard.clipboard.cut.push(item);
     dashboard = undisplayOne(dashboard, item, "inclusive");
