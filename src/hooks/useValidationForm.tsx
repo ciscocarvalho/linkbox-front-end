@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useForm, Form } from "./useForm";
-import AuthErrorModal from "../app/cadastro/AuthErrorModal";
+import AuthErrorModal from "../app/(auth)/signup/components/AuthErrorModal";
 
 export const useValidationForm = (
   getPayload: (form: Form) => any,

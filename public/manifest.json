@@ -6,17 +6,17 @@
     "background_color": "#F4F4F4",
     "description": "Gerenciador de Links",
     "icons": [{
-      "src": "images/Logo48x48.png",
+      "src": "images/logo/logo-48x48.png",
       "sizes": "48x48",
       "type": "image/png"
     },
     {
-        "src": "images/Logo192x192.png",
+        "src": "images/logo/logo-192x192.png",
         "sizes": "192x192",
         "type": "image/png"
       },
     {
-        "src": "images/Logo512x512.png",
+        "src": "images/logo/logo-512x512.png",
         "sizes": "512x512",
         "type": "image/png"
       }

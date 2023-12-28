@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import fetchJsonPayload from "../Services/fetchJsonPayload";
+import fetchData from "../services/fetchData";
 
 type User = {
   username: string;
@@ -12,7 +12,7 @@ export function useCurrentUser() {
 
   useEffect(() => {
     const setUser = async () => {
-      const { data: { user } } = await fetchJsonPayload("get", "/me");
+      const { data: { user } } = await fetchData("get", "/me");
       if (user) {
         setCurrentUser(user);
         setLoading(false);
