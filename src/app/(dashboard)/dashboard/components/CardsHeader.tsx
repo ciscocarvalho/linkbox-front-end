@@ -5,12 +5,12 @@ import {
   DashboardContext,
   DashboardDispatchContext,
 } from "../contexts/DashboardContext";
-import AddItemModal from "./AddItemModal";
 import { goBack } from "../utils/actions/goBack";
 import { paste } from "../utils/actions/paste";
 import { refreshDashboard } from "../utils/actions/refreshDashboard";
 import FolderBreadcrumb from "./FolderBreadcrumb";
 import { getItemID } from "../utils";
+import AddItemDialog from "./AddItemDialog";
 
 const CardsHeader = () => {
   const dashboard = useContext(DashboardContext);
@@ -19,7 +19,7 @@ const CardsHeader = () => {
   const clipboardInUse =
     clipboard.cut.length > 0 || clipboard.copied.length > 0;
   const [inSubfolder, setInSubfolder] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
     setInSubfolder(!!dashboard.dataOfCurrentFolder?.parent);
@@ -56,9 +56,9 @@ const CardsHeader = () => {
           </>
         ) : null}
 
-        <IconButton onClick={() => setOpenModal(true)} icon="add" />
+        <IconButton onClick={() => setOpenDialog(true)} icon="add" />
 
-        <AddItemModal openModal={openModal} setOpenModal={setOpenModal} />
+        <AddItemDialog openDialog={openDialog} setOpenDialog={setOpenDialog} />
       </div>
     </header>
   );

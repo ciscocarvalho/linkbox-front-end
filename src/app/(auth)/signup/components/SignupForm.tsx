@@ -1,114 +1,88 @@
-"use client";
-import React, { useState } from "react";
-import {
-  getPasswordError,
-  getUsernameError,
-  getEmailError,
-} from "../../login/utils/validateUser";
-import PrimaryButton from "../../../../components/PrimaryButton";
-import signup from "../../services/signup";
-import Icon from "../../../../components/Icon";
-import MyTextInput from "../../../../components/Form/MyTextInput";
-import { useToken } from "../../../../hooks/useToken";
-import { Form } from "../../../../hooks/useForm";
-import { useValidationForm } from "../../../../hooks/useValidationForm";
+"use client"
 
-const SignupForm: React.FC = () => {
-  const [showPassword, setShowPassword] = useState(false);
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { Button } from "@/components/ui/Button"
+import { FormProvider } from "@/components/ui/Form";
+import { z } from "zod";
+import Icon from "@/components/Icon";
+import { useToken } from "@/hooks/useToken";
+import signup from "../../services/signup";
+import useValidationForm from "@/hooks/useValidationForm";
+import CustomFormField from "@/components/ui/Form/CustomFormField";
+import PasswordFormField from "@/components/ui/Form/PasswordFormField";
+
+const formSchema = z.object({
+  email: z
+    .string()
+    .min(1, "O email é obrigatório.")
+    .email("Insira um email válido."),
+  username: z.string().min(1, "O nome de usuário é obrigatório."),
+  password: z
+    .string()
+    .min(1, "A senha é obrigatória.")
+    .min(7, "A senha precisa ter mais de 6 caracteres."),
+});
+
+type SignupForm = z.infer<typeof formSchema>;
+
+const useOnSuccess = () => {
   const { setToken } = useToken();
 
-  const toggleShowPassword = () => {
-    setShowPassword((showPassword) => !showPassword);
-  };
-
-  const errorType = "AUTH_ERROR";
-
-  const form = {
-    username: { value: "", validate: getUsernameError },
-    email: { value: "", validate: getEmailError },
-    password: { value: "", validate: getPasswordError },
-  };
-
-  const getPayload = async (form: Form) => {
-    const payload = await signup({
-      username: form.username.value,
-      email: form.email.value,
-      password: form.password.value,
-    });
-
+  const onSuccess = (payload: any) => {
     if (payload?.data?.auth) {
       setToken(payload.data.token);
       window.location.href = "/dashboard";
       return;
     }
+  }
 
-    return payload;
-  };
+  return onSuccess;
+}
 
-  const { context, errorModal } = useValidationForm(
-    getPayload,
-    errorType,
-    form
-  );
-  const { onSubmit, getValue, getError, setters } = context;
+const SignupForm: React.FC = () => {
+  const defaultValues: SignupForm = { email: "", username: "", password: "" };
+  const form = useForm<SignupForm>({ resolver: zodResolver(formSchema), defaultValues });
+  const { onValid, errorModal } = useValidationForm({
+    form,
+    getPayload: signup,
+    onSuccess: useOnSuccess(),
+    expectedErrorType: "AUTH_ERROR",
+  });
+
+  form.watch((_, info) => { form.trigger(info.name) });
 
   return (
     <>
       {errorModal}
-      <form
-        className="flex flex-col justify-center items-center gap-[inherit] w-[100%] h-[60%] max-[540px]:h-fit"
-        onSubmit={onSubmit}
-      >
-        <div className="flex flex-col pt-[20px] w-full h-fit">
-          <div>
-            <MyTextInput
-              placeholder="Nome"
-              id="username"
-              name="username"
-              value={getValue("username")}
-              setValue={setters.username}
-              error={getError("username")}
-              rightIcon={() => <Icon name="edit" />}
-            />
-          </div>
-          <div>
-            <MyTextInput
-              placeholder="Email"
-              id="email"
-              name="email"
-              value={getValue("email")}
-              setValue={setters.email}
-              error={getError("email")}
-              rightIcon={() => <Icon name="mail" />}
-            />
-          </div>
-          {/* flowbite-react doesn't provide a straightforward way to handle onClick on TextInput icon: https://github.com/themesberg/flowbite-react/issues/734 */}
-          <div className="relative">
-            <MyTextInput
-              placeholder="Senha"
-              id="password"
-              name="password"
-              value={getValue("password")}
-              setValue={setters.password}
-              error={getError("password")}
-              type={showPassword ? "text" : "password"}
-            />
-            <div
-              onClick={toggleShowPassword}
-              className={`absolute top-[10px] right-[10px] hover:cursor-pointer select-none`}
-            >
-              <Icon name={showPassword ? "visibility_off" : "visibility"} />
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-col justify-center items-center gap-[10px]">
-          <PrimaryButton type="submit">Criar conta</PrimaryButton>
-        </div>
+      <FormProvider {...form}>
+        <form
+          onSubmit={form.handleSubmit(onValid)}
+          className="flex pt-[20px] flex-col justify-center items-center gap-[inherit] w-[100%] h-[60%] max-[540px]:h-fit"
+        >
+          <CustomFormField
+            control={form.control}
+            name={"username"}
+            placeholder={"Nome"}
+            rightIcon={<Icon name="edit" />}
+          />
 
-        <a href="/login" className="text-[15px] text-[#2795DB] mt-[30px]">
-          Já possui conta? Entrar
-        </a>
-      </form>
+          <CustomFormField
+            control={form.control}
+            name={"email"}
+            placeholder="Email"
+            rightIcon={<Icon name="mail" />}
+          />
+
+          <PasswordFormField control={form.control} name={"password"} placeholder="Senha" />
+
+          <Button type="submit" className={"w-full"}>Criar conta</Button>
+
+          <a href="/login" className="text-[15px] text-[#2795DB] mt-[30px]">
+            Já possui conta? Entrar
+          </a>
+        </form>
+      </FormProvider>
     </>
   );
 };

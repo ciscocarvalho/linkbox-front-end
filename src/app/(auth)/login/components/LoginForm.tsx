@@ -1,95 +1,76 @@
 "use client";
-import React, { useState } from "react";
-import { getEmailError } from "../utils/validateUser";
-import PrimaryButton from "../../../../components/PrimaryButton";
+import React from "react";
 import login from "../../services/login";
-import MyTextInput from "../../../../components/Form/MyTextInput";
 import Icon from "../../../../components/Icon";
 import { useToken } from "../../../../hooks/useToken";
-import { Form } from "../../../../hooks/useForm";
-import { useValidationForm } from "../../../../hooks/useValidationForm";
+import useValidationForm from "../../../../hooks/useValidationForm";
+import { z } from "zod";
+import { FormProvider, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/Button";
+import CustomFormField from "@/components/ui/Form/CustomFormField";
+import PasswordFormField from "@/components/ui/Form/PasswordFormField";
 
-const LoginForm: React.FC = () => {
-  const [showPassword, setShowPassword] = useState(false);
+const useOnSuccess = () => {
   const { setToken } = useToken();
 
-  const getPayload = async (form: Form) => {
-    const payload = await login(form.email.value, form.password.value);
-
+  const onSuccess = async (payload: any) => {
     if (payload.data?.auth) {
       setToken(payload.data.token);
       window.location.href = "/dashboard";
       return;
     }
+  }
 
-    return payload;
-  };
+  return onSuccess;
+}
 
-  const form = {
-    email: { value: "", validate: getEmailError },
-    password: { value: "" },
-  };
+const formSchema = z.object({
+  email: z.string().email("Insira um email válido."),
+  password: z.string(),
+});
 
-  const { context, errorModal } = useValidationForm(
-    getPayload,
-    "AUTH_ERROR",
-    form
-  );
-  const { onSubmit, getValue, getError, setters } = context;
+type LoginForm = z.infer<typeof formSchema>;
 
-  const toggleShowPassword = () => {
-    setShowPassword((showPassword) => !showPassword);
-  };
+const LoginForm: React.FC = () => {
+  const defaultValues: LoginForm = { email: "", password: "" };
+  const form = useForm<LoginForm>({ resolver: zodResolver(formSchema), defaultValues });
+
+  const { onValid, errorModal } = useValidationForm({
+    form,
+    getPayload: (form) => login(form.email, form.password),
+    onSuccess: useOnSuccess(),
+    expectedErrorType: "AUTH_ERROR",
+  });
+
+  form.watch((_, info) => { form.trigger(info.name) });
 
   return (
     <>
       {errorModal}
-      <form
-        className="flex pt-[20px] gap-[inherit] flex-col justify-center items-center w-full"
-        onSubmit={onSubmit}
-      >
-        <div className="w-full gap-[10px] flex flex-col">
-          <div>
-            <MyTextInput
+      <FormProvider {...form}>
+        <form
+          className="flex pt-[20px] gap-[inherit] flex-col justify-center items-center w-full"
+          onSubmit={form.handleSubmit(onValid)}
+        >
+          <div className="w-full gap-[10px] flex flex-col">
+            <CustomFormField
+              control={form.control}
+              name={"email"}
               placeholder="Email"
-              id="email"
-              name="email"
-              value={getValue("email")}
-              setValue={setters.email}
-              error={getError("email")}
-              rightIcon={() => <Icon name="mail" />}
+              rightIcon={<Icon name="mail" />}
             />
-          </div>
-          {/* flowbite-react doesn't provide a straightforward way to handle onClick on TextInput icon: https://github.com/themesberg/flowbite-react/issues/734 */}
-          <div className="relative">
-            <MyTextInput
-              placeholder="Senha"
-              id="password"
-              name="password"
-              value={getValue("password")}
-              setValue={setters.password}
-              error={getError("password")}
-              type={showPassword ? "text" : "password"}
-            />
-            <div
-              onClick={toggleShowPassword}
-              className={`absolute top-[10px] right-[10px] hover:cursor-pointer select-none`}
-            >
-              <Icon name={showPassword ? "visibility_off" : "visibility"} />
-            </div>
-          </div>
-        </div>
 
-        <div className="w-full gap-[10px] flex flex-col justify-center items-center">
-          <PrimaryButton type="submit">
-            <span>Entrar</span>
-          </PrimaryButton>
-        </div>
+            <PasswordFormField control={form.control} name={"password"} placeholder="Senha" />
+          </div>
 
-        <a href="/signup" className="text-[#2795DB] mt-[30px]">
-          Ainda não possui conta? Cadastrar
-        </a>
-      </form>
+          <Button type="submit" className={"w-full"}>Entrar</Button>
+
+          <a href="/signup" className="text-[#2795DB] mt-[30px]">
+            Ainda não possui conta? Cadastrar
+          </a>
+        </form>
+      </FormProvider>
     </>
   );
 };

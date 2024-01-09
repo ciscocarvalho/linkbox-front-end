@@ -12,14 +12,14 @@ import CardsHeader from "./CardsHeader";
 import CardsFooter from "./CardsFooter";
 import { includesItem } from "../utils";
 import IconButton from "../../../../components/IconButton";
-import { Dropdown } from "flowbite-react";
 import logout from "../services/logout";
 import Icon from "../../../../components/Icon";
 import { getFolderByPath } from "../services/getFolderByPath";
 import { useCurrentUser } from "../../../../hooks/useCurrentUser";
-import EditItemModal from "./EditItemModal";
+import EditItemDialog from "./EditItemDialog";
 import { useToken } from "../../../../hooks/useToken";
 import { useIsClient } from "../../../../hooks/useIsClient";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/DropdownMenu";
 
 const BaseDashboard: React.FC = () => {
   const { removeToken } = useToken();
@@ -97,40 +97,43 @@ const BaseDashboard: React.FC = () => {
             <SearchBar type="text" placeholder="Pesquise" id="inputPesquisa" />
           </div>
           <div className="flex-1 flex justify-end">
-            <Dropdown
-              label=""
-              placement="bottom-end"
-              renderTrigger={() => (
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger asChild>
                 <div>
                   <IconButton icon="more_vert" />
                 </div>
-              )}
-              className="max-w-[250px]"
-            >
-              <Dropdown.Header>
-                <span className="block truncate text-lg">
-                  {loadingCurrentUser
-                    ? "Carregando..."
-                    : currentUser?.username ?? ""}
-                </span>
-                <span className="block truncate">
-                  {loadingCurrentUser
-                    ? "Carregando..."
-                    : currentUser?.email ?? ""}
-                </span>
-              </Dropdown.Header>
-              <Dropdown.Item
-                icon={() => <Icon name="logout" />}
-                onClick={handleLogout}
-              >
-                <span className="ml-[10px]">Sair</span>
-              </Dropdown.Item>
-            </Dropdown>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="end" className="max-w-[250px]">
+                <DropdownMenuLabel>
+                  <div className="font-normal">
+                    <span className="block truncate text-lg">
+                      {loadingCurrentUser
+                        ? "Carregando..."
+                        : currentUser?.username ?? ""}
+                    </span>
+                    <span className="block truncate">
+                      {loadingCurrentUser
+                        ? "Carregando..."
+                        : currentUser?.email ?? ""}
+                    </span>
+                  </div>
+                </DropdownMenuLabel>
+
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className={"cursor-pointer"}
+                >
+                  <Icon name="logout" />
+                  <span className="ml-[10px]">Sair</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </nav>
 
         <main className="h-[100%] flex flex-col overflow-y-auto">
-          <EditItemModal />
+          <EditItemDialog />
           <CardsHeader />
           {hasItems ? (
             <CardsContainer items={displayedItems} />

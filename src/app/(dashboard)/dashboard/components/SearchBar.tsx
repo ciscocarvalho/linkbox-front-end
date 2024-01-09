@@ -8,7 +8,7 @@ import { includesItem, itemIsFolder, itemIsLink } from "../utils";
 import { getChildren } from "../services/getChildren";
 import { DashboardItem } from "../types";
 import Icon from "../../../../components/Icon";
-import { TextInput } from "flowbite-react";
+import { Input } from "@/components/ui/Input";
 
 const SearchBar: React.FC<JSX.IntrinsicElements["input"]> = () => {
   const dashboard = useContext(DashboardContext);
@@ -43,10 +43,10 @@ const SearchBar: React.FC<JSX.IntrinsicElements["input"]> = () => {
   };
 
   return (
-    <TextInput
-      type="text"
+    <Input
+      className="bg-secondary"
       placeholder="Pesquise"
-      rightIcon={() => <Icon name="search" />}
+      rightIcon={<Icon name="search" />}
       onInput={(e: any) => filterItems(e.target.value)}
       ref={searchBar}
     />

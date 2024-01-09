@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import React from 'react';
 import '../styles/reset.css';
+import { Button } from '../components/ui/Button';
 
 export const metadata: Metadata = {
   icons: [{ rel: 'short icon', url: 'images/logo/logo.svg' } ],
@@ -21,7 +22,14 @@ const page: React.FC = () => {
             </a>
             <nav>
             <li className="m-[5px]"><a href="/login" className="border-b-[2px] border-solid border-[#00000000] duration-[.2s] hover:duration-[.2s] hover:border-b-[black]">Entrar</a></li>
-            <li className="m-[5px]"><a href="/signup"><span className="bg-[#90CDF4] p-[15px] rounded-[10px] duration-[.2s] hover:duration-[.2s] hover:bg-[#52a2d4] max-[500px]:hidden">Começar agora</span></a></li>
+
+            <li className="m-[5px]">
+                <Button asChild>
+                    <a href="/signup">
+                        Começar agora
+                    </a>
+                </Button>
+            </li>
 
             </nav>
         </header>
@@ -32,9 +40,11 @@ const page: React.FC = () => {
                         O melhor lugar para organizar seus <span className="text-[#90CDF4]">links</span>!
                     </p>
                     <p className="text-[20px] text-center max-[950px]:text-[16px]">Use o LinkBox para uma organização sem dor de cabeça</p>
-                    <a href="/signup">
-                        <span className="bg-[#90CDF4] p-[15px] rounded-[10px] duration-[.2s] hover:duration-[.2s] hover:bg-[#52a2d4] max-[280px]:p-[15px]">Começar agora</span>
-                    </a>
+                    <Button asChild>
+                        <a href="/signup">
+                            Começar agora
+                        </a>
+                    </Button>
                 </div>
                 <img className="max-w-[500px] w-fit max-[950px]:hidden" src="/images/illustrations/home-illustration.svg" />
             </section>

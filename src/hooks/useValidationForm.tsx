@@ -1,51 +1,93 @@
-import { useState } from "react";
-import { useForm, Form } from "./useForm";
-import AuthErrorModal from "../app/(auth)/signup/components/AuthErrorModal";
+import { FieldPath, FieldValues, UseFormReturn } from "react-hook-form"
+import { useRef, useState } from "react";
+import AuthErrorModal from "@/app/(auth)/signup/components/AuthErrorModal";
 
-export const useValidationForm = (
-  getPayload: (form: Form) => any,
-  errorType: string,
-  initialForm: Form
-) => {
-  const [unhandledErrorMessage, setUnhandledErrorMessage] = useState();
-  const [openErrorModal, setOpenErrorModal] = useState(false);
+type ServerFieldError<T extends FieldValues, Field = FieldPath<T>> = {
+  type: string;
+  field: Field;
+  userMessage: string;
+};
 
-  const context = useForm(async (e, { form, errorSetters }) => {
-    const payload = await getPayload(form);
-    const errors = payload?.errors;
+type FailHandler<T extends FieldValues> = (errors: ServerFieldError<T>[]) => void;
+type ValidHandler<T extends FieldValues> = (data: T) => void;
 
-    if (!errors) {
-      return;
-    }
+const useForceUpdate = () => {
+  const [_, setValue] = useState(false);
+  return () => setValue((value) => !value);
+}
 
-    let unhandledError;
+const useOnFail = <T extends FieldValues>(form: UseFormReturn<T>, expectedErrorType: string) => {
+  const forceUpdate = useForceUpdate();
+  const unexpectedErrorMessage = useRef("");
+  const failedWithUnexpectedError = useRef(false);
 
-    errors.forEach((error: any) => {
-      if (error.type === errorType) {
-        const setError = (errorSetters as any)[error.field] ?? null;
+  if (failedWithUnexpectedError.current) {
+    failedWithUnexpectedError.current = false;
+  } else {
+    unexpectedErrorMessage.current = "";
+  }
 
-        if (setError) {
-          setError(error.userMessage);
-          return;
-        }
+  const onFail: FailHandler<T> = (errors) => {
+    unexpectedErrorMessage.current = "";
+
+    errors.forEach((error) => {
+      const { field, userMessage: message } = error;
+      const errorIsExpected = error.type === expectedErrorType;
+
+      if (errorIsExpected) {
+        form.setError(field, { message });
+      } else {
+        unexpectedErrorMessage.current = message;
       }
-
-      unhandledError = error.userMessage ?? true;
     });
 
-    if (unhandledError) {
-      setUnhandledErrorMessage(
-        unhandledError === true ? undefined : unhandledError
-      );
-      setOpenErrorModal(true);
+    if (unexpectedErrorMessage.current) {
+      failedWithUnexpectedError.current = true;
+      forceUpdate();
     }
-  }, initialForm);
+  }
 
-  const errorModal = <AuthErrorModal
-    openModal={openErrorModal}
-    setOpenModal={setOpenErrorModal}
-    error={unhandledErrorMessage}
-  />
-
-  return { context, unhandledErrorMessage, openErrorModal, setOpenErrorModal, errorModal };
+  const errorModal = <AuthErrorModal error={unexpectedErrorMessage.current} />;
+  return { onFail, errorModal };
 };
+
+const useOnValid = <T extends FieldValues>({
+  onFail,
+  onSuccess,
+  getPayload,
+}: {
+  onFail: FailHandler<T>;
+  onSuccess: (payload: any) => void;
+  getPayload: (data: T) => any;
+}) => {
+  const onValid: ValidHandler<T> = async (data) => {
+    const payload = await getPayload(data);
+    let errors = payload?.errors;
+
+    if (errors) {
+      onFail(errors);
+    } else {
+      onSuccess(payload);
+    }
+  }
+
+  return { onValid };
+}
+
+const useValidationForm = <T extends FieldValues>({
+  form,
+  getPayload,
+  onSuccess,
+  expectedErrorType,
+}: {
+  form: UseFormReturn<T>;
+  getPayload: (data: T) => any;
+  onSuccess: (payload: any) => void;
+  expectedErrorType: string;
+}) => {
+  const { onFail, errorModal } = useOnFail(form, expectedErrorType);
+  const { onValid } = useOnValid<T>({ onFail, onSuccess, getPayload });
+  return { onValid, errorModal };
+};
+
+export default useValidationForm;
