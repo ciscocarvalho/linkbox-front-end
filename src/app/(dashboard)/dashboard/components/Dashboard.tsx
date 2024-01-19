@@ -11,20 +11,13 @@ import CardsContainer from "./CardsContainer";
 import CardsHeader from "./CardsHeader";
 import CardsFooter from "./CardsFooter";
 import { includesItem } from "../utils";
-import IconButton from "../../../../components/IconButton";
-import logout from "../services/logout";
-import Icon from "../../../../components/Icon";
 import { getFolderByPath } from "../services/getFolderByPath";
-import { useCurrentUser } from "../../../../hooks/useCurrentUser";
 import EditItemDialog from "./EditItemDialog";
 import { useToken } from "../../../../hooks/useToken";
 import { useIsClient } from "../../../../hooks/useIsClient";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/DropdownMenu";
+import UserDropdownMenu from "./UserDropdownMenu";
 
 const BaseDashboard: React.FC = () => {
-  const { removeToken } = useToken();
-  const { currentUser, loading: loadingCurrentUser } = useCurrentUser();
-
   const initialDashboard: DashboardView = {
     displayedItems: [],
     selected: [],
@@ -70,88 +63,54 @@ const BaseDashboard: React.FC = () => {
     return null;
   }
 
-  const handleLogout = async () => {
-    await logout();
-    removeToken();
-  };
-
   return (
-    <DashboardContext.Provider value={dashboard}>
-      <DashboardDispatchContext.Provider value={dispatch}>
-        <nav className="flex justify-between p-[24px] bg-[#2795DB] items-center gap-[40px] max-[651px]:gap-[20px] max-[651px]:justify-around max-[651px]:p-[24px]">
-          <div className="flex justify-start flex-1 min-w-[fit-content]">
-            <a href="/">
-              <div className="flex items-center gap-[20px]">
-                <img
-                  className="w-[40px]"
-                  src="/images/logo/logo.svg"
-                  alt="LinkBox logo"
-                />
-                <p className="text-[1.5rem] font-bold max-[651px]:hidden">
-                  LinkBox
-                </p>
-              </div>
-            </a>
-          </div>
-          <div className="min-w-[50%] max-w-[600px] flex-1">
-            <SearchBar type="text" placeholder="Pesquise" id="inputPesquisa" />
-          </div>
-          <div className="flex-1 flex justify-end">
-            <DropdownMenu modal={false}>
-              <DropdownMenuTrigger asChild>
-                <div>
-                  <IconButton icon="more_vert" />
+    <>
+      <DashboardContext.Provider value={dashboard}>
+        <DashboardDispatchContext.Provider value={dispatch}>
+          <nav className="flex justify-between p-[24px] bg-[#2795DB] items-center gap-[40px] max-[651px]:gap-[20px] max-[651px]:justify-around max-[651px]:p-[24px]">
+            <div className="flex justify-start flex-1 min-w-[fit-content]">
+              <a href="/">
+                <div className="flex items-center gap-[20px]">
+                  <img
+                    className="w-[40px]"
+                    src="/images/logo/logo.svg"
+                    alt="LinkBox logo"
+                  />
+                  <p className="text-[1.5rem] font-bold max-[651px]:hidden">
+                    LinkBox
+                  </p>
                 </div>
-              </DropdownMenuTrigger>
+              </a>
+            </div>
+            <div className="min-w-[50%] max-w-[600px] flex-1">
+              <SearchBar type="text" placeholder="Pesquise" id="inputPesquisa" />
+            </div>
+            <div className="flex-1 flex justify-end">
+              <UserDropdownMenu />
+            </div>
+          </nav>
 
-              <DropdownMenuContent align="end" className="max-w-[250px]">
-                <DropdownMenuLabel>
-                  <div className="font-normal">
-                    <span className="block truncate text-lg">
-                      {loadingCurrentUser
-                        ? "Carregando..."
-                        : currentUser?.username ?? ""}
-                    </span>
-                    <span className="block truncate">
-                      {loadingCurrentUser
-                        ? "Carregando..."
-                        : currentUser?.email ?? ""}
-                    </span>
-                  </div>
-                </DropdownMenuLabel>
-
-                <DropdownMenuItem
-                  onClick={handleLogout}
-                  className={"cursor-pointer"}
-                >
-                  <Icon name="logout" />
-                  <span className="ml-[10px]">Sair</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </nav>
-
-        <main className="h-[100%] flex flex-col overflow-y-auto">
-          <EditItemDialog />
-          <CardsHeader />
-          {hasItems ? (
-            <CardsContainer items={displayedItems} />
-          ) : (
-            <p
-              className={
-                "my-0 mx-auto w-[80%] h-[100%] flex justify-center items-center text-center text-[1.5rem] font-bold"
-              }
-            >
-              Esta pasta está vazia.
-              <br />
-              Adicione um link ou uma pasta clicando no botão +
-            </p>
-          )}
-          <CardsFooter />
-        </main>
-      </DashboardDispatchContext.Provider>
-    </DashboardContext.Provider>
+          <main className="h-[100%] flex flex-col overflow-y-auto">
+            <EditItemDialog />
+            <CardsHeader />
+            {hasItems ? (
+              <CardsContainer items={displayedItems} />
+            ) : (
+              <p
+                className={
+                  "my-0 mx-auto w-[80%] h-[100%] flex justify-center items-center text-center text-[1.5rem] font-bold"
+                }
+              >
+                Esta pasta está vazia.
+                <br />
+                Adicione um link ou uma pasta clicando no botão +
+              </p>
+            )}
+            <CardsFooter />
+          </main>
+        </DashboardDispatchContext.Provider>
+      </DashboardContext.Provider>
+    </>
   );
 };
 

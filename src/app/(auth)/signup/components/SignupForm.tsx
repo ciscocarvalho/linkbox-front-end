@@ -11,18 +11,9 @@ import signup from "../../services/signup";
 import useValidationForm from "@/hooks/useValidationForm";
 import CustomFormField from "@/components/ui/Form/CustomFormField";
 import PasswordFormField from "@/components/ui/Form/PasswordFormField";
+import accountSchema from "../../../../schemas/accountSchema";
 
-const formSchema = z.object({
-  email: z
-    .string()
-    .min(1, "O email é obrigatório.")
-    .email("Insira um email válido."),
-  username: z.string().min(1, "O nome de usuário é obrigatório."),
-  password: z
-    .string()
-    .min(1, "A senha é obrigatória.")
-    .min(7, "A senha precisa ter mais de 6 caracteres."),
-});
+const formSchema = accountSchema;
 
 type SignupForm = z.infer<typeof formSchema>;
 
