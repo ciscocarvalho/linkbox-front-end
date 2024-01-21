@@ -8,6 +8,8 @@ import CustomFormField from "@/components/ui/Form/CustomFormField";
 import { updateCurrentUser } from "../../services/updateCurrentUser";
 import { z } from "zod";
 import userSchema from "../../../../../schemas/userSchema";
+import DeleteAccountDialog from "./DeleteAccountDialog";
+import { useState } from "react";
 
 type User = z.infer<typeof userSchema>;
 
@@ -20,6 +22,8 @@ const ProfileForm: React.FC<AccountFormProps> = ({
   onSuccess,
   defaultValues,
 }) => {
+  const [openDeleteAccountDialog, setOpenDeleteAccountDialog] = useState(false);
+
   const form = useForm<User>({
     resolver: zodResolver(userSchema),
     defaultValues,
@@ -41,6 +45,10 @@ const ProfileForm: React.FC<AccountFormProps> = ({
   return (
     <>
       {errorModal}
+      <DeleteAccountDialog
+        open={openDeleteAccountDialog}
+        onOpenChange={setOpenDeleteAccountDialog}
+      />
       <FormProvider {...form}>
         <form
           className="flex flex-col gap-[inherit]"
@@ -62,9 +70,19 @@ const ProfileForm: React.FC<AccountFormProps> = ({
             />
           </div>
 
-          <Button className={"self-end"} type="submit">
-            Salvar perfil
-          </Button>
+          <div className="flex gap-[inherit] self-end">
+            <Button
+              type={"button"}
+              variant={"destructive"}
+              onClick={() => setOpenDeleteAccountDialog(true)}
+            >
+              Excluir conta
+            </Button>
+
+            <Button type="submit">
+              Salvar perfil
+            </Button>
+          </div>
         </form>
       </FormProvider>
     </>
