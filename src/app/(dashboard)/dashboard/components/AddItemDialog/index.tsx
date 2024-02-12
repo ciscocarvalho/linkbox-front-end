@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader } from "@/components/ui/Dialog";
 import LinkForm from "./_LinkForm";
 import FolderForm from "./_FolderForm";
 import ItemTypeSelect from "./_ItemTypeSelect";
+import { useTranslation } from "react-i18next";
 
 interface AddItemModalProps {
   openDialog: boolean;
@@ -22,6 +23,8 @@ const AddItemDialog: React.FC<AddItemModalProps> = ({
   openDialog,
   setOpenDialog,
 }) => {
+  const { t } = useTranslation();
+
   const [itemType, setItemType] = useState("link");
   const dashboard = useContext(DashboardContext);
   const dispatch = useContext(DashboardDispatchContext);
@@ -45,7 +48,9 @@ const AddItemDialog: React.FC<AddItemModalProps> = ({
       <DialogHeader />
       <DialogContent className="flex flex-col gap-[20px]">
         <div className="space-y-6">
-          <h3 className="text-xl">Adicionar item</h3>
+          <h3 className="text-xl">
+            {t("page.dashboard.dialog.add-item.title")}
+          </h3>
           <ItemTypeSelect onValueChange={(value) => setItemType(value)} />
         </div>
 

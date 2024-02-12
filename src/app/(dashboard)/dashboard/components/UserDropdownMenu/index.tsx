@@ -13,8 +13,10 @@ import { useCurrentUser } from "../../../../../hooks/useCurrentUser";
 import logout from "../../services/logout";
 import { useToken } from "../../../../../hooks/useToken";
 import AccountDialog from "../UserDropdownMenu/AccountDialog";
+import { useTranslation } from "react-i18next";
 
 const UserDropdownMenu: React.FC = () => {
+  const { t } = useTranslation();
   const [openAccountDialog, setOpenAccountDialog] = useState(false);
   const {
     currentUser,
@@ -51,12 +53,12 @@ const UserDropdownMenu: React.FC = () => {
             <div className="font-normal">
               <span className="block truncate text-lg">
                 {loadingCurrentUser
-                  ? "Carregando..."
+                  ? t("shared.loading")
                   : currentUser?.username ?? ""}
               </span>
               <span className="block truncate">
                 {loadingCurrentUser
-                  ? "Carregando..."
+                  ? t("shared.loading")
                   : currentUser?.email ?? ""}
               </span>
             </div>
@@ -67,12 +69,12 @@ const UserDropdownMenu: React.FC = () => {
             className={"cursor-pointer"}
           >
             <Icon name="person" />
-            <span className="ml-[10px]">Conta</span>
+            <span className="ml-[10px]">{t("page.dashboard.dropdown.item.account")}</span>
           </DropdownMenuItem>
 
           <DropdownMenuItem onClick={handleLogout} className={"cursor-pointer"}>
             <Icon name="logout" />
-            <span className="ml-[10px]">Sair</span>
+            <span className="ml-[10px]">{t("page.dashboard.dropdown.item.logout")}</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -1,5 +1,7 @@
-import accountSchema from "./accountSchema";
+import { getAccountSchema } from "./accountSchema";
 
-const userSchema = accountSchema.omit({ password: true });
+export const getUserSchema = () => {
+  return getAccountSchema().omit({ password: true });
+};
 
-export default userSchema;
+export type UserSchema = ReturnType<typeof getUserSchema>;

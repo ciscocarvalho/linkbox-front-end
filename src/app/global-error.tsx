@@ -2,8 +2,11 @@
 import React from 'react';
 import '../styles/reset.css';
 import Layout from "./components/layout";
+import { useTranslation } from 'react-i18next';
 
-const page: React.FC = () => {
+const Page: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <Layout>
       <div className="bg-[#2795DB] flex min-h-[inherit] min-w-[100vw] justify-center items-center flex-col gap-[50px] p-[5px]">
@@ -25,11 +28,11 @@ const page: React.FC = () => {
         </section>
 
         <p className="font-bold text-[clamp(20px,8vw,40px)] text-center">
-          Ocorreu algum erro no servidor!
+          {t("page.global-error")}
         </p>
       </div>
     </Layout>
   );
 };
 
-export default page;
+export default Page;

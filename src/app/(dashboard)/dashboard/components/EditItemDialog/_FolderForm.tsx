@@ -5,8 +5,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import useValidationForm from "@/hooks/useValidationForm";
-import folderSchema from "../../utils/folderSchema";
+import { FolderSchema, getFolderSchema } from "../../utils/folderSchema";
 import CustomFormField from "@/components/ui/Form/CustomFormField";
+import { useTranslation } from "react-i18next";
 
 interface ItemFormProps {
   editItem: Function;
@@ -15,11 +16,13 @@ interface ItemFormProps {
 type FolderFormProps = ItemFormProps & { folder: DashboardFolder };
 
 
-export type FolderForm = z.infer<typeof folderSchema>;
+export type FolderForm = z.infer<FolderSchema>;
 
 const FolderForm: React.FC<FolderFormProps> = ({ editItem, folder }) => {
+  const { t } = useTranslation();
+
   const form = useForm<FolderForm>({
-    resolver: zodResolver(folderSchema),
+    resolver: zodResolver(getFolderSchema()),
     defaultValues: folder,
   });
 
@@ -45,18 +48,22 @@ const FolderForm: React.FC<FolderFormProps> = ({ editItem, folder }) => {
           onSubmit={form.handleSubmit(onValid)}
         >
           <div className="space-y-6">
-            <h3 className="text-xl">Editar pasta</h3>
+            <h3 className="text-xl">
+              {t("page.dashboard.dialog.edit-item.title.folder")}
+            </h3>
           </div>
 
           <div className="mb-8">
             <CustomFormField
               control={form.control}
               name={"name"}
-              label={"Nome"}
+              label={t("page.dashboard.form.folder.label.name")}
             />
           </div>
 
-          <Button className={"self-end"} type="submit">Salvar</Button>
+          <Button className={"self-end"} type="submit">
+            {t("page.dashboard.dialog.edit-item.save.folder")}
+          </Button>
         </form>
       </FormProvider>
     </>

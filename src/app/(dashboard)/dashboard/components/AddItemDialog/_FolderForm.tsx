@@ -5,19 +5,22 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/Button";
-import folderSchema from "../../utils/folderSchema";
+import { FolderSchema, getFolderSchema } from "../../utils/folderSchema";
 import CustomFormField from "@/components/ui/Form/CustomFormField";
+import { useTranslation } from "react-i18next";
 
 interface ItemFormProps {
   addItem: Function;
 }
 
-type FolderForm = z.infer<typeof folderSchema>;
+type FolderForm = z.infer<FolderSchema>;
 
 const FolderForm: React.FC<ItemFormProps> = ({ addItem }) => {
+  const { t } = useTranslation();
+
   const defaultValues: FolderForm = { name: "" };
   const form = useForm<FolderForm>({
-    resolver: zodResolver(folderSchema),
+    resolver: zodResolver(getFolderSchema()),
     defaultValues,
   });
 
@@ -46,12 +49,12 @@ const FolderForm: React.FC<ItemFormProps> = ({ addItem }) => {
             <CustomFormField
               control={form.control}
               name={"name"}
-              label={"Nome"}
+              label={t("page.dashboard.form.folder.label.name")}
             />
           </div>
 
           <Button className={"self-end"} type="submit">
-            Adicionar pasta
+            {t("page.dashboard.dialog.add-item.save.folder")}
           </Button>
         </form>
       </FormProvider>

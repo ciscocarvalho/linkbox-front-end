@@ -12,13 +12,14 @@ import React, { useState } from "react";
 import ProfileForm from "./ProfileForm";
 import PasswordForm from "./PasswordForm";
 import { z } from "zod";
-import accountSchema from "../../../../../schemas/accountSchema";
+import { useTranslation } from "react-i18next";
+import { UserSchema } from "../../../../../schemas/userSchema";
 
 type DialogProps = React.ComponentProps<typeof Dialog>;
 type AccountDialogProps = Required<
   Pick<DialogProps, "open" | "onOpenChange">
 > & {
-  currentUser: z.infer<typeof accountSchema> | null;
+  currentUser: z.infer<UserSchema> | null;
   refetchCurrentUser: () => Promise<any>;
 };
 
@@ -28,6 +29,7 @@ const AccountDialog: React.FC<AccountDialogProps> = ({
   currentUser,
   refetchCurrentUser,
 }) => {
+  const { t } = useTranslation();
   const [itemType, setItemType] = useState("profile");
   const closeDialog = () => onOpenChange(false);
   const onSuccess = async () => {
@@ -50,7 +52,7 @@ const AccountDialog: React.FC<AccountDialogProps> = ({
       <DialogHeader />
       <DialogContent>
         <div className="space-y-6">
-          <h3 className="text-xl">Conta</h3>
+          <h3 className="text-xl">{t("page.dashboard.dialog.account.title")}</h3>
 
           <Select
             onValueChange={(value) => setItemType(value)}
@@ -62,8 +64,8 @@ const AccountDialog: React.FC<AccountDialogProps> = ({
 
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="profile">Perfil</SelectItem>
-                <SelectItem value="password">Senha</SelectItem>
+                <SelectItem value="profile">{t("page.dashboard.dialog.account.options.profile.name")}</SelectItem>
+                <SelectItem value="password">{t("page.dashboard.dialog.account.options.password.name")}</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>

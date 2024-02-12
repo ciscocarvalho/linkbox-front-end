@@ -9,8 +9,10 @@ import { removeMany } from "../utils/actions/removeMany";
 import BtnsContainer from "./ItemCard/BtnsContainer";
 import { useMobileView } from "../../../../hooks/useMobileView";
 import { getChildren } from "../services/getChildren";
+import { useTranslation } from "react-i18next";
 
 const CardsFooter: React.FC = () => {
+  const { t } = useTranslation();
   const dashboard = useContext(DashboardContext);
   const dispatch = useContext(DashboardDispatchContext);
   const { mobileView } = useMobileView();
@@ -54,7 +56,7 @@ const CardsFooter: React.FC = () => {
     >
       <p className="p-[20px]">
         {selected.length}{" "}
-        {selected.length === 1 ? "Selecionado" : "Selecionados"}
+        {t("page.dashboard.items.amount-selected", { count: selected.length })}
       </p>
       {selected.length === 1 ? (
         <BtnsContainer

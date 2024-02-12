@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run i18n:gen-resources && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "i18n:gen-resources": "i18next-resources-for-ts toc -i ./src/i18n/locales/en -o ./src/i18n/resources.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.0.8",
@@ -21,24 +22,32 @@
     "@radix-ui/react-slot": "^1.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "i18next": "^23.7.18",
+    "i18next-browser-languagedetector": "^7.2.0",
+    "i18next-resources-to-backend": "^1.2.0",
+    "negotiator": "^0.6.3",
     "next": "13.4.19",
     "react": "18.2.0",
     "react-cookie": "^6.1.1",
     "react-device-detect": "^2.2.3",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.49.2",
+    "react-i18next": "^14.0.1",
     "react-icons": "^4.12.0",
     "tailwind-merge": "^2.2.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/i18n": "^0.13.10",
+    "@types/negotiator": "^0.6.3",
     "@types/node": "20.6.0",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
     "autoprefixer": "10.4.15",
     "eslint": "8.49.0",
     "eslint-config-next": "13.4.19",
+    "i18next-resources-for-ts": "^1.5.0",
     "postcss": "8.4.29",
     "tailwindcss": "3.3.3",
     "typescript": "5.2.2"

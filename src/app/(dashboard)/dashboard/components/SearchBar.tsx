@@ -9,8 +9,10 @@ import { getChildren } from "../services/getChildren";
 import { DashboardItem } from "../types";
 import Icon from "../../../../components/Icon";
 import { Input } from "@/components/ui/Input";
+import { useTranslation } from "react-i18next";
 
 const SearchBar: React.FC<JSX.IntrinsicElements["input"]> = () => {
+  const { t } = useTranslation();
   const dashboard = useContext(DashboardContext);
   const dispatch = useContext(DashboardDispatchContext);
   const searchBar = useRef<HTMLInputElement>(null);
@@ -45,7 +47,7 @@ const SearchBar: React.FC<JSX.IntrinsicElements["input"]> = () => {
   return (
     <Input
       className="bg-secondary"
-      placeholder="Pesquise"
+      placeholder={t("shared.input.placeholder.search")}
       rightIcon={<Icon name="search" />}
       onInput={(e: any) => filterItems(e.target.value)}
       ref={searchBar}

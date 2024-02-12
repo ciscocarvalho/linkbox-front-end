@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react"
 import fetchData from "../services/fetchData";
-import { User } from "../app/(dashboard)/dashboard/types";
+import { z } from "zod";
+import { UserSchema } from "../schemas/userSchema";
+
+type User = z.infer<UserSchema>;
 
 export function useCurrentUser() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);

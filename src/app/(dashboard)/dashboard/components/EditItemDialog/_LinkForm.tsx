@@ -5,10 +5,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import useValidationForm from "@/hooks/useValidationForm";
 import { Button } from "@/components/ui/Button";
-import linkSchema from "../../utils/linkSchema";
+import { LinkSchema, getLinkSchema } from "../../utils/linkSchema";
 import CustomFormField from "@/components/ui/Form/CustomFormField";
+import { useTranslation } from "react-i18next";
 
-export type LinkForm = z.infer<typeof linkSchema>;
+export type LinkForm = z.infer<LinkSchema>;
 
 interface ItemFormProps {
   editItem: Function;
@@ -17,8 +18,10 @@ interface ItemFormProps {
 type LinkFormProps = ItemFormProps & { link: DashboardLink };
 
 const LinkForm: React.FC<LinkFormProps> = ({ editItem, link }) => {
+  const { t } = useTranslation();
+
   const form = useForm<LinkForm>({
-    resolver: zodResolver(linkSchema),
+    resolver: zodResolver(getLinkSchema()),
     defaultValues: link,
   });
 
@@ -43,14 +46,16 @@ const LinkForm: React.FC<LinkFormProps> = ({ editItem, link }) => {
           onSubmit={form.handleSubmit(onValid)}
         >
           <div className="space-y-6">
-            <h3 className="text-xl">Editar link</h3>
+            <h3 className="text-xl">
+              {t("page.dashboard.dialog.edit-item.title.link")}
+            </h3>
           </div>
 
           <div className="mb-8">
             <CustomFormField
               control={form.control}
               name={"url"}
-              label={"URL"}
+              label={t("page.dashboard.form.link.label.url")}
             />
           </div>
 
@@ -58,12 +63,12 @@ const LinkForm: React.FC<LinkFormProps> = ({ editItem, link }) => {
             <CustomFormField
               control={form.control}
               name={"title"}
-              label={"Título"}
+              label={t("page.dashboard.form.link.label.title")}
             />
           </div>
 
           <Button type={"submit"} className={"self-end"}>
-            Salvar
+            {t("page.dashboard.dialog.edit-item.save.link")}
           </Button>
         </form>
       </FormProvider>

@@ -7,11 +7,12 @@ import { Button } from "@/components/ui/Button";
 import CustomFormField from "@/components/ui/Form/CustomFormField";
 import { updateCurrentUser } from "../../services/updateCurrentUser";
 import { z } from "zod";
-import userSchema from "../../../../../schemas/userSchema";
+import { UserSchema, getUserSchema } from "../../../../../schemas/userSchema";
 import DeleteAccountDialog from "./DeleteAccountDialog";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
-type User = z.infer<typeof userSchema>;
+type User = z.infer<UserSchema>;
 
 interface AccountFormProps {
   onSuccess: (payload: any) => void;
@@ -22,10 +23,11 @@ const ProfileForm: React.FC<AccountFormProps> = ({
   onSuccess,
   defaultValues,
 }) => {
+  const { t } = useTranslation();
   const [openDeleteAccountDialog, setOpenDeleteAccountDialog] = useState(false);
 
   const form = useForm<User>({
-    resolver: zodResolver(userSchema),
+    resolver: zodResolver(getUserSchema()),
     defaultValues,
   });
 
@@ -58,7 +60,7 @@ const ProfileForm: React.FC<AccountFormProps> = ({
             <CustomFormField
               control={form.control}
               name={"username"}
-              label={"Nome"}
+              label={t("shared.input.label.username")}
             />
           </div>
 
@@ -66,7 +68,7 @@ const ProfileForm: React.FC<AccountFormProps> = ({
             <CustomFormField
               control={form.control}
               name={"email"}
-              label={"Email"}
+              label={t("shared.input.label.email")}
             />
           </div>
 
@@ -76,11 +78,11 @@ const ProfileForm: React.FC<AccountFormProps> = ({
               variant={"destructive"}
               onClick={() => setOpenDeleteAccountDialog(true)}
             >
-              Excluir conta
+              {t("shared.button.delete-account")}
             </Button>
 
             <Button type="submit">
-              Salvar perfil
+              {t("shared.button.update-profile")}
             </Button>
           </div>
         </form>

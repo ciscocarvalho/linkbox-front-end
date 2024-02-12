@@ -10,6 +10,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/Button";
 import CustomFormField from "@/components/ui/Form/CustomFormField";
 import PasswordFormField from "@/components/ui/Form/PasswordFormField";
+import { useTranslation } from "react-i18next";
+import { t } from "i18next";
 
 const useOnSuccess = () => {
   const { setToken } = useToken();
@@ -25,14 +27,18 @@ const useOnSuccess = () => {
   return onSuccess;
 }
 
-const formSchema = z.object({
-  email: z.string().email("Insira um email válido."),
-  password: z.string(),
-});
+const getFormSchema = () => {
+  return z.object({
+    email: z.string().email(t("shared.input.error.email.invalid")),
+    password: z.string(),
+  });
+};
 
-type LoginForm = z.infer<typeof formSchema>;
+type LoginForm = z.infer<ReturnType<typeof getFormSchema>>;
 
 const LoginForm: React.FC = () => {
+  const { t } = useTranslation();
+  const formSchema = getFormSchema();
   const defaultValues: LoginForm = { email: "", password: "" };
   const form = useForm<LoginForm>({ resolver: zodResolver(formSchema), defaultValues });
 
@@ -57,17 +63,17 @@ const LoginForm: React.FC = () => {
             <CustomFormField
               control={form.control}
               name={"email"}
-              placeholder="Email"
+              placeholder={t("shared.input.placeholder.email")}
               rightIcon={<Icon name="mail" />}
             />
 
-            <PasswordFormField control={form.control} name={"password"} placeholder="Senha" />
+            <PasswordFormField control={form.control} name={"password"} placeholder={t("shared.input.placeholder.password")} />
           </div>
 
-          <Button type="submit" className={"w-full"}>Entrar</Button>
+          <Button type="submit" className={"w-full"}>{t("shared.button.login")}</Button>
 
           <a href="/signup" className="text-[#2795DB] mt-[30px]">
-            Ainda não possui conta? Cadastrar
+            {t("shared.link.signup")}
           </a>
         </form>
       </FormProvider>

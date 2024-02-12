@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   Dialog,
@@ -11,9 +12,11 @@ import { Button } from "../../../../../components/ui/Button";
 import { deleteAccount } from "../../services/deleteAccount";
 import PasswordFormField from "../../../../../components/ui/Form/PasswordFormField";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
+import { t } from "i18next";
 
 const passwordConfirmationSchema = z.object({
-  password: z.string().min(1, "A senha é obrigatória."),
+  password: z.string().min(1, t("shared.input.error.password.required")),
 })
 
 type PasswordConfirmation = z.infer<typeof passwordConfirmationSchema>;
@@ -21,6 +24,8 @@ type PasswordConfirmation = z.infer<typeof passwordConfirmationSchema>;
 interface DeleteAccountFormProps {}
 
 const DeleteAccountForm: React.FC<DeleteAccountFormProps> = ({}) => {
+  const { t } = useTranslation();
+
   const form = useForm<PasswordConfirmation>({
     resolver: zodResolver(passwordConfirmationSchema),
     defaultValues: { password: "" },
@@ -46,14 +51,12 @@ const DeleteAccountForm: React.FC<DeleteAccountFormProps> = ({}) => {
           onSubmit={form.handleSubmit(onValid)}
         >
           <h3 className="text-destructive">
-            Você está prestes a excluir sua conta, isso é uma ação
-            irreversível. Tenha certeza do que está fazendo antes de
-            prosseguir, você não poderá recuperar sua conta depois.
+            {t("shared.warn.delete-account")}
           </h3>
 
           <div className="mb-8">
             <PasswordFormField
-              label="Digite sua senha"
+              label={t("shared.input.label.password-before-deleting-account")}
               control={form.control}
               name="password"
             />
@@ -64,7 +67,7 @@ const DeleteAccountForm: React.FC<DeleteAccountFormProps> = ({}) => {
             variant={"destructive"}
             type={"submit"}
           >
-            Excluir conta
+            {t("shared.button.delete-account")}
           </Button>
         </form>
       </FormProvider>

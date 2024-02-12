@@ -1,9 +1,11 @@
+"use client";
 import React, { Dispatch, useContext, useEffect, useState } from 'react';
 import { HiHome } from 'react-icons/hi';
 import { DashboardAction, DashboardFolder } from '../types';
 import { getFolderByPath } from "../services/getFolderByPath";
 import { DashboardContext, DashboardDispatchContext } from '../contexts/DashboardContext';
 import { Breadcrumb, BreadcrumbItem } from "@/components/ui/Breadcrumb"
+import { useTranslation } from "react-i18next";
  
 interface FolderBreadcrumbProps {
   folder: DashboardFolder;
@@ -20,6 +22,7 @@ const goToLocation = async  (location: string[], dispatch: Dispatch<DashboardAct
 }
 
 const FolderBreadcrumb: React.FC<FolderBreadcrumbProps> = ({ folder }) => {
+  const { t } = useTranslation();
   const [location, setLocation] = useState<string[] | null>(null);
   const dashboard = useContext(DashboardContext);
   const dispatch = useContext(DashboardDispatchContext);
@@ -39,7 +42,7 @@ const FolderBreadcrumb: React.FC<FolderBreadcrumbProps> = ({ folder }) => {
                 className="hover:cursor-pointer hover:bg-[#c2c8d1] hover:duration-[0.2s] h-[36px] px-[8px] rounded-lg flex items-center gap-2"
               >
                 {<HiHome />}
-                <p>Início</p>
+                <p>{t("page.dashboard.breadcrumb.root-node")}</p>
               </div>
             </BreadcrumbItem>
           : null

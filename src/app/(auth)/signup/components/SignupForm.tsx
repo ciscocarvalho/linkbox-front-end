@@ -11,11 +11,8 @@ import signup from "../../services/signup";
 import useValidationForm from "@/hooks/useValidationForm";
 import CustomFormField from "@/components/ui/Form/CustomFormField";
 import PasswordFormField from "@/components/ui/Form/PasswordFormField";
-import accountSchema from "../../../../schemas/accountSchema";
-
-const formSchema = accountSchema;
-
-type SignupForm = z.infer<typeof formSchema>;
+import { AccountSchema, getAccountSchema } from "../../../../schemas/accountSchema";
+import { useTranslation } from "react-i18next";
 
 const useOnSuccess = () => {
   const { setToken } = useToken();
@@ -31,7 +28,11 @@ const useOnSuccess = () => {
   return onSuccess;
 }
 
+type SignupForm = z.infer<AccountSchema>;
+
 const SignupForm: React.FC = () => {
+  const { t } = useTranslation();
+  const formSchema = getAccountSchema();
   const defaultValues: SignupForm = { email: "", username: "", password: "" };
   const form = useForm<SignupForm>({ resolver: zodResolver(formSchema), defaultValues });
   const { onValid, errorModal } = useValidationForm({
@@ -54,23 +55,23 @@ const SignupForm: React.FC = () => {
           <CustomFormField
             control={form.control}
             name={"username"}
-            placeholder={"Nome"}
+            placeholder={t("shared.input.placeholder.username")}
             rightIcon={<Icon name="edit" />}
           />
 
           <CustomFormField
             control={form.control}
             name={"email"}
-            placeholder="Email"
+            placeholder={t("shared.input.placeholder.email")}
             rightIcon={<Icon name="mail" />}
           />
 
-          <PasswordFormField control={form.control} name={"password"} placeholder="Senha" />
+          <PasswordFormField control={form.control} name={"password"} placeholder={t("shared.input.placeholder.password")} />
 
-          <Button type="submit" className={"w-full"}>Criar conta</Button>
+          <Button type="submit" className={"w-full"}>{t("shared.button.signup")}</Button>
 
           <a href="/login" className="text-[15px] text-[#2795DB] mt-[30px]">
-            Já possui conta? Entrar
+            {t("shared.link.login")}
           </a>
         </form>
       </FormProvider>

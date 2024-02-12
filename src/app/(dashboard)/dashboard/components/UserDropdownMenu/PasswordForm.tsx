@@ -1,6 +1,7 @@
+"use client"
 import React from "react";
 import { z } from "zod";
-import { rawAccountSchema } from "../../../../../schemas/accountSchema";
+import { getAccountSchema } from "../../../../../schemas/accountSchema";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import useValidationForm from "../../../../../hooks/useValidationForm";
@@ -8,30 +9,39 @@ import { Button } from "../../../../../components/ui/Button";
 import { updateCurrentUser } from "../../services/updateCurrentUser";
 import PasswordFormField from "../../../../../components/ui/Form/PasswordFormField";
 import { changePassword } from "../../services/changePassword";
-
-const schema = z
-  .object({
-    currentPassword: z.string().min(1, "A senha é obrigatória."),
-    newPassword: rawAccountSchema["password"],
-    confirmNewPassword: z.string(),
-  })
-  .refine(
-    ({ newPassword, confirmNewPassword }) => {
-      return newPassword === confirmNewPassword;
-    },
-    {
-      message: "As senhas não coincidem",
-      path: ["confirmNewPassword"],
-    }
-  );
-
-type Schema = z.infer<typeof schema>;
+import { useTranslation } from "react-i18next";
+import { t } from "i18next";
 
 interface PasswordFormProps {
   onSuccess: (payload: any) => void;
 }
 
+const getSchema = () => {
+  const accountSchema = getAccountSchema();
+
+  return z
+    .object({
+      currentPassword: z.string().min(1, t("shared.input.error.password.required")),
+      newPassword: accountSchema.shape.password,
+      confirmNewPassword: z.string(),
+    })
+    .refine(
+      ({ newPassword, confirmNewPassword }) => {
+        return newPassword === confirmNewPassword;
+      },
+      {
+        message: t("page.dashboard.dialog.account.options.password.mismatch-error"),
+        path: ["confirmNewPassword"],
+      }
+    );
+};
+
+type Schema = z.infer<ReturnType<typeof getSchema>>;
+
 const PasswordForm: React.FC<PasswordFormProps> = ({ onSuccess }) => {
+  const { t } = useTranslation();
+  const schema = getSchema();
+
   const form = useForm<Schema>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -66,7 +76,7 @@ const PasswordForm: React.FC<PasswordFormProps> = ({ onSuccess }) => {
             <PasswordFormField
               control={form.control}
               name={"currentPassword"}
-              label={"Senha atual"}
+              label={t("shared.input.placeholder.current-password")}
             />
           </div>
 
@@ -74,7 +84,7 @@ const PasswordForm: React.FC<PasswordFormProps> = ({ onSuccess }) => {
             <PasswordFormField
               control={form.control}
               name={"newPassword"}
-              label={"Nova senha"}
+              label={t("shared.input.placeholder.new-password")}
             />
           </div>
 
@@ -82,11 +92,11 @@ const PasswordForm: React.FC<PasswordFormProps> = ({ onSuccess }) => {
             <PasswordFormField
               control={form.control}
               name={"confirmNewPassword"}
-              label={"Confirme a nova senha"}
+              label={t("shared.input.placeholder.confirm-new-password")}
             />
           </div>
 
-          <Button className={"self-end"}>Salvar senha</Button>
+          <Button className={"self-end"}>{t("shared.button.update-password")}</Button>
         </form>
       </FormProvider>
     </>

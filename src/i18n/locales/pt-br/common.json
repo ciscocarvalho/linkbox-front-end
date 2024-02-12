@@ -1,0 +1,159 @@
+{
+  "page": {
+    "signup": {
+      "title": "Cadastro"
+    },
+    "home": {
+      "description": "O melhor lugar para organizar seus links!",
+      "button": {
+        "signup": "Começar agora",
+        "login": "Entrar"
+      },
+      "slogan": "O melhor lugar para organizar seus <0>links</0>!",
+      "slogan-sub": "Use o LinkBox para uma organização sem dor de cabeça"
+    },
+    "dashboard": {
+      "empty-current-folder": {
+        "message": "Esta pasta está vazia.",
+        "detail": "Adicione um link ou uma pasta clicando no botão +"
+      },
+      "breadcrumb": {
+        "root-node": "Início"
+      },
+      "dropdown": {
+        "item": {
+          "account": "Conta",
+          "logout": "Sair"
+        }
+      },
+      "items": {
+        "amount-selected_zero": "Selecionados",
+        "amount-selected_one": "Selecionado",
+        "amount-selected_other": "Selecionados"
+      },
+      "form": {
+        "link": {
+          "name": "Link",
+          "label": {
+            "title": "Título",
+            "url": "URL"
+          }
+        },
+        "folder": {
+          "name": "Pasta",
+          "label": {
+            "name": "Nome"
+          }
+        }
+      },
+      "dialog": {
+        "add-item": {
+          "title": "Adicionar item",
+          "save": {
+            "link": "Adicionar link",
+            "folder": "Adicionar pasta"
+          }
+        },
+        "edit-item": {
+          "title": {
+            "link": "Editar link",
+            "folder": "Editar pasta"
+          },
+          "save": {
+            "link": "Salvar",
+            "folder": "Salvar"
+          }
+        },
+        "account": {
+          "title": "Conta",
+          "options": {
+            "profile": {
+              "name": "Perfil"
+            },
+            "password": {
+              "name": "Senha",
+              "mismatch-error": "As senhas não coincidem."
+            }
+          }
+        }
+      }
+    },
+    "page-not-found": {
+      "title": "Erro 404",
+      "message": "Página não encontrada!"
+    },
+    "global-error": "Ocorreu algum erro no servidor!"
+  },
+  "shared": {
+    "loading": "Carregando...",
+    "warn": {
+      "delete-account": "Você está prestes a excluir sua conta, isso é uma ação irreversível. Tenha certeza do que está fazendo antes de prosseguir, você não poderá recuperar sua conta depois."
+    },
+    "button": {
+      "login": "Entrar",
+      "signup": "Criar conta",
+      "delete-account": "Excluir conta",
+      "update-profile": "Salvar perfil",
+      "update-password": "Salvar senha"
+    },
+    "link": {
+      "signup": "Ainda não possui conta? Cadastrar",
+      "login": "Já possui conta? Entrar"
+    },
+    "input": {
+      "label": {
+        "email": "Email",
+        "username": "Nome",
+        "password-before-deleting-account": "Digite sua senha"
+      },
+      "placeholder": {
+        "email": "Email",
+        "password": "Senha",
+        "username": "Nome",
+        "search": "Pesquise",
+        "current-password": "Senha atual",
+        "new-password": "Nova senha",
+        "confirm-new-password": "Confirme a nova senha"
+      },
+      "error": {
+        "username": {
+          "required": "O nome de usuário é obrigatório."
+        },
+        "email": {
+          "required": "O email é obrigatório.",
+          "invalid": "Insira um email válido."
+        },
+        "password": {
+          "required": "A senha é obrigatória.",
+          "min-characters-not-filled": "A senha precisa ter mais de {{- data.amountMinusOne}} caracteres."
+        },
+        "folder": {
+          "name": {
+            "whitespace-only": "Nome não pode ser composto apenas de espaços em branco",
+            "whitespace-start": "Nome não pode começar com espaço em branco",
+            "whitespace-end": "Nome não pode terminar com espaço em branco",
+            "required": "Nome é obrigatório",
+            "max-characters-exceeded": "Nome não pode ter mais que {{- data.amountMinusByOne}} caracteres",
+            "invalid-character": "Nome não pode conter \"{{- data.character}}\""
+          }
+        },
+        "link": {
+          "title": {
+            "whitespace-only": "Título não pode ser composto apenas de espaços em branco",
+            "whitespace-start": "Título não pode começar com espaço em branco",
+            "whitespace-end": "Título não pode terminar com espaço em branco",
+            "required": "Título é obrigatório",
+            "max-characters-exceeded": "Título não pode ter mais que {{- data.amount}} caracteres"
+          },
+          "url": {
+            "whitespace-only": "URL não pode ser composta apenas de espaços em branco",
+            "whitespace-start": "URL não pode começar com espaço em branco",
+            "whitespace-end": "URL não pode terminar com espaço em branco",
+            "required": "URL é obrigatória",
+            "max-characters-exceeded": "URL não pode ter mais que {{- data.amount}} caracteres"
+          }
+        }
+      }
+    }
+  }
+}

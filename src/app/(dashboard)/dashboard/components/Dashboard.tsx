@@ -16,8 +16,11 @@ import EditItemDialog from "./EditItemDialog";
 import { useToken } from "../../../../hooks/useToken";
 import { useIsClient } from "../../../../hooks/useIsClient";
 import UserDropdownMenu from "./UserDropdownMenu";
+import { useTranslation } from "react-i18next";
 
 const BaseDashboard: React.FC = () => {
+  const { t } = useTranslation();
+
   const initialDashboard: DashboardView = {
     displayedItems: [],
     selected: [],
@@ -83,7 +86,7 @@ const BaseDashboard: React.FC = () => {
               </a>
             </div>
             <div className="min-w-[50%] max-w-[600px] flex-1">
-              <SearchBar type="text" placeholder="Pesquise" id="inputPesquisa" />
+              <SearchBar type="text" placeholder={t("shared.input.placeholder.search")} id="inputPesquisa" />
             </div>
             <div className="flex-1 flex justify-end">
               <UserDropdownMenu />
@@ -101,9 +104,9 @@ const BaseDashboard: React.FC = () => {
                   "my-0 mx-auto w-[80%] h-[100%] flex justify-center items-center text-center text-[1.5rem] font-bold"
                 }
               >
-                Esta pasta está vazia.
+                {t("page.dashboard.empty-current-folder.message")}
                 <br />
-                Adicione um link ou uma pasta clicando no botão +
+                {t("page.dashboard.empty-current-folder.detail")}
               </p>
             )}
             <CardsFooter />

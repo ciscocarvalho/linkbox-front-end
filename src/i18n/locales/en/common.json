@@ -1,0 +1,157 @@
+{
+  "page": {
+    "signup": {
+      "title": "Sign up"
+    },
+    "home": {
+      "description": "The best place to organize your links!",
+      "button": {
+        "signup": "Start now",
+        "login": "Log in"
+      },
+      "slogan": "The best place to organize your <0>links</0>!",
+      "slogan-sub": "Use LinkBox for organization without headaches"
+    },
+    "dashboard": {
+      "empty-current-folder": {
+        "message": "This folder is empty.",
+        "detail": "Add a link or a folder by clicking the + button."
+      },
+      "breadcrumb": {
+        "root-node": "Home"
+      },
+      "dropdown": {
+        "item": {
+          "account": "Account",
+          "logout": "Log out"
+        }
+      },
+      "items": {
+        "amount-selected": "Selected"
+      },
+      "form": {
+        "link": {
+          "name": "Link",
+          "label": {
+            "title": "Title",
+            "url": "URL"
+          }
+        },
+        "folder": {
+          "name": "Folder",
+          "label": {
+            "name": "Name"
+          }
+        }
+      },
+      "dialog": {
+        "add-item": {
+          "title": "Add item",
+          "save": {
+            "link": "Add link",
+            "folder": "Add folder"
+          }
+        },
+        "edit-item": {
+          "title": {
+            "link": "Edit link",
+            "folder": "Edit folder"
+          },
+          "save": {
+            "link": "Update",
+            "folder": "Update"
+          }
+        },
+        "account": {
+          "title": "Account",
+          "options": {
+            "profile": {
+              "name": "Profile"
+            },
+            "password": {
+              "name": "Password",
+              "mismatch-error": "Passwords do not match."
+            }
+          }
+        }
+      }
+    },
+    "page-not-found": {
+      "title": "404 Error",
+      "message": "Page not found!"
+    },
+    "global-error": "Server crashed!"
+  },
+  "shared": {
+    "loading": "Loading...",
+    "warn": {
+      "delete-account": "You are about to delete your account, and this action is irreversible. Be sure of what you're doing before proceeding; you won't be able to recover your account afterward."
+    },
+    "button": {
+      "login": "Log in",
+      "signup": "Sign up",
+      "delete-account": "Delete account",
+      "update-profile": "Update profile",
+      "update-password": "Save password"
+    },
+    "link": {
+      "signup": "Don't have an account yet? Sign up",
+      "login": "Already have an account? Log in"
+    },
+    "input": {
+      "label": {
+        "email": "Email",
+        "username": "Name",
+        "password-before-deleting-account": "Insert your password"
+      },
+      "placeholder": {
+        "email": "Email",
+        "password": "Password",
+        "username": "Name",
+        "search": "Search",
+        "current-password": "Current password",
+        "new-password": "New password",
+        "confirm-new-password": "Confirm new password"
+      },
+      "error": {
+        "username": {
+          "required": "Username is required."
+        },
+        "email": {
+          "required": "Email is required.",
+          "invalid": "Insert a valid email."
+        },
+        "password": {
+          "required": "Password is required.",
+          "min-characters-not-filled": "Password needs to have more than {{- data.amountMinusOne}} characters."
+        },
+        "folder": {
+          "name": {
+            "whitespace-only": "Name cannot consist solely of whitespaces.",
+            "whitespace-start": "Name cannot start with a whitespace.",
+            "whitespace-end": "Name cannot end with a whitespace.",
+            "required": "Name is required.",
+            "max-characters-exceeded": "Name cannot have more than {{- data.amount}} characters.",
+            "invalid-character": "Name cannot contain \"{{- data.character}}\"."
+          }
+        },
+        "link": {
+          "title": {
+            "whitespace-only": "Title cannot consist solely of whitespaces.",
+            "whitespace-start": "Title cannot start with whitespace.",
+            "whitespace-end": "Title cannot end with whitespace.",
+            "required": "Title is mandatory.",
+            "max-characters-exceeded": "Title cannot have more than {{- data.amount}} characters."
+          },
+          "url": {
+            "whitespace-only": "URL cannot consist solely of whitespaces.",
+            "whitespace-start": "URL cannot start with whitespace.",
+            "whitespace-end": "URL cannot end with whitespace.",
+            "required": "URL is mandatory.",
+            "max-characters-exceeded": "URL cannot have more than {{- data.amount}} characters."
+          }
+        }
+      }
+    }
+  }
+}
