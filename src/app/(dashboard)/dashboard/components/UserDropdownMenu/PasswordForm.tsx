@@ -102,7 +102,7 @@ const PasswordForm: React.FC<PasswordFormProps> = ({ onSuccess }) => {
             />
           </div>
 
-          <Button className={"self-end"} disabled={loading}>
+          <Button className={"self-end"} loading={loading} disabled={loading}>
             {t("shared.button.update-password")}
           </Button>
         </form>

@@ -70,6 +70,7 @@ const DeleteAccountForm: React.FC<DeleteAccountFormProps> = ({}) => {
             className={"self-end"}
             variant={"destructive"}
             type={"submit"}
+            loading={loading}
             disabled={loading}
           >
             {t("shared.button.delete-account")}

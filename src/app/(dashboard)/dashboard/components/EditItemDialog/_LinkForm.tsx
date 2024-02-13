@@ -74,6 +74,7 @@ const LinkForm: React.FC<LinkFormProps> = ({ editItem, link }) => {
           <Button
             className={"self-end"}
             type={"submit"}
+            loading={loading}
             disabled={loading}
           >
             {t("page.dashboard.dialog.edit-item.save.link")}

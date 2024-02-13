@@ -87,7 +87,7 @@ const ProfileForm: React.FC<AccountFormProps> = ({
               {t("shared.button.delete-account")}
             </Button>
 
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" loading={loading} disabled={loading}>
               {t("shared.button.update-profile")}
             </Button>
           </div>

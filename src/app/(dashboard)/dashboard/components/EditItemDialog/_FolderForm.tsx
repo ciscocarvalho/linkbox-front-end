@@ -68,6 +68,7 @@ const FolderForm: React.FC<FolderFormProps> = ({ editItem, folder }) => {
           <Button
             className={"self-end"}
             type="submit"
+            loading={loading}
             disabled={loading}
           >
             {t("page.dashboard.dialog.edit-item.save.folder")}

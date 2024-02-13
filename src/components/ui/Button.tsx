@@ -56,7 +56,16 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {
           loading
-            ? <Icon name="progress_activity" className="animate-spin" />
+            ? <>
+                <div className="relative">
+                  <div className="invisible">
+                    {children}
+                  </div>
+                  <div className="absolute flex left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                    <Icon name="progress_activity" className="animate-spin" />
+                  </div>
+                </div>
+              </>
             : children
         }
       </Comp>

@@ -82,6 +82,7 @@ const LoginForm: React.FC = () => {
           <Button
             type="submit"
             className={"w-full"}
+            loading={loading}
             disabled={loading}
           >
             {t("shared.button.login")}
