@@ -6,7 +6,7 @@ import {
 } from "../../contexts/DashboardContext";
 import { add } from "../../services/add";
 import { refreshDashboard } from "../../utils/actions/refreshDashboard";
-import { DashboardItem } from "../../types";
+import { DashboardItem, DashboardItemType } from "../../types";
 import { getItemID } from "../../utils";
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/Dialog";
 import LinkForm from "./_LinkForm";
@@ -25,7 +25,7 @@ const AddItemDialog: React.FC<AddItemModalProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const [itemType, setItemType] = useState("link");
+  const [itemType, setItemType] = useState<DashboardItemType>("link");
   const dashboard = useContext(DashboardContext);
   const dispatch = useContext(DashboardDispatchContext);
 
@@ -51,7 +51,10 @@ const AddItemDialog: React.FC<AddItemModalProps> = ({
           <h3 className="text-xl">
             {t("page.dashboard.dialog.add-item.title")}
           </h3>
-          <ItemTypeSelect onValueChange={(value) => setItemType(value)} />
+          <ItemTypeSelect
+            defaultValue={itemType}
+            onValueChange={(value) => setItemType(value)}
+          />
         </div>
 
         {

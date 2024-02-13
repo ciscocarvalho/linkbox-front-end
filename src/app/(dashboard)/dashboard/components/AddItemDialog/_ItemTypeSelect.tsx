@@ -1,10 +1,11 @@
 "use client";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
 import { useTranslation } from "react-i18next";
+import { DashboardItemType } from "../../types";
 
 interface ItemTypeSelectProps {
-  onValueChange?: (value: string) => void;
-  defaultValue?: "link" | "folder",
+  onValueChange?: (value: DashboardItemType) => void;
+  defaultValue?: DashboardItemType;
 }
 
 const ItemTypeSelect: React.FC<ItemTypeSelectProps> = ({
