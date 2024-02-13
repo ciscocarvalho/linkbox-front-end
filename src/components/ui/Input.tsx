@@ -7,7 +7,7 @@ export interface InputProps
   rightIcon?: React.ReactNode;
 }
 
-interface IconWrapperProps {
+interface IconWrapperProps extends React.HTMLAttributes<HTMLDivElement> {
   side?: "left" | "right";
   children: React.ReactNode;
 }
@@ -15,12 +15,18 @@ interface IconWrapperProps {
 const IconWrapper: React.FC<IconWrapperProps> = ({
   side = "left",
   children,
+  className,
+  ...props
 }) => {
   return (
-    <div className={cn(
-      side === "left" ? "left-3" : "right-3",
-      "absolute top-0 flex items-center justify-center h-full pointer-events-none"
-    )}>
+    <div
+      className={cn(
+        className,
+        side === "left" ? "left-3" : "right-3",
+        "absolute top-0 flex items-center justify-center h-full pointer-events-none",
+      )}
+      {...props}
+    >
       {children}
     </div>
   );
@@ -32,11 +38,18 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     type,
     leftIcon,
     rightIcon,
+    disabled,
     ...props
   }, ref) => {
     return (
-      <div className={cn("relative")}>
-        {leftIcon && <IconWrapper>{leftIcon}</IconWrapper>}
+      <div className={cn("relative", disabled && "cursor-not-allowed [&>*]:!cursor-not-allowed [&>*]:!pointer-events-none")}>
+        {
+          leftIcon
+            ? <IconWrapper className={cn(disabled && "opacity-50")}>
+                {leftIcon}
+              </IconWrapper>
+            : null
+        }
         <input
           type={type}
           className={cn(
@@ -45,10 +58,17 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             rightIcon && "pr-10",
             className,
           )}
+          disabled={disabled}
           ref={ref}
           {...props}
         />
-        {rightIcon && <IconWrapper side="right">{rightIcon}</IconWrapper>}
+        {
+          rightIcon
+            ? <IconWrapper side="right" className={cn(disabled && "opacity-50")}>
+                {rightIcon}
+              </IconWrapper>
+            : null
+        }
       </div>
     );
   }

@@ -13,6 +13,7 @@ import CustomFormField from "@/components/ui/Form/CustomFormField";
 import PasswordFormField from "@/components/ui/Form/PasswordFormField";
 import { AccountSchema, getAccountSchema } from "../../../../schemas/accountSchema";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 const useOnSuccess = () => {
   const { setToken } = useToken();
@@ -32,13 +33,18 @@ type SignupForm = z.infer<AccountSchema>;
 
 const SignupForm: React.FC = () => {
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
+
   const formSchema = getAccountSchema();
   const defaultValues: SignupForm = { email: "", username: "", password: "" };
   const form = useForm<SignupForm>({ resolver: zodResolver(formSchema), defaultValues });
+
   const { onValid, errorModal } = useValidationForm({
     form,
     getPayload: signup,
     onSuccess: useOnSuccess(),
+    onLoadingStart: () => setLoading(true),
+    onLoadingEnd: () => setLoading(false),
     expectedErrorType: "AUTH_ERROR",
   });
 
@@ -57,6 +63,7 @@ const SignupForm: React.FC = () => {
             name={"username"}
             placeholder={t("shared.input.placeholder.username")}
             rightIcon={<Icon name="edit" />}
+            disabled={loading}
           />
 
           <CustomFormField
@@ -64,11 +71,23 @@ const SignupForm: React.FC = () => {
             name={"email"}
             placeholder={t("shared.input.placeholder.email")}
             rightIcon={<Icon name="mail" />}
+            disabled={loading}
           />
 
-          <PasswordFormField control={form.control} name={"password"} placeholder={t("shared.input.placeholder.password")} />
+          <PasswordFormField
+            control={form.control}
+            name={"password"}
+            placeholder={t("shared.input.placeholder.password")}
+            disabled={loading}
+          />
 
-          <Button type="submit" className={"w-full"}>{t("shared.button.signup")}</Button>
+          <Button
+            type="submit"
+            className={"w-full"}
+            disabled={loading}
+          >
+            {t("shared.button.signup")}
+          </Button>
 
           <a href="/login" className="text-[15px] text-[#2795DB] mt-[30px]">
             {t("shared.link.login")}

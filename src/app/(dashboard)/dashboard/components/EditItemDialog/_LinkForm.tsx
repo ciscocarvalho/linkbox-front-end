@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { LinkSchema, getLinkSchema } from "../../utils/linkSchema";
 import CustomFormField from "@/components/ui/Form/CustomFormField";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 export type LinkForm = z.infer<LinkSchema>;
 
@@ -19,6 +20,7 @@ type LinkFormProps = ItemFormProps & { link: DashboardLink };
 
 const LinkForm: React.FC<LinkFormProps> = ({ editItem, link }) => {
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<LinkForm>({
     resolver: zodResolver(getLinkSchema()),
@@ -34,6 +36,8 @@ const LinkForm: React.FC<LinkFormProps> = ({ editItem, link }) => {
       });
     },
     onSuccess: () => {},
+    onLoadingStart: () => setLoading(true),
+    onLoadingEnd: () => setLoading(false),
     expectedErrorType: "ITEM_ERROR",
   });
 
@@ -67,7 +71,11 @@ const LinkForm: React.FC<LinkFormProps> = ({ editItem, link }) => {
             />
           </div>
 
-          <Button type={"submit"} className={"self-end"}>
+          <Button
+            className={"self-end"}
+            type={"submit"}
+            disabled={loading}
+          >
             {t("page.dashboard.dialog.edit-item.save.link")}
           </Button>
         </form>

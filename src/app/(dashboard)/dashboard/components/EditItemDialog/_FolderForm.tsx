@@ -8,6 +8,7 @@ import useValidationForm from "@/hooks/useValidationForm";
 import { FolderSchema, getFolderSchema } from "../../utils/folderSchema";
 import CustomFormField from "@/components/ui/Form/CustomFormField";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 interface ItemFormProps {
   editItem: Function;
@@ -20,6 +21,7 @@ export type FolderForm = z.infer<FolderSchema>;
 
 const FolderForm: React.FC<FolderFormProps> = ({ editItem, folder }) => {
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<FolderForm>({
     resolver: zodResolver(getFolderSchema()),
@@ -32,6 +34,8 @@ const FolderForm: React.FC<FolderFormProps> = ({ editItem, folder }) => {
       return await editItem({ name: data.name.trim() });
     },
     onSuccess: () => {},
+    onLoadingStart: () => setLoading(true),
+    onLoadingEnd: () => setLoading(false),
     expectedErrorType: "ITEM_ERROR",
   });
 
@@ -61,7 +65,11 @@ const FolderForm: React.FC<FolderFormProps> = ({ editItem, folder }) => {
             />
           </div>
 
-          <Button className={"self-end"} type="submit">
+          <Button
+            className={"self-end"}
+            type="submit"
+            disabled={loading}
+          >
             {t("page.dashboard.dialog.edit-item.save.folder")}
           </Button>
         </form>

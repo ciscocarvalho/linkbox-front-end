@@ -2,12 +2,14 @@ import { useState } from "react";
 import { FieldValues } from "react-hook-form";
 import Icon from "../../Icon";
 import CustomFormField, { CustomFormFieldProps } from "./CustomFormField";
+import { cn } from "../../../lib/utils";
 
 type PasswordFormFieldProps<T extends FieldValues> = CustomFormFieldProps<T>;
 
-const PasswordFormField = <T extends FieldValues>(
-  props: PasswordFormFieldProps<T>
-) => {
+const PasswordFormField = <T extends FieldValues>({
+  disabled,
+  ...props
+}: PasswordFormFieldProps<T>) => {
   const [inputType, setInputType] = useState<"text" | "password">("password");
   const iconName = inputType === "password" ? "visibility" : "visibility_off";
 
@@ -18,15 +20,19 @@ const PasswordFormField = <T extends FieldValues>(
   return (
     <CustomFormField
       type={inputType}
+      disabled={disabled}
       rightIcon={
-        <div
+        <button
+          type="button"
           onClick={toggleInputType}
-          className={
-            "cursor-pointer pointer-events-auto select-none flex items-center justify-center"
-          }
+          disabled={disabled}
+          className={cn(
+            disabled !== true && "pointer-events-auto",
+            "flex items-center justify-center"
+          )}
         >
           <Icon name={iconName} />
-        </div>
+        </button>
       }
       {...props}
     />

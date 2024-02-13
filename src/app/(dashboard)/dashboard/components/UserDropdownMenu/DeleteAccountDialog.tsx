@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +25,7 @@ interface DeleteAccountFormProps {}
 
 const DeleteAccountForm: React.FC<DeleteAccountFormProps> = ({}) => {
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<PasswordConfirmation>({
     resolver: zodResolver(passwordConfirmationSchema),
@@ -35,6 +36,8 @@ const DeleteAccountForm: React.FC<DeleteAccountFormProps> = ({}) => {
     form,
     onSuccess: () => {},
     getPayload: ({ password }) => deleteAccount(password),
+    onLoadingStart: () => setLoading(true),
+    onLoadingEnd: () => setLoading(false),
     expectedErrorType: "AUTH_ERROR",
   });
 
@@ -59,6 +62,7 @@ const DeleteAccountForm: React.FC<DeleteAccountFormProps> = ({}) => {
               label={t("shared.input.label.password-before-deleting-account")}
               control={form.control}
               name="password"
+              disabled={loading}
             />
           </div>
 
@@ -66,6 +70,7 @@ const DeleteAccountForm: React.FC<DeleteAccountFormProps> = ({}) => {
             className={"self-end"}
             variant={"destructive"}
             type={"submit"}
+            disabled={loading}
           >
             {t("shared.button.delete-account")}
           </Button>

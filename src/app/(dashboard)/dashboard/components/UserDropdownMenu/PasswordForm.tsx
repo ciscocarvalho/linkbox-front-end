@@ -1,5 +1,5 @@
 "use client"
-import React from "react";
+import React, { useState } from "react";
 import { z } from "zod";
 import { getAccountSchema } from "../../../../../schemas/accountSchema";
 import { FormProvider, useForm } from "react-hook-form";
@@ -40,6 +40,7 @@ type Schema = z.infer<ReturnType<typeof getSchema>>;
 
 const PasswordForm: React.FC<PasswordFormProps> = ({ onSuccess }) => {
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
   const schema = getSchema();
 
   const form = useForm<Schema>({
@@ -57,6 +58,8 @@ const PasswordForm: React.FC<PasswordFormProps> = ({ onSuccess }) => {
     getPayload: async ({ currentPassword, newPassword }) => {
       return changePassword({ currentPassword, newPassword });
     },
+    onLoadingStart: () => setLoading(true),
+    onLoadingEnd: () => setLoading(false),
     expectedErrorType: "AUTH_ERROR",
   });
 
@@ -77,6 +80,7 @@ const PasswordForm: React.FC<PasswordFormProps> = ({ onSuccess }) => {
               control={form.control}
               name={"currentPassword"}
               label={t("shared.input.placeholder.current-password")}
+              disabled={loading}
             />
           </div>
 
@@ -85,6 +89,7 @@ const PasswordForm: React.FC<PasswordFormProps> = ({ onSuccess }) => {
               control={form.control}
               name={"newPassword"}
               label={t("shared.input.placeholder.new-password")}
+              disabled={loading}
             />
           </div>
 
@@ -93,10 +98,13 @@ const PasswordForm: React.FC<PasswordFormProps> = ({ onSuccess }) => {
               control={form.control}
               name={"confirmNewPassword"}
               label={t("shared.input.placeholder.confirm-new-password")}
+              disabled={loading}
             />
           </div>
 
-          <Button className={"self-end"}>{t("shared.button.update-password")}</Button>
+          <Button className={"self-end"} disabled={loading}>
+            {t("shared.button.update-password")}
+          </Button>
         </form>
       </FormProvider>
     </>

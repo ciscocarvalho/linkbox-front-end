@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { FolderSchema, getFolderSchema } from "../../utils/folderSchema";
 import CustomFormField from "@/components/ui/Form/CustomFormField";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 interface ItemFormProps {
   addItem: Function;
@@ -17,6 +18,7 @@ type FolderForm = z.infer<FolderSchema>;
 
 const FolderForm: React.FC<ItemFormProps> = ({ addItem }) => {
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
 
   const defaultValues: FolderForm = { name: "" };
   const form = useForm<FolderForm>({
@@ -29,6 +31,8 @@ const FolderForm: React.FC<ItemFormProps> = ({ addItem }) => {
     getPayload: async (data: FolderForm) => {
       return await addItem({ name: data.name.trim(), items: [] });
     },
+    onLoadingStart: () => setLoading(true),
+    onLoadingEnd: () => setLoading(false),
     onSuccess: () => {},
     expectedErrorType: "ITEM_ERROR",
   });
@@ -50,10 +54,15 @@ const FolderForm: React.FC<ItemFormProps> = ({ addItem }) => {
               control={form.control}
               name={"name"}
               label={t("page.dashboard.form.folder.label.name")}
+              disabled={loading}
             />
           </div>
 
-          <Button className={"self-end"} type="submit">
+          <Button
+            className={"self-end"}
+            type="submit"
+            disabled={loading}
+          >
             {t("page.dashboard.dialog.add-item.save.folder")}
           </Button>
         </form>

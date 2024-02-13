@@ -24,6 +24,7 @@ const ProfileForm: React.FC<AccountFormProps> = ({
   defaultValues,
 }) => {
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
   const [openDeleteAccountDialog, setOpenDeleteAccountDialog] = useState(false);
 
   const form = useForm<User>({
@@ -37,6 +38,8 @@ const ProfileForm: React.FC<AccountFormProps> = ({
     },
     expectedErrorType: "AUTH_ERROR",
     onSuccess,
+    onLoadingStart: () => setLoading(true),
+    onLoadingEnd: () => setLoading(false),
     form,
   });
 
@@ -61,6 +64,7 @@ const ProfileForm: React.FC<AccountFormProps> = ({
               control={form.control}
               name={"username"}
               label={t("shared.input.label.username")}
+              disabled={loading}
             />
           </div>
 
@@ -69,6 +73,7 @@ const ProfileForm: React.FC<AccountFormProps> = ({
               control={form.control}
               name={"email"}
               label={t("shared.input.label.email")}
+              disabled={loading}
             />
           </div>
 
@@ -77,11 +82,12 @@ const ProfileForm: React.FC<AccountFormProps> = ({
               type={"button"}
               variant={"destructive"}
               onClick={() => setOpenDeleteAccountDialog(true)}
+              disabled={loading}
             >
               {t("shared.button.delete-account")}
             </Button>
 
-            <Button type="submit">
+            <Button type="submit" disabled={loading}>
               {t("shared.button.update-profile")}
             </Button>
           </div>

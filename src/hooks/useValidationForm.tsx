@@ -54,14 +54,27 @@ const useOnFail = <T extends FieldValues>(form: UseFormReturn<T>, expectedErrorT
 const useOnValid = <T extends FieldValues>({
   onFail,
   onSuccess,
+  onLoadingStart,
+  onLoadingEnd,
   getPayload,
 }: {
   onFail: FailHandler<T>;
   onSuccess: (payload: any) => void;
+  onLoadingStart?: () => void;
+  onLoadingEnd?: () => void;
   getPayload: (data: T) => any;
 }) => {
   const onValid: ValidHandler<T> = async (data) => {
+    if (onLoadingStart) {
+      onLoadingStart();
+    }
+
     const payload = await getPayload(data);
+
+    if (onLoadingEnd) {
+      onLoadingEnd();
+    }
+
     let errors = payload?.errors;
 
     if (errors) {
@@ -78,15 +91,26 @@ const useValidationForm = <T extends FieldValues>({
   form,
   getPayload,
   onSuccess,
+  onLoadingStart,
+  onLoadingEnd,
   expectedErrorType,
 }: {
   form: UseFormReturn<T>;
   getPayload: (data: T) => any;
   onSuccess: (payload: any) => void;
+  onLoadingStart?: () => void,
+  onLoadingEnd?: () => void,
   expectedErrorType: string;
 }) => {
   const { onFail, errorModal } = useOnFail(form, expectedErrorType);
-  const { onValid } = useOnValid<T>({ onFail, onSuccess, getPayload });
+  const { onValid } = useOnValid<T>({
+    onFail,
+    onSuccess,
+    onLoadingStart,
+    onLoadingEnd,
+    getPayload,
+  });
+
   return { onValid, errorModal };
 };
 

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import login from "../../services/login";
 import Icon from "../../../../components/Icon";
 import { useToken } from "../../../../hooks/useToken";
@@ -41,11 +41,14 @@ const LoginForm: React.FC = () => {
   const formSchema = getFormSchema();
   const defaultValues: LoginForm = { email: "", password: "" };
   const form = useForm<LoginForm>({ resolver: zodResolver(formSchema), defaultValues });
+  const [loading, setLoading] = useState(false);
 
   const { onValid, errorModal } = useValidationForm({
     form,
     getPayload: (form) => login(form.email, form.password),
     onSuccess: useOnSuccess(),
+    onLoadingStart: () => setLoading(true),
+    onLoadingEnd: () => setLoading(false),
     expectedErrorType: "AUTH_ERROR",
   });
 
@@ -65,12 +68,24 @@ const LoginForm: React.FC = () => {
               name={"email"}
               placeholder={t("shared.input.placeholder.email")}
               rightIcon={<Icon name="mail" />}
+              disabled={loading}
             />
 
-            <PasswordFormField control={form.control} name={"password"} placeholder={t("shared.input.placeholder.password")} />
+            <PasswordFormField
+              control={form.control}
+              name={"password"}
+              placeholder={t("shared.input.placeholder.password")}
+              disabled={loading}
+            />
           </div>
 
-          <Button type="submit" className={"w-full"}>{t("shared.button.login")}</Button>
+          <Button
+            type="submit"
+            className={"w-full"}
+            disabled={loading}
+          >
+            {t("shared.button.login")}
+          </Button>
 
           <a href="/signup" className="text-[#2795DB] mt-[30px]">
             {t("shared.link.signup")}
