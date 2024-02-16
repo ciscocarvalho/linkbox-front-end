@@ -1,7 +1,7 @@
 "use client";
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/Dialog";
 import { useRef, useState } from "react";
-import { HiOutlineExclamationCircle } from 'react-icons/hi';
+import Icon from "../../../../components/Icon";
 
 interface AuthErrorModalProps {
   error: string;
@@ -38,7 +38,7 @@ const AuthErrorModal: React.FC<AuthErrorModalProps> = ({ error }) => {
       <DialogContent className="sm:max-w-[425px]">
         <div className="flex flex-col gap-[20px]">
           <div className="text-center">
-            <HiOutlineExclamationCircle className="mx-auto my-4 h-14 w-14" />
+            <Icon name="error_outline" className="my-4 text-[3.5rem]" />
             <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
               {error}
             </h3>

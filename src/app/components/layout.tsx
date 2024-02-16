@@ -29,13 +29,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <html lang={i18next.language}>
-      <head>
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0"
-        />
-      </head>
-
       <body>
         <IsClientCtxProvider>{children}</IsClientCtxProvider>
       </body>

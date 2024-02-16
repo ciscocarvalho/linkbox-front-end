@@ -4,7 +4,7 @@
 // officially.
 
 import * as React from "react"
-import { ChevronRightIcon } from "@radix-ui/react-icons"
+import Icon from "../Icon"
 import { cn, getValidChildren } from "@/lib/utils"
 
 export interface BreadcrumbProps extends React.ComponentPropsWithoutRef<"nav"> {
@@ -22,7 +22,7 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
     {
       children,
       className,
-      separator = <ChevronRightIcon className="h-4 w-4" />,
+      separator = <Icon name="chevron_right" />,
       addSeparator = true,
       ...props
     },
@@ -141,7 +141,7 @@ export const BreadcrumbSeparator = React.forwardRef<
 >(({ className, ...props }, forwardedRef) => {
   return (
     <span
-      className={cn("mx-2 opacity-50", className)}
+      className={cn("mx-2 opacity-50 flex justify-center items-center", className)}
       role="presentation"
       {...props}
       ref={forwardedRef}

@@ -1,6 +1,6 @@
 "use client";
 import React, { Dispatch, useContext, useEffect, useState } from 'react';
-import { HiHome } from 'react-icons/hi';
+import Icon from '../../../../components/Icon';
 import { DashboardAction, DashboardFolder } from '../types';
 import { getFolderByPath } from "../services/getFolderByPath";
 import { DashboardContext, DashboardDispatchContext } from '../contexts/DashboardContext';
@@ -41,7 +41,7 @@ const FolderBreadcrumb: React.FC<FolderBreadcrumbProps> = ({ folder }) => {
                 onClick={async () => await goToLocation([], dispatch)}
                 className="hover:cursor-pointer hover:bg-[#c2c8d1] hover:duration-[0.2s] h-[36px] px-[8px] rounded-lg flex items-center gap-2"
               >
-                {<HiHome />}
+                <Icon name="home" />
                 <p>{t("page.dashboard.breadcrumb.root-node")}</p>
               </div>
             </BreadcrumbItem>
